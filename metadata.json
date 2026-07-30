@@ -1,0 +1,11 @@
+{
+  "name": "Krishi Saathi",
+  "description": "AI-powered smart farming platform with botanist-grade plant identification, disease detection, soil compatibility, and sustainable farming guides.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
