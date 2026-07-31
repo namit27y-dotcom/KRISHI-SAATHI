@@ -299,6 +299,91 @@ export class Database {
 
     // Seeding Default Role-Based Users
     const seededUsers: Record<string, User & { passwordHash: string }> = {
+      "guest-1": {
+        id: "guest-1",
+        name: "Rajesh Patil",
+        email: "guest@krishisaathi.com",
+        passwordHash: "guest123",
+        mobile: "9876543210",
+        role: "farmer",
+        isVerified: true,
+        country: "India",
+        state: "Maharashtra",
+        district: "Pune",
+        village: "Khed",
+        landArea: 2.5,
+        soilType: "Black Cotton Soil",
+        cropsGrown: ["Wheat", "Tomato"],
+        preferredLanguage: "en",
+        createdAt: new Date().toISOString()
+      },
+      "farmer-1": {
+        id: "farmer-1",
+        name: "Rajesh Patil",
+        email: "farmer1@krishisaathi.com",
+        passwordHash: "farmer123",
+        mobile: "9876543210",
+        role: "farmer",
+        isVerified: true,
+        country: "India",
+        state: "Maharashtra",
+        district: "Nashik",
+        village: "Pimpalgaon",
+        landArea: 4.5,
+        soilType: "Black Cotton Soil",
+        cropsGrown: ["Wheat", "Tomato", "Sugarcane"],
+        preferredLanguage: "mr",
+        createdAt: new Date().toISOString()
+      },
+      "seller-1": {
+        id: "seller-1",
+        name: "Anand Kumar",
+        email: "seller1@krishisaathi.com",
+        passwordHash: "seller123",
+        mobile: "9123456789",
+        role: "seller",
+        isVerified: true,
+        country: "India",
+        state: "Maharashtra",
+        district: "Nashik",
+        village: "Pimpalgaon Market",
+        companyName: "Agri-Grow Fertilisers & Tools Ltd",
+        gstNumber: "27AAACA1234F1Z0",
+        preferredLanguage: "hi",
+        createdAt: new Date().toISOString()
+      },
+      "buyer-1": {
+        id: "buyer-1",
+        name: "Sanjay Gupta",
+        email: "buyer1@krishisaathi.com",
+        passwordHash: "buyer123",
+        mobile: "9567890123",
+        role: "buyer",
+        isVerified: true,
+        country: "India",
+        state: "Maharashtra",
+        district: "Mumbai",
+        village: "APMC Market",
+        companyName: "Gupta Agro Exports Ltd",
+        buyerType: "exporter",
+        preferredLanguage: "en",
+        createdAt: new Date().toISOString()
+      },
+      "admin-1": {
+        id: "admin-1",
+        name: "Admin Officer",
+        email: "admin1@krishisaathi.com",
+        passwordHash: "admin123",
+        mobile: "9000000000",
+        role: "admin",
+        isVerified: true,
+        country: "India",
+        state: "New Delhi",
+        district: "Central Delhi",
+        village: "Krishi Bhawan",
+        preferredLanguage: "en",
+        createdAt: new Date().toISOString()
+      },
       "u-farmer-1": {
         id: "u-farmer-1",
         name: "Ramesh Patil",
@@ -469,7 +554,34 @@ export class Database {
 
   // --- Users Table API ---
   public getUsers() { return this.data.users; }
-  public getUserById(id: string) { return this.data.users[id]; }
+  public getUserById(id: string) { 
+    if (this.data.users[id]) {
+      return this.data.users[id];
+    }
+    // Auto-create fallback user if absent in db file
+    const role = id.includes("seller") ? "seller" : id.includes("buyer") ? "buyer" : id.includes("admin") ? "admin" : "farmer";
+    const fallbackUser: User & { passwordHash: string } = {
+      id,
+      name: id.startsWith("guest") ? "Rajesh Patil" : `User (${id})`,
+      email: `${id}@krishisaathi.com`,
+      passwordHash: "password123",
+      mobile: "+91 98765 43210",
+      role,
+      isVerified: true,
+      country: "India",
+      state: "Maharashtra",
+      district: "Nashik",
+      village: "Pimpalgaon",
+      soilType: "Black Cotton Soil",
+      landArea: 2.5,
+      cropsGrown: ["Tomato"],
+      preferredLanguage: "en",
+      createdAt: new Date().toISOString()
+    };
+    this.data.users[id] = fallbackUser;
+    this.save();
+    return fallbackUser;
+  }
   public getUserByEmail(email: string) {
     return Object.values(this.data.users).find((u) => u.email.toLowerCase() === email.toLowerCase());
   }

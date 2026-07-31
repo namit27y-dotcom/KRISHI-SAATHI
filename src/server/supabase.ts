@@ -1,12 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Clean user's projectID (namitdatabase@27 -> namitdatabase-27) for valid domain
-const defaultProjectID = "namitdatabase@27".replace(/@/g, "-").replace(/[^a-zA-Z0-9-]/g, "");
-const defaultUrl = `https://${defaultProjectID}.supabase.co`;
-const defaultKey = "sb_publishable_Pbsgr4l45cBZoGNeqldn9w_gc6evJuw";
-
-const supabaseUrl = process.env.SUPABASE_URL || defaultUrl;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || defaultKey;
+// Optional Supabase client configuration
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseKey = process.env.SUPABASE_ANON_KEY || "";
 
 let supabaseClient: any = null;
 
@@ -20,6 +16,7 @@ export function getSupabase() {
       supabaseClient = createClient(supabaseUrl, supabaseKey);
     } catch (err: any) {
       console.error("[Supabase Init] Error initializing client:", err.message || err);
+      return null;
     }
   }
   return supabaseClient;

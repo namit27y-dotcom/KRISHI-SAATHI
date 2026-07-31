@@ -1,0 +1,415 @@
+{
+  "users": {
+    "u-farmer-1": {
+      "id": "u-farmer-1",
+      "name": "Ramesh Patil",
+      "email": "farmer@krishisaathi.com",
+      "passwordHash": "farmer123",
+      "mobile": "9876543210",
+      "role": "farmer",
+      "isVerified": true,
+      "country": "India",
+      "state": "Maharashtra",
+      "district": "Nashik",
+      "village": "Pimpalgaon",
+      "landArea": 4.5,
+      "soilType": "Black Cotton Soil",
+      "cropsGrown": [
+        "Wheat",
+        "Tomato",
+        "Sugarcane"
+      ],
+      "preferredLanguage": "mr",
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    },
+    "u-seller-1": {
+      "id": "u-seller-1",
+      "name": "Anand Kumar",
+      "email": "seller@krishisaathi.com",
+      "passwordHash": "seller123",
+      "mobile": "9123456789",
+      "role": "seller",
+      "isVerified": true,
+      "country": "India",
+      "state": "Maharashtra",
+      "district": "Nashik",
+      "village": "Pimpalgaon Market",
+      "companyName": "Agri-Grow Fertilisers & Tools Ltd",
+      "gstNumber": "27AAACA1234F1Z0",
+      "preferredLanguage": "hi",
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    },
+    "u-buyer-1": {
+      "id": "u-buyer-1",
+      "name": "Sanjay Gupta",
+      "email": "buyer@krishisaathi.com",
+      "passwordHash": "buyer123",
+      "mobile": "9567890123",
+      "role": "buyer",
+      "isVerified": true,
+      "country": "India",
+      "state": "Maharashtra",
+      "district": "Mumbai",
+      "village": "APMC Market",
+      "companyName": "Gupta Agro Exports Ltd",
+      "buyerType": "exporter",
+      "preferredLanguage": "en",
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    },
+    "u-admin-1": {
+      "id": "u-admin-1",
+      "name": "Admin Officer",
+      "email": "admin@krishisaathi.com",
+      "passwordHash": "admin123",
+      "mobile": "9000000000",
+      "role": "admin",
+      "isVerified": true,
+      "country": "India",
+      "state": "New Delhi",
+      "district": "Central Delhi",
+      "village": "Krishi Bhawan",
+      "preferredLanguage": "en",
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    }
+  },
+  "plantSpecies": {
+    "sp-1": {
+      "id": "sp-1",
+      "scientificName": "Solanum lycopersicum",
+      "commonName": "Tomato",
+      "family": "Solanaceae",
+      "growthHabit": "Herbaceous annual or short-lived perennial climber",
+      "nativeRegion": "South and Central America",
+      "idealPhMin": 6,
+      "idealPhMax": 6.8,
+      "idealSoilTexture": "Loamy, well-draining soil",
+      "waterRequirement": "medium",
+      "sunlightRequirement": "Full sun",
+      "isInvasive": false
+    },
+    "sp-2": {
+      "id": "sp-2",
+      "scientificName": "Oryza sativa",
+      "commonName": "Rice / Paddy",
+      "family": "Poaceae",
+      "growthHabit": "Semi-aquatic annual grass",
+      "nativeRegion": "Tropical Asia",
+      "idealPhMin": 5.5,
+      "idealPhMax": 6.5,
+      "idealSoilTexture": "Clayey or heavy clay loams that retain water",
+      "waterRequirement": "high",
+      "sunlightRequirement": "Full sun",
+      "isInvasive": false
+    },
+    "sp-3": {
+      "id": "sp-3",
+      "scientificName": "Gossypium hirsutum",
+      "commonName": "Cotton",
+      "family": "Malvaceae",
+      "growthHabit": "Shrubby perennial (cultivated as annual)",
+      "nativeRegion": "Central America / Mexico",
+      "idealPhMin": 5.8,
+      "idealPhMax": 8,
+      "idealSoilTexture": "Deep loamy, alluvial, or black cotton soil with good drainage",
+      "waterRequirement": "medium",
+      "sunlightRequirement": "Full sun",
+      "isInvasive": false
+    },
+    "sp-4": {
+      "id": "sp-4",
+      "scientificName": "Saccharum officinarum",
+      "commonName": "Sugarcane",
+      "family": "Poaceae",
+      "growthHabit": "Tall perennial bunchgrass",
+      "nativeRegion": "Southeast Asia / New Guinea",
+      "idealPhMin": 6,
+      "idealPhMax": 7.5,
+      "idealSoilTexture": "Rich loamy or clayey loam soils",
+      "waterRequirement": "high",
+      "sunlightRequirement": "Full sun",
+      "isInvasive": false
+    },
+    "sp-5": {
+      "id": "sp-5",
+      "scientificName": "Azadirachta indica",
+      "commonName": "Neem",
+      "family": "Meliaceae",
+      "growthHabit": "Fast-growing evergreen tree",
+      "nativeRegion": "Indian subcontinent",
+      "idealPhMin": 5,
+      "idealPhMax": 8.2,
+      "idealSoilTexture": "Slightly acidic to alkaline, well-drained sandy or loamy soils",
+      "waterRequirement": "low",
+      "sunlightRequirement": "Full sun",
+      "isInvasive": false
+    }
+  },
+  "plantLocalNames": {
+    "ln-1": {
+      "id": "ln-1",
+      "plantSpeciesId": "sp-1",
+      "language": "en",
+      "localName": "Tomato"
+    },
+    "ln-2": {
+      "id": "ln-2",
+      "plantSpeciesId": "sp-1",
+      "language": "hi",
+      "localName": "टमाटर (Tamatar)"
+    },
+    "ln-3": {
+      "id": "ln-3",
+      "plantSpeciesId": "sp-1",
+      "language": "mr",
+      "localName": "टोमॅटो (Tomato)"
+    },
+    "ln-4": {
+      "id": "ln-4",
+      "plantSpeciesId": "sp-2",
+      "language": "en",
+      "localName": "Rice"
+    },
+    "ln-5": {
+      "id": "ln-5",
+      "plantSpeciesId": "sp-2",
+      "language": "hi",
+      "localName": "धान / चावल (Dhan / Chawal)"
+    },
+    "ln-6": {
+      "id": "ln-6",
+      "plantSpeciesId": "sp-2",
+      "language": "mr",
+      "localName": "भात / तांदूळ (Bhat / Tandul)"
+    },
+    "ln-7": {
+      "id": "ln-7",
+      "plantSpeciesId": "sp-3",
+      "language": "en",
+      "localName": "Cotton"
+    },
+    "ln-8": {
+      "id": "ln-8",
+      "plantSpeciesId": "sp-3",
+      "language": "hi",
+      "localName": "कपास (Kapaas)"
+    },
+    "ln-9": {
+      "id": "ln-9",
+      "plantSpeciesId": "sp-3",
+      "language": "mr",
+      "localName": "कापूस (Kapus)"
+    },
+    "ln-10": {
+      "id": "ln-10",
+      "plantSpeciesId": "sp-4",
+      "language": "en",
+      "localName": "Sugarcane"
+    },
+    "ln-11": {
+      "id": "ln-11",
+      "plantSpeciesId": "sp-4",
+      "language": "hi",
+      "localName": "गन्ना (Ganna)"
+    },
+    "ln-12": {
+      "id": "ln-12",
+      "plantSpeciesId": "sp-4",
+      "language": "mr",
+      "localName": "ऊस (Us)"
+    },
+    "ln-13": {
+      "id": "ln-13",
+      "plantSpeciesId": "sp-5",
+      "language": "en",
+      "localName": "Neem"
+    },
+    "ln-14": {
+      "id": "ln-14",
+      "plantSpeciesId": "sp-5",
+      "language": "hi",
+      "localName": "नीम (Neem)"
+    },
+    "ln-15": {
+      "id": "ln-15",
+      "plantSpeciesId": "sp-5",
+      "language": "mr",
+      "localName": "कडुनिंब (Kadunimb)"
+    }
+  },
+  "plantDiseasesReference": {
+    "dr-1": {
+      "id": "dr-1",
+      "plantSpeciesId": "sp-1",
+      "diseaseName": "Early Blight",
+      "typicalSymptoms": "Dark brown spots with concentric rings (target-like pattern) appearing first on older lower leaves.",
+      "commonTreatment": "Apply copper-based fungicides.",
+      "organicTreatment": "Remove infected lower leaves immediately; spray organic neem oil mixed with mild soap, or copper-hydroxide organic formulation."
+    },
+    "dr-2": {
+      "id": "dr-2",
+      "plantSpeciesId": "sp-1",
+      "diseaseName": "Late Blight",
+      "typicalSymptoms": "Large, dark brown water-soaked patches on leaves and stems with white fungal mold visible on the underside in humid weather.",
+      "commonTreatment": "Fungicides like Mancozeb or Chlorothalonil.",
+      "organicTreatment": "Apply bio-fungicides containing Bacillus subtilis, crop rotation, and avoid overhead watering."
+    },
+    "dr-3": {
+      "id": "dr-3",
+      "plantSpeciesId": "sp-2",
+      "diseaseName": "Blast Disease",
+      "typicalSymptoms": "Spindle-shaped spots on leaves with reddish-brown margins and grey centers.",
+      "commonTreatment": "Spray Tricyclazole or Isoprothiolane.",
+      "organicTreatment": "Use disease-resistant varieties, optimize nitrogen levels, and treat seeds with Pseudomonas fluorescens bio-agent."
+    },
+    "dr-4": {
+      "id": "dr-4",
+      "plantSpeciesId": "sp-3",
+      "diseaseName": "Bacterial Blight",
+      "typicalSymptoms": "Angular leaf spots restricted by veins, and blackening of branches (blackarm phase).",
+      "commonTreatment": "Copper oxychloride spray mixed with Streptocycline.",
+      "organicTreatment": "Seed treatment with organic neem seed kernel extract and field sanitization."
+    },
+    "dr-5": {
+      "id": "dr-5",
+      "plantSpeciesId": "sp-4",
+      "diseaseName": "Red Rot",
+      "typicalSymptoms": "Reddish discolored tissues inside split cane stems with white horizontal bands and an odor of fermented alcohol.",
+      "commonTreatment": "Avoid planting infected setts; clean field hygiene.",
+      "organicTreatment": "Treat seed setts with Trichoderma viride or hot water (52°C) prior to planting, and maintain proper drainage."
+    }
+  },
+  "plantIdentificationLogs": {},
+  "diseaseReports": {},
+  "weatherRecords": {},
+  "fertilizerPlans": {},
+  "irrigationPlans": {},
+  "chatHistory": {
+    "msg-ttlwf08uu": {
+      "id": "msg-ttlwf08uu",
+      "userId": "guest-1",
+      "message": "hello",
+      "response": "Namaste! 🙏 A very warm welcome to you. \n\nI am your Krishi Saathi AI Farming Assistant, your companion for all things related to farming. Whether you want to know about improving your soil, saving water, protecting your crops from pests naturally, or boosting your yield, I am here to help you.\n\nPlease tell me:\n1. Which crop are you growing right now?\n2. What issue or question do you have today? \n\nYou can ask me in English, Hindi, or your local language. Let's work together to make your farm green and healthy! 🌾💚",
+      "createdAt": "2026-07-31T08:20:49.057Z"
+    },
+    "msg-u3ohoyu2h": {
+      "id": "msg-u3ohoyu2h",
+      "userId": "guest-1",
+      "message": "hello",
+      "response": "Namaste! Hello, my farming friend. Welcome to **Krishi Saathi**! 🌾\n\nI am your AI Farming Assistant, here to help you get the healthiest yield from your fields. Whether you want to know about improving your soil, saving water, managing pests without harsh chemicals, or choosing the best organic manures, I am right here in your pocket to guide you.\n\nPlease tell me:\n*   **Which crop** are you growing right now?\n*   **What challenge** are you facing in your field today? (For example: yellowing leaves, pests, watering questions, or soil health).\n\nFeel free to ask in English, Hindi, or your preferred local language. Let’s work together to make your farm green and prosperous! 🚜🌱",
+      "createdAt": "2026-07-31T08:51:41.836Z"
+    },
+    "msg-4d5qkfwkm": {
+      "id": "msg-4d5qkfwkm",
+      "userId": "guest-1",
+      "message": "How do I convert Acres to Bighas?",
+      "response": "As your Krishi Saathi assistant, I recommend focusing on healthy, soil-friendly solutions! For your question: \"How do I convert Acres to Bighas?\", the best path is:\n1. **Prioritize Organic Solutions:** Use compost, vermicompost, and biofertilizers (like Trichoderma or Neem cake) to enhance root immunity naturally.\n2. **Water Efficiency:** Adopt drip irrigation or mulching to conserve critical soil moisture.\n3. **Integrated Pest Management:** Inspect your crops daily and use companion plants or pheromone traps rather than spraying harsh synthetic chemicals.\n\nPlease let me know if you would like me to detail a specific schedule or organic recipe for your farm!",
+      "createdAt": "2026-07-31T08:51:58.894Z"
+    },
+    "msg-s5ubpe1gw": {
+      "id": "msg-s5ubpe1gw",
+      "userId": "guest-1",
+      "message": "How do I convert Acres to Bighas?",
+      "response": "As your Krishi Saathi assistant, I recommend focusing on healthy, soil-friendly solutions! For your question: \"How do I convert Acres to Bighas?\", the best path is:\n1. **Prioritize Organic Solutions:** Use compost, vermicompost, and biofertilizers (like Trichoderma or Neem cake) to enhance root immunity naturally.\n2. **Water Efficiency:** Adopt drip irrigation or mulching to conserve critical soil moisture.\n3. **Integrated Pest Management:** Inspect your crops daily and use companion plants or pheromone traps rather than spraying harsh synthetic chemicals.\n\nPlease let me know if you would like me to detail a specific schedule or organic recipe for your farm!",
+      "createdAt": "2026-07-31T08:52:37.306Z"
+    },
+    "msg-jdkjxl9qd": {
+      "id": "msg-jdkjxl9qd",
+      "userId": "guest-1",
+      "message": "How do I convert Acres to Bighas?",
+      "response": "As your Krishi Saathi assistant, I recommend focusing on healthy, soil-friendly solutions! For your question: \"How do I convert Acres to Bighas?\", the best path is:\n1. **Prioritize Organic Solutions:** Use compost, vermicompost, and biofertilizers (like Trichoderma or Neem cake) to enhance root immunity naturally.\n2. **Water Efficiency:** Adopt drip irrigation or mulching to conserve critical soil moisture.\n3. **Integrated Pest Management:** Inspect your crops daily and use companion plants or pheromone traps rather than spraying harsh synthetic chemicals.\n\nPlease let me know if you would like me to detail a specific schedule or organic recipe for your farm!",
+      "createdAt": "2026-07-31T08:53:03.455Z"
+    },
+    "msg-09wbicfl1": {
+      "id": "msg-09wbicfl1",
+      "userId": "guest-1",
+      "message": "How do I convert Acres to Bighas?",
+      "response": "नमस्कार! यह बहुत ही काम का सवाल है, क्योंकि हमारे किसान भाई अक्सर एकड़ और बीघा के बीच में माप-जोख करते रहते हैं।\n\nसबसे पहले, यह समझना बहुत ज़रूरी है कि **बीघा** का माप हर राज्य और कभी-कभी तो एक ही राज्य के अलग-अलग ज़िलों में भी थोड़ा बदल जाता है। यह एकड़ (जो एक अंतरराष्ट्रीय मानक माप है) की तरह एक तय माप नहीं है।\n\nलेकिन, मैं आपको कुछ सामान्य अनुमान और तरीके बताता हूँ:\n\n**सामान्य अनुमान:**\n\n1.  **उत्तरी भारत (जैसे उत्तर प्रदेश, बिहार, उत्तराखंड, झारखंड के कुछ हिस्से):**\n    *   यहाँ आमतौर पर, **1 एकड़ लगभग 1.6 बीघा (या लगभग 1 बीघा 12 बिस्वा)** के बराबर माना जाता है।\n    *   या फिर, **1 बीघा लगभग 0.625 एकड़** के बराबर होता है।\n\n2.  **राजस्थान:**\n    *   यहाँ **1 एकड़ लगभग 1.6 बीघा** या कभी-कभी **1.62 बीघा** के बराबर होता है।\n    *   या फिर, **1 बीघा लगभग 0.617 एकड़** के बराबर होता है।\n\n3.  **पंजाब और हरियाणा (यहाँ 'किला' शब्द का भी इस्तेमाल होता है):**\n    *   यहाँ **1 एकड़ = 4 बीघा (कच्चा बीघा)** माना जाता है, जहाँ 1 बीघा 1008 वर्ग गज के बराबर होता है।\n    *   और अगर 'पक्का बीघा' की बात करें, तो **1 एकड़ = 2 पक्का बीघा** के बराबर होता है। (यह थोड़ा पेचीदा है, क्योंकि यहाँ 'किला' ही ज़्यादा चलता है और 1 किला = 1 एकड़ होता है।)\n\n**तो, आप एकड़ को बीघा में कैसे बदलेंगे?**\n\nआपको बस अपने क्षेत्र में **1 एकड़ में कितने बीघा होते हैं**, यह पता करना होगा।\n\nमान लीजिए, आपके इलाके में **1 एकड़ में 1.6 बीघा** होते हैं।\nतो, अगर आपके पास 5 एकड़ ज़मीन है, तो:\n5 एकड़ * 1.6 बीघा/एकड़ = 8 बीघा\n\n**सबसे सटीक तरीका:**\n\nमैं आपको सलाह दूँगा कि आप अपने क्षेत्र के पटवारी या स्थानीय ज़मीन की माप करने वाले से एक बार ज़रूर पूछ लें कि आपके गाँव या ज़िले में **1 एकड़ में कितने बीघा माने जाते हैं**। यह जानकारी सबसे भरोसेमंद होगी, क्योंकि जैसा मैंने बताया, बीघा का माप अलग-अलग हो सकता है।\n\nअगर आपको अपने इलाके का पता है कि 1 बीघा कितने वर्ग फुट या वर्ग गज का होता है, तो मैं आपको और सटीक तरीके से बदलने में मदद कर सकता हूँ! बस मुझे बताएँ।",
+      "createdAt": "2026-07-31T08:53:20.686Z"
+    }
+  },
+  "notifications": {},
+  "cropListings": {
+    "crop-1": {
+      "id": "crop-1",
+      "farmerId": "u-farmer-1",
+      "farmerName": "Ramesh Patil",
+      "cropName": "Wheat (Sarbati Premium Grade)",
+      "quantity": 2500,
+      "unit": "kg",
+      "pricePerUnit": 28,
+      "country": "India",
+      "state": "Maharashtra",
+      "district": "Nashik",
+      "village": "Pimpalgaon",
+      "description": "Naturally grown Sarbati wheat, harvested last week. Extensively dried, minimal moisture, golden luster grains.",
+      "imageUrl": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=600",
+      "isVerified": true,
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    },
+    "crop-2": {
+      "id": "crop-2",
+      "farmerId": "u-farmer-1",
+      "farmerName": "Ramesh Patil",
+      "cropName": "Organic Vine-Ripe Tomatoes",
+      "quantity": 800,
+      "unit": "kg",
+      "pricePerUnit": 22,
+      "country": "India",
+      "state": "Maharashtra",
+      "district": "Nashik",
+      "village": "Pimpalgaon",
+      "description": "Juicy organic red tomatoes, hand-picked. Perfect size and firmness for transport and retail sale.",
+      "imageUrl": "https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&q=80&w=600",
+      "isVerified": true,
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    }
+  },
+  "agriculturalProducts": {
+    "prod-1": {
+      "id": "prod-1",
+      "sellerId": "u-seller-1",
+      "sellerName": "Agri-Grow Fertilisers & Tools Ltd",
+      "name": "Premium NPK 19-19-19 Fertilizer",
+      "category": "fertilizers",
+      "description": "Water-soluble balanced chemical fertilizer. Highly effective for early growth, root branching, and crop yield booster.",
+      "price": 480,
+      "unit": "bag (25 kg)",
+      "inventory": 45,
+      "imageUrl": "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&q=80&w=600",
+      "isVerified": true,
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    },
+    "prod-2": {
+      "id": "prod-2",
+      "sellerId": "u-seller-1",
+      "sellerName": "Agri-Grow Fertilisers & Tools Ltd",
+      "name": "Organic Cold-Pressed Neem Oil Spray",
+      "category": "pesticides",
+      "description": "100% natural, biodegradable pest controller. Eradicates spider mites, aphids, whiteflies, and other leaf caterpillars.",
+      "price": 290,
+      "unit": "bottle (1 Liter)",
+      "inventory": 85,
+      "imageUrl": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=600",
+      "isVerified": true,
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    },
+    "prod-3": {
+      "id": "prod-3",
+      "sellerId": "u-seller-1",
+      "sellerName": "Agri-Grow Fertilisers & Tools Ltd",
+      "name": "Manual Knapsack Battery Sprayer (16L)",
+      "category": "sprayers",
+      "description": "Heavy-duty double pump rechargeable sprayer. High pressure nozzle with adjustable lance for uniform pesticide coverage.",
+      "price": 2850,
+      "unit": "piece",
+      "inventory": 12,
+      "imageUrl": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&q=80&w=600",
+      "isVerified": true,
+      "createdAt": "2026-07-31T08:14:30.580Z"
+    }
+  },
+  "marketplaceOrders": {},
+  "marketplaceChats": {},
+  "payments": {},
+  "transactions": {}
+}

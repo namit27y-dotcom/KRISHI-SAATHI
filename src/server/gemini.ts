@@ -14,7 +14,7 @@ const ai = new GoogleGenAI({
   },
 });
 
-const MODEL_NAME = "gemini-3.5-flash";
+const MODEL_NAME = "gemini-2.5-flash";
 
 // Helper to convert base64 image object for Gemini SDK
 function getGeminiImagePart(base64Data: string) {
@@ -42,7 +42,7 @@ function getGeminiImagePart(base64Data: string) {
 async function withTimeoutAndFallback<T>(
   promise: Promise<T>,
   fallbackGenerator: () => T,
-  timeoutMs: number = 6000
+  timeoutMs: number = 15000
 ): Promise<T> {
   let timeoutId: any;
   const timeoutPromise = new Promise<never>((_, reject) => {
@@ -271,12 +271,45 @@ function getQueryGovernmentSchemesFallback(query: string, farmerState: string, f
 }
 
 function getChatFarmingAssistantFallback(message: string) {
-  return `As your Krishi Saathi assistant, I recommend focusing on healthy, soil-friendly solutions! For your question: "${message}", the best path is:
-1. **Prioritize Organic Solutions:** Use compost, vermicompost, and biofertilizers (like Trichoderma or Neem cake) to enhance root immunity naturally.
-2. **Water Efficiency:** Adopt drip irrigation or mulching to conserve critical soil moisture.
-3. **Integrated Pest Management:** Inspect your crops daily and use companion plants or pheromone traps rather than spraying harsh synthetic chemicals.
+  const query = message.toLowerCase();
 
-Please let me know if you would like me to detail a specific schedule or organic recipe for your farm!`;
+  if (query.includes("bigha") || query.includes("acre") || query.includes("convert") || query.includes("hectare") || query.includes("guntha")) {
+    return `🌾 **Land Unit Conversion Quick Guide:**
+
+- **1 Acre** = **1.6 Pucca Bigha** (Standard in UP, Bihar, Rajasthan, MP)
+- **1 Acre** = **3.025 Kachha Bigha** (Local North India standard)
+- **1 Acre** = **40 Gunthas** (Maharashtra, Gujarat, Karnataka)
+- **1 Acre** = **0.4047 Hectares** (or 4,047 sq meters / 43,560 sq ft)
+- **1 Hectare** = **2.47 Acres** = **3.95 Bighas**
+
+*Note: Bigha measurements vary slightly by state, but 1 Acre = 1.6 Pucca Bighas is the most widely recognized government standard.*`;
+  }
+
+  if (query.includes("fertilizer") || query.includes("urea") || query.includes("dap") || query.includes("npk") || query.includes("compost")) {
+    return `🌱 **Soil & Fertilizer Advice for your field:**
+
+1. **Balanced NPK Ratio:** Maintain a standard 4:2:1 (N:P:K) ratio for cereals, or 1:2:1 for legumes and pulses.
+2. **Organic Boosters:** Combine chemical doses with 2-3 tonnes/acre of well-rotted FYM (Farm Yard Manure) or Vermicompost.
+3. **Bio-fertilizers:** Seed treatment with *Azotobacter* (for nitrogen) and *PSB* (Phosphorus Solubilizing Bacteria) boosts nutrient intake by 20%.
+4. **Soil Testing:** Always test soil pH and organic carbon content every 2 years before heavy fertilizer application.`;
+  }
+
+  if (query.includes("pest") || query.includes("disease") || query.includes("insect") || query.includes("fungus") || query.includes("yellow")) {
+    return `🐛 **Integrated Pest & Disease Management Plan:**
+
+1. **Neem Oil Spray:** Mix 5ml Neem Oil (10,000 ppm) + 1ml liquid soap per liter of water. Spray during early morning or evening.
+2. **Yellow Sticky Traps:** Deploy 10-12 yellow/blue sticky traps per acre to catch whiteflies, thrips, and aphids naturally.
+3. **Fungal Protection:** Apply *Trichoderma viride* (5g/liter) to soil root zone for wilt and root-rot prevention.
+4. **Targeted Treatment:** For severe caterpillar or worm attacks, use eco-friendly *Bacillus thuringiensis* (Bt) or Spinosad.`;
+  }
+
+  return `Namaste! 🙏 As your Krishi Saathi assistant, here is my recommended agronomist advice for "${message}":
+
+1. **Prioritize Organic Soil Health:** Integrate compost, vermicompost, and bio-inoculants to build root resilience.
+2. **Water Management:** Utilize drip irrigation and organic mulching to conserve moisture and maintain micro-climates.
+3. **Crop Rotation:** Rotate heavy feeders (like Maize/Sugarcane) with legumes (Gram/Cowpea) to fix natural nitrogen into the soil.
+
+Feel free to ask about specific crops, pest controls, land unit conversions, or regional government schemes!`;
 }
 
 function getForecastYieldFallback(cropName: string, soilType: string, landArea: number, state: string, district: string) {
@@ -824,7 +857,7 @@ export async function chatFarmingAssistant(message: string, history: { role: str
   return withTimeoutAndFallback(
     apiCall,
     () => getChatFarmingAssistantFallback(message),
-    5000
+    15000
   );
 }
 
