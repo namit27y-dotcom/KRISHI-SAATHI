@@ -19,7 +19,6 @@ import {
   PaymentRecord,
   TransactionRecord
 } from "../types.js";
-import { syncToSupabase, deleteFromSupabase } from "./supabase.js";
 
 const DB_DIR = path.join(process.cwd(), "data");
 const DB_FILE = path.join(DB_DIR, "db.json");
@@ -588,14 +587,12 @@ export class Database {
   public addUser(user: User, passwordHash: string) {
     this.data.users[user.id] = { ...user, passwordHash };
     this.save();
-    syncToSupabase("Users", { ...user, passwordHash });
     return user;
   }
   public updateUser(id: string, updates: Partial<User>) {
     if (this.data.users[id]) {
       this.data.users[id] = { ...this.data.users[id], ...updates };
       this.save();
-      syncToSupabase("Users", this.data.users[id]);
       return this.data.users[id];
     }
     return null;
@@ -627,7 +624,6 @@ export class Database {
   public addPlantIdLog(log: PlantIdentificationLog) {
     this.data.plantIdentificationLogs[log.id] = log;
     this.save();
-    syncToSupabase("Plant_Identification_Logs", log);
     return log;
   }
 
@@ -642,7 +638,6 @@ export class Database {
   public addDiseaseReport(report: DiseaseReport) {
     this.data.diseaseReports[report.id] = report;
     this.save();
-    syncToSupabase("Disease_Reports", report);
     return report;
   }
 
@@ -655,7 +650,6 @@ export class Database {
   public saveWeatherRecord(record: WeatherRecord) {
     this.data.weatherRecords[record.id] = record;
     this.save();
-    syncToSupabase("Weather_Records", record);
     return record;
   }
 
@@ -666,7 +660,6 @@ export class Database {
   public addFertilizerPlan(plan: FertilizerPlan) {
     this.data.fertilizerPlans[plan.id] = plan;
     this.save();
-    syncToSupabase("Fertilizer_Plans", plan);
     return plan;
   }
   public getIrrigationPlans() {
@@ -675,7 +668,6 @@ export class Database {
   public addIrrigationPlan(plan: IrrigationPlan) {
     this.data.irrigationPlans[plan.id] = plan;
     this.save();
-    syncToSupabase("Irrigation_Plans", plan);
     return plan;
   }
 
@@ -688,7 +680,6 @@ export class Database {
   public addChatMessage(msg: ChatMessage) {
     this.data.chatHistory[msg.id] = msg;
     this.save();
-    syncToSupabase("Chat_History", msg);
     return msg;
   }
 
@@ -701,14 +692,12 @@ export class Database {
   public addNotification(notification: Notification) {
     this.data.notifications[notification.id] = notification;
     this.save();
-    syncToSupabase("Notifications", notification);
     return notification;
   }
   public markNotificationAsRead(id: string) {
     if (this.data.notifications[id]) {
       this.data.notifications[id].isRead = true;
       this.save();
-      syncToSupabase("Notifications", this.data.notifications[id]);
     }
   }
 
@@ -719,14 +708,12 @@ export class Database {
   public addCropListing(listing: CropListing) {
     this.data.cropListings[listing.id] = listing;
     this.save();
-    syncToSupabase("Crop_Listings", listing);
     return listing;
   }
   public updateCropListing(id: string, updates: Partial<CropListing>) {
     if (this.data.cropListings[id]) {
       this.data.cropListings[id] = { ...this.data.cropListings[id], ...updates };
       this.save();
-      syncToSupabase("Crop_Listings", this.data.cropListings[id]);
       return this.data.cropListings[id];
     }
     return null;
@@ -735,7 +722,6 @@ export class Database {
     if (this.data.cropListings[id]) {
       delete this.data.cropListings[id];
       this.save();
-      deleteFromSupabase("Crop_Listings", id);
       return true;
     }
     return false;
@@ -748,14 +734,12 @@ export class Database {
   public addAgriculturalProduct(product: AgriculturalProduct) {
     this.data.agriculturalProducts[product.id] = product;
     this.save();
-    syncToSupabase("Agricultural_Products", product);
     return product;
   }
   public updateAgriculturalProduct(id: string, updates: Partial<AgriculturalProduct>) {
     if (this.data.agriculturalProducts[id]) {
       this.data.agriculturalProducts[id] = { ...this.data.agriculturalProducts[id], ...updates };
       this.save();
-      syncToSupabase("Agricultural_Products", this.data.agriculturalProducts[id]);
       return this.data.agriculturalProducts[id];
     }
     return null;
@@ -764,7 +748,6 @@ export class Database {
     if (this.data.agriculturalProducts[id]) {
       delete this.data.agriculturalProducts[id];
       this.save();
-      deleteFromSupabase("Agricultural_Products", id);
       return true;
     }
     return false;
@@ -777,14 +760,12 @@ export class Database {
   public addMarketplaceOrder(order: MarketplaceOrder) {
     this.data.marketplaceOrders[order.id] = order;
     this.save();
-    syncToSupabase("Marketplace_Orders", order);
     return order;
   }
   public updateMarketplaceOrder(id: string, updates: Partial<MarketplaceOrder>) {
     if (this.data.marketplaceOrders[id]) {
       this.data.marketplaceOrders[id] = { ...this.data.marketplaceOrders[id], ...updates };
       this.save();
-      syncToSupabase("Marketplace_Orders", this.data.marketplaceOrders[id]);
       return this.data.marketplaceOrders[id];
     }
     return null;
@@ -797,7 +778,6 @@ export class Database {
   public addMarketplaceChat(chat: MarketplaceChat) {
     this.data.marketplaceChats[chat.id] = chat;
     this.save();
-    syncToSupabase("Marketplace_Chats", chat);
     return chat;
   }
 
@@ -811,14 +791,12 @@ export class Database {
   public addPayment(payment: PaymentRecord) {
     this.data.payments[payment.id] = payment;
     this.save();
-    syncToSupabase("Payments", payment);
     return payment;
   }
   public updatePayment(id: string, updates: Partial<PaymentRecord>) {
     if (this.data.payments[id]) {
       this.data.payments[id] = { ...this.data.payments[id], ...updates };
       this.save();
-      syncToSupabase("Payments", this.data.payments[id]);
       return this.data.payments[id];
     }
     return null;
@@ -831,14 +809,12 @@ export class Database {
   public addTransaction(tx: TransactionRecord) {
     this.data.transactions[tx.id] = tx;
     this.save();
-    syncToSupabase("Transactions", tx);
     return tx;
   }
   public updateTransaction(id: string, updates: Partial<TransactionRecord>) {
     if (this.data.transactions[id]) {
       this.data.transactions[id] = { ...this.data.transactions[id], ...updates };
       this.save();
-      syncToSupabase("Transactions", this.data.transactions[id]);
       return this.data.transactions[id];
     }
     return null;
@@ -852,7 +828,6 @@ export class Database {
     if (this.data.users[id]) {
       delete this.data.users[id];
       this.save();
-      deleteFromSupabase("Users", id);
       return true;
     }
     return false;
