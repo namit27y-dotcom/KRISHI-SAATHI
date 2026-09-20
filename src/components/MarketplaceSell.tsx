@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Sprout, PlusCircle, AlertCircle, Trash2, CheckCircle2, MessageSquare, Tag, Package, Clock, Loader2, ArrowRight } from "lucide-react";
+import { Sprout, PlusCircle, AlertCircle, Trash2, CheckCircle2, MessageSquare, Tag, Package, Clock, Loader2, ArrowRight, Image as ImageIcon } from "lucide-react";
+import { UNSPLASH_CROP_IMAGES, getCropImageUrl } from "../data/unsplashImages";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 interface MarketplaceSellProps {
   user: any;
@@ -8,6 +10,9 @@ interface MarketplaceSellProps {
 }
 
 export default function MarketplaceSell({ user, onChatNavigate }: MarketplaceSellProps) {
+  const { t } = useLanguage();
+  const mp = t.marketplace;
+
   const [listings, setListings] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -121,10 +126,10 @@ export default function MarketplaceSell({ user, onChatNavigate }: MarketplaceSel
         <div className="space-y-1.5 z-10">
           <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
             <Sprout className="w-6 h-6 stroke-[2.5]" />
-            Farmer Crop Sales Panel
+            {mp.sellTitle}
           </h3>
           <p className="text-xs text-emerald-100/80 max-w-xl">
-            List your harvest online, verify crop quality, attract wholesale commodity traders, accept bulk orders, and receive quick digital or cash payments.
+            {mp.sellSubtitle}
           </p>
         </div>
         <button
@@ -132,7 +137,7 @@ export default function MarketplaceSell({ user, onChatNavigate }: MarketplaceSel
           className="bg-white text-emerald-800 hover:bg-emerald-50 transition-all font-black text-xs py-3 px-5 rounded-xl shadow-md shrink-0 flex items-center gap-1.5 z-10 cursor-pointer"
         >
           <PlusCircle className="w-4 h-4 text-emerald-700" />
-          List New Harvest
+          {mp.addListing}
         </button>
         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
       </div>
@@ -305,24 +310,32 @@ export default function MarketplaceSell({ user, onChatNavigate }: MarketplaceSel
             <form onSubmit={handleAddListing} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="text-xs space-y-1">
-                  <label className="font-bold text-slate-600">Select Crop Commodity *</label>
+                  <label className="font-bold text-slate-600">{mp.cropName} *</label>
                   <select
                     value={cropName}
-                    onChange={(e) => setCropName(e.target.value)}
+                    onChange={(e) => {
+                      const newCrop = e.target.value;
+                      setCropName(newCrop);
+                      if (!imageUrl || UNSPLASH_CROP_IMAGES.some(img => img.url === imageUrl)) {
+                        setImageUrl(getCropImageUrl(newCrop));
+                      }
+                    }}
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 font-semibold text-slate-700"
                   >
                     <option value="Wheat (Sarbati Premium)">Wheat (Gehun) 🌾</option>
                     <option value="Organic Red Tomatoes">Tomatoes (Tamatar) 🍅</option>
                     <option value="Basmati Rice Grade-A">Paddy / Rice (Chawal) 🌾</option>
                     <option value="White Cotton Fiber">Cotton (Kapas) ☁️</option>
+                    <option value="Golden Sweet Corn Cobs">Sweet Corn (Makka) 🌽</option>
                     <option value="Raw Cane Sugarcane">Sugarcane (Ganna) 🎋</option>
                     <option value="Organic Potatoes">Potatoes (Aloo) 🥔</option>
                     <option value="Red Onions Fresh">Onions (Pyaz) 🧅</option>
+                    <option value="Fresh Green Chillies">Chillies (Mirch) 🌶️</option>
                   </select>
                 </div>
 
                 <div className="text-xs space-y-1">
-                  <label className="font-bold text-slate-600">Harvest Quantity *</label>
+                  <label className="font-bold text-slate-600">{mp.stockQuantity} *</label>
                   <div className="flex gap-1">
                     <input
                       type="number"
@@ -337,9 +350,9 @@ export default function MarketplaceSell({ user, onChatNavigate }: MarketplaceSel
                       onChange={(e) => setUnit(e.target.value)}
                       className="w-1/3 p-2 bg-slate-50 border border-slate-200 rounded-xl outline-none text-[10px] font-bold"
                     >
-                      <option value="kg">Kilograms (kg)</option>
-                      <option value="quintal">Quintal (100 kg)</option>
-                      <option value="ton">Tonnes</option>
+                      <option value="kg">kg</option>
+                      <option value="quintal">quintal</option>
+                      <option value="ton">ton</option>
                     </select>
                   </div>
                 </div>
@@ -347,7 +360,7 @@ export default function MarketplaceSell({ user, onChatNavigate }: MarketplaceSel
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="text-xs space-y-1">
-                  <label className="font-bold text-slate-600">Target Price per kg (INR) *</label>
+                  <label className="font-bold text-slate-600">{mp.pricePerUnit} (INR) *</label>
                   <input
                     type="number"
                     required
@@ -359,19 +372,50 @@ export default function MarketplaceSell({ user, onChatNavigate }: MarketplaceSel
                 </div>
 
                 <div className="text-xs space-y-1">
-                  <label className="font-bold text-slate-600">Sample Photo URL (Optional)</label>
+                  <label className="font-bold text-slate-600">{mp.uploadPhoto} (URL)</label>
                   <input
                     type="url"
-                    placeholder="https://..."
+                    placeholder="https://images.unsplash.com/..."
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 text-slate-700"
                   />
                 </div>
               </div>
 
+              {/* Curated Unsplash Photo Picker */}
+              <div className="text-xs space-y-2">
+                <label className="font-bold text-slate-600 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />
+                    {mp.uploadPhoto}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-normal">Click to assign photo</span>
+                </label>
+                <div className="grid grid-cols-5 gap-2">
+                  {UNSPLASH_CROP_IMAGES.slice(0, 5).map((img) => (
+                    <button
+                      type="button"
+                      key={img.id}
+                      onClick={() => setImageUrl(img.url)}
+                      className={`relative aspect-video rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                        (imageUrl || getCropImageUrl(cropName)) === img.url
+                          ? "border-emerald-600 ring-2 ring-emerald-300"
+                          : "border-slate-200 opacity-70 hover:opacity-100"
+                      }`}
+                      title={img.name}
+                    >
+                      <img src={img.url} alt={img.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                      <span className="absolute bottom-0 inset-x-0 bg-black/60 text-[8px] font-bold text-white text-center py-0.5 truncate">
+                        {img.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="text-xs space-y-1">
-                <label className="font-bold text-slate-600">Crop Condition Description</label>
+                <label className="font-bold text-slate-600">{mp.description}</label>
                 <textarea
                   rows={2}
                   placeholder="Mention quality, moisture levels, date of harvesting, pesticides used, organic credentials, etc."
@@ -401,7 +445,7 @@ export default function MarketplaceSell({ user, onChatNavigate }: MarketplaceSel
                   className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-all shadow-md flex items-center gap-1"
                 >
                   {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  Publish Crop for Sale
+                  {mp.submitListing}
                 </button>
               </div>
             </form>

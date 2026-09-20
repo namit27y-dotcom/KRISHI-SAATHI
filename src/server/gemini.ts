@@ -16,6 +16,20 @@ const ai = new GoogleGenAI({
 
 const MODEL_NAME = "gemini-2.5-flash";
 
+export const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  hi: "Hindi (हिन्दी)",
+  bho: "Bhojpuri (भोजपुरी)",
+  mr: "Marathi (मराठी)",
+  pa: "Punjabi (ਪੰਜਾਬੀ)",
+  ta: "Tamil (தமிழ்)",
+  te: "Telugu (తెలుగు)",
+  bn: "Bengali (বাংলা)",
+  es: "Spanish (Español)",
+  vi: "Vietnamese (Tiếng Việt)",
+  sw: "Swahili (Kiswahili)",
+};
+
 // Helper to convert base64 image object for Gemini SDK
 function getGeminiImagePart(base64Data: string) {
   // strip data:image/...;base64, prefix if present
@@ -556,25 +570,30 @@ export async function identifyPlant(
 }
 
 export async function detectDisease(base64Image: string, preferredLanguage: string = "en") {
-  console.log("Analyzing plant disease...");
+  console.log(`Analyzing plant disease in language: ${preferredLanguage}...`);
   const imagePart = getGeminiImagePart(base64Image);
+  const targetLangName = LANGUAGE_NAMES[preferredLanguage] || preferredLanguage;
 
   const prompt = `
     Diagnose the plant disease shown in this image.
     Provide an agronomist-grade diagnosis.
-    Preferred Language: ${preferredLanguage}
+    
+    CRITICAL LOCALIZATION REQUIREMENT:
+    The user's preferred language is ${targetLangName} (Language code: "${preferredLanguage}").
+    Provide all field values (symptoms, causes, organicTreatment, chemicalTreatment, preventiveMeasures, recoveryTime) naturally, accurately, and fluently in ${targetLangName}.
+    Translate the cropName and diseaseName if customary, or provide local names alongside.
 
     Return the results as a structured JSON object:
     {
       "cropName": "Identified Crop/Plant Name",
       "diseaseName": "Name of the detected disease (or 'Healthy Plant' if no disease is found)",
       "confidence": 90,
-      "symptoms": "Detailed list of visible symptoms in the photo",
-      "causes": "Underlying biological, fungal, bacterial, viral, or environmental causes",
-      "organicTreatment": "Complete organic treatment, biological controls, compost tea, neem oil sprays, etc.",
-      "chemicalTreatment": "Minimum effective chemical fungicides/pesticides as a secondary resort only",
-      "preventiveMeasures": "Preventive practices for future seasons (crop rotation, proper spacing, sanitation)",
-      "recoveryTime": "Estimated recovery time, e.g., '7-14 days' or 'Non-recoverable (destroy plants)'"
+      "symptoms": "Detailed list of visible symptoms in the photo in ${targetLangName}",
+      "causes": "Underlying biological, fungal, bacterial, viral, or environmental causes in ${targetLangName}",
+      "organicTreatment": "Complete organic treatment, biological controls, compost tea, neem oil sprays, etc. in ${targetLangName}",
+      "chemicalTreatment": "Minimum effective chemical fungicides/pesticides as a secondary resort only in ${targetLangName}",
+      "preventiveMeasures": "Preventive practices for future seasons (crop rotation, proper spacing, sanitation) in ${targetLangName}",
+      "recoveryTime": "Estimated recovery time in ${targetLangName}"
     }
   `;
 
@@ -608,25 +627,31 @@ export async function detectDisease(base64Image: string, preferredLanguage: stri
   );
 }
 
-export async function recommendCrops(state: string, district: string, soilType: string, season: string) {
-  console.log(`Analyzing crop recommendations for ${state}, ${district}...`);
+export async function recommendCrops(state: string, district: string, soilType: string, season: string, preferredLanguage: string = "en") {
+  console.log(`Analyzing crop recommendations for ${state}, ${district} in ${preferredLanguage}...`);
+  const targetLangName = LANGUAGE_NAMES[preferredLanguage] || preferredLanguage;
 
   const prompt = `
     Based on location: ${state}, ${district} in India, Season: ${season}, and Soil Type: ${soilType}.
     Recommend the best 3 crops to grow. Provide a thorough meteorological and agricultural analysis.
 
+    CRITICAL LOCALIZATION REQUIREMENT:
+    The user's preferred language is ${targetLangName} (Language code: "${preferredLanguage}").
+    Provide all analysis, advice, reasons, crop names, and predictions fluently, idiomatically, and completely in ${targetLangName}.
+    Do NOT output in English unless the language code is "en".
+
     Return a structured JSON object:
     {
-      "weatherAnalysis": "Analysis of typical temperature, rainfall, and wind conditions for this season in ${district}, ${state}.",
-      "rainfallPrediction": "Rainfall expectations (e.g., adequate monsoon, dry, erratic) and water planning advice.",
-      "temperatureInsights": "Insights on temperature suitability for sowing and maturity.",
-      "farmingAdvice": "Core agronomist wisdom on land preparation, tillage, and sustainable water management.",
-      "riskAlerts": "Environmental and weather risks (e.g., pest outbreak risk during high humidity, late season frost, heatwave) and how to mitigate.",
+      "weatherAnalysis": "Analysis of typical temperature, rainfall, and wind conditions in ${targetLangName}.",
+      "rainfallPrediction": "Rainfall expectations and water planning advice in ${targetLangName}.",
+      "temperatureInsights": "Insights on temperature suitability for sowing and maturity in ${targetLangName}.",
+      "farmingAdvice": "Core agronomist wisdom on land preparation and sustainable management in ${targetLangName}.",
+      "riskAlerts": "Environmental and weather risks in ${targetLangName}.",
       "recommendations": [
         {
-          "cropName": "Name of recommended crop",
-          "suitableSowingPeriod": "Ideal window of weeks or months to sow",
-          "whyRecommended": "Agronomical reason why this fits the soil and weather",
+          "cropName": "Name of recommended crop in ${targetLangName}",
+          "suitableSowingPeriod": "Ideal window of weeks or months to sow in ${targetLangName}",
+          "whyRecommended": "Agronomical reason why this fits the soil and weather in ${targetLangName}",
           "estimatedDaysToHarvest": "e.g., 110-120 days"
         }
       ]
@@ -671,7 +696,8 @@ export async function recommendCrops(state: string, district: string, soilType: 
   );
 }
 
-export async function planFertilizer(crop: string, growthStage: string, soilType: string, fieldSize: number) {
+export async function planFertilizer(crop: string, growthStage: string, soilType: string, fieldSize: number, preferredLanguage: string = "en") {
+  const targetLangName = LANGUAGE_NAMES[preferredLanguage] || preferredLanguage;
   const prompt = `
     Create a sustainable Fertilizer Plan for:
     Crop: ${crop}
@@ -680,14 +706,18 @@ export async function planFertilizer(crop: string, growthStage: string, soilType
     Field Size: ${fieldSize} Acres
 
     Adhere strictly to environmentally sustainable, soil-safe practices. Recommend organic-first.
+    CRITICAL LOCALIZATION REQUIREMENT:
+    The user's preferred language is ${targetLangName} (Language code: "${preferredLanguage}").
+    Provide all textual descriptions, schedules, alternatives, and explanations fluently in ${targetLangName}.
+
     Return a structured JSON response:
     {
-      "recommendedFertilizer": "Primary recommended safe fertilizer/biofertilizer name",
-      "quantity": "Exact quantity needed for ${fieldSize} Acres (e.g., '120 kg vermicompost and 5 kg PSB')",
-      "schedule": "Application timing schedule (split dose details)",
-      "organicAlternatives": "Rich list of composting, bio-fertilizers (Rhizobium, Azotobacter, green manure) and mulching methods",
+      "recommendedFertilizer": "Primary recommended safe fertilizer/biofertilizer name in ${targetLangName}",
+      "quantity": "Exact quantity needed for ${fieldSize} Acres in ${targetLangName}",
+      "schedule": "Application timing schedule (split dose details) in ${targetLangName}",
+      "organicAlternatives": "Rich list of composting, bio-fertilizers and mulching methods in ${targetLangName}",
       "estimatedCost": 2500,
-      "environmentalExplanation": "Plain-language impact warning explaining why this minimum dose is environmentally safe and won't leach into groundwater."
+      "environmentalExplanation": "Plain-language impact warning explaining why this minimum dose is environmentally safe in ${targetLangName}"
     }
   `;
 
@@ -718,7 +748,8 @@ export async function planFertilizer(crop: string, growthStage: string, soilType
   );
 }
 
-export async function planIrrigation(crop: string, growthStage: string, soilType: string) {
+export async function planIrrigation(crop: string, growthStage: string, soilType: string, preferredLanguage: string = "en") {
+  const targetLangName = LANGUAGE_NAMES[preferredLanguage] || preferredLanguage;
   const prompt = `
     Create a smart, water-saving Smart Irrigation Plan for:
     Crop: ${crop}
@@ -726,12 +757,16 @@ export async function planIrrigation(crop: string, growthStage: string, soilType
     Soil Type: ${soilType}
 
     Focus on high efficiency, reducing evapotranspiration loss, and promoting drip/sprinkler if suitable.
+    CRITICAL LOCALIZATION REQUIREMENT:
+    The user's preferred language is ${targetLangName} (Language code: "${preferredLanguage}").
+    Provide all water requirements, frequency, best timing, and water-saving recommendations fluently in ${targetLangName}.
+
     Return a structured JSON response:
     {
-      "waterRequirement": "Daily or weekly water depth (e.g., '15-20 mm per week' or '25 liters per plant')",
-      "frequency": "Irrigation frequency (e.g., 'Every 3-4 days' or 'Twice daily')",
-      "bestTiming": "Best time of day to irrigate (e.g., 'Early morning between 5:00 AM - 7:00 AM or late evening to minimize evaporation loss')",
-      "waterSavingRecommendations": "Specific moisture conservation practices (organic straw mulching, drip irrigation lines, check basins, deficit irrigation)"
+      "waterRequirement": "Daily or weekly water depth in ${targetLangName}",
+      "frequency": "Irrigation frequency in ${targetLangName}",
+      "bestTiming": "Best time of day to irrigate in ${targetLangName}",
+      "waterSavingRecommendations": "Specific moisture conservation practices in ${targetLangName}"
     }
   `;
 
@@ -760,7 +795,8 @@ export async function planIrrigation(crop: string, growthStage: string, soilType
   );
 }
 
-export async function queryGovernmentSchemes(query: string, farmerState: string, farmerCrop: string, landSize: number) {
+export async function queryGovernmentSchemes(query: string, farmerState: string, farmerCrop: string, landSize: number, preferredLanguage: string = "en") {
+  const targetLangName = LANGUAGE_NAMES[preferredLanguage] || preferredLanguage;
   const prompt = `
     You are Krishi Saathi's Government Scheme AI Assistant.
     Provide personalized suggestions of 2-3 matching Indian central or state schemes for:
@@ -770,6 +806,12 @@ export async function queryGovernmentSchemes(query: string, farmerState: string,
     User's query: "${query}"
 
     Search your database of schemes (such as PM-KISAN, PM-FBY Pradhan Mantri Fasal Bima Yojana, PM-KMY, Subsidies on Drip Irrigation, Soil Health Card Scheme, Rashtriya Krishi Vikas Yojana).
+    
+    CRITICAL LOCALIZATION REQUIREMENT:
+    The user's preferred language is ${targetLangName} (Language code: "${preferredLanguage}").
+    Provide all criteria, benefits, required documents, and personalizedAdvice in ${targetLangName}.
+    You may keep official scheme names and links in their recognized format alongside the translation.
+
     Return a structured JSON list of matching schemes with eligibility, benefits, required documents, official registration links, and last date where known.
 
     Return schema:
@@ -777,14 +819,14 @@ export async function queryGovernmentSchemes(query: string, farmerState: string,
       "matchingSchemes": [
         {
           "name": "Scheme Full Name",
-          "eligibility": "Clear criteria (e.g., small and marginal farmers owning under 2 hectares)",
-          "benefits": "Financial subsidies, insurance coverage details, or training",
-          "requiredDocuments": "Aadhaar Card, Land Possession Certificate (7/12 extract), Bank Passbook, Passport photo",
+          "eligibility": "Clear criteria in ${targetLangName}",
+          "benefits": "Financial subsidies, insurance coverage details in ${targetLangName}",
+          "requiredDocuments": "Required documents in ${targetLangName}",
           "officialLink": "https://...",
           "lastApplicationDate": "Last application date (e.g. 15th August 2026, or 'Ongoing')"
         }
       ],
-      "personalizedAdvice": "Tailored guidance on how the farmer can combine these schemes for maximum support based on their ${landSize}-acre farm in ${farmerState}."
+      "personalizedAdvice": "Tailored guidance in ${targetLangName}."
     }
   `;
 
@@ -824,7 +866,9 @@ export async function queryGovernmentSchemes(query: string, farmerState: string,
   );
 }
 
-export async function chatFarmingAssistant(message: string, history: { role: string; text: string }[]) {
+export async function chatFarmingAssistant(message: string, history: { role: string; text: string }[], preferredLanguage: string = "en") {
+  const targetLangName = LANGUAGE_NAMES[preferredLanguage] || preferredLanguage;
+
   // Append new message to contents
   const contents = history.map((h) => ({
     role: h.role === "user" ? "user" : "model",
@@ -849,7 +893,11 @@ export async function chatFarmingAssistant(message: string, history: { role: str
         - Integrated Pest Management (IPM) rather than chemical sprays.
         - Environmentally safe, minimal chemical dosages if synthetic is mentioned.
         - Support farmers with local vernacular contexts if they ask.
-        Keep your language humbler, very practical, and easy to understand for smallholder farmers.
+        CRITICAL LANGUAGE REQUIREMENT:
+        The user's preferred language is ${targetLangName} (Language code: "${preferredLanguage}").
+        You MUST formulate your entire response in ${targetLangName}.
+        Do NOT reply in English unless the requested language is English.
+        Keep your language humble, very practical, and easy to understand for smallholder farmers.
       `,
     },
   }).then(response => response.text || "I apologize, but I could not formulate a response at this moment.");

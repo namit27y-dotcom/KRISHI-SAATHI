@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Store, Plus, Package, ClipboardList, TrendingUp, AlertTriangle, MessageSquare, Trash, RefreshCw, Check, Loader2 } from "lucide-react";
+import { Store, Plus, Package, ClipboardList, TrendingUp, AlertTriangle, MessageSquare, Trash, RefreshCw, Check, Loader2, Image as ImageIcon } from "lucide-react";
+import { UNSPLASH_PRODUCT_IMAGES, getProductImageUrl } from "../data/unsplashImages";
 
 interface SellerDashboardProps {
   user: any;
@@ -380,14 +381,14 @@ export default function SellerDashboard({ user, onChatNavigate }: SellerDashboar
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 font-semibold"
                   >
-                    <option value="seeds">Seeds 🌱</option>
-                    <option value="fertilizers">Fertilizers 🧪</option>
-                    <option value="pesticides">Pesticides 🦠</option>
-                    <option value="tractors">Tractors 🚜</option>
-                    <option value="pumps">Water Pumps 💧</option>
-                    <option value="sprayers">Sprayers 💨</option>
-                    <option value="irrigation_equipment">Irrigation Equipment 💧</option>
-                    <option value="farm_tools">Farm Tools 🛠️</option>
+                    <option value="seeds">Seeds</option>
+                    <option value="fertilizers">Fertilizers</option>
+                    <option value="pesticides">Pesticides</option>
+                    <option value="tractors">Tractors</option>
+                    <option value="pumps">Water Pumps</option>
+                    <option value="sprayers">Sprayers</option>
+                    <option value="irrigation_equipment">Irrigation Equipment</option>
+                    <option value="farm_tools">Farm Tools</option>
                   </select>
                 </div>
 
@@ -434,11 +435,42 @@ export default function SellerDashboard({ user, onChatNavigate }: SellerDashboar
                 <label className="font-bold text-slate-600">Image Asset URL (Optional)</label>
                 <input
                   type="url"
-                  placeholder="https://..."
+                  placeholder="https://images.unsplash.com/..."
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
                 />
+              </div>
+
+              {/* Curated Unsplash Product Photos */}
+              <div className="space-y-1.5">
+                <label className="font-bold text-slate-600 flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />
+                    Curated Product Catalog Photos (Unsplash)
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-normal">Click to assign</span>
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {UNSPLASH_PRODUCT_IMAGES.map((prod) => (
+                    <button
+                      type="button"
+                      key={prod.id}
+                      onClick={() => setImageUrl(prod.url)}
+                      className={`relative aspect-video rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                        (imageUrl || getProductImageUrl(name, category)) === prod.url
+                          ? "border-emerald-600 ring-2 ring-emerald-300"
+                          : "border-slate-200 opacity-70 hover:opacity-100"
+                      }`}
+                      title={prod.name}
+                    >
+                      <img src={prod.url} alt={prod.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                      <span className="absolute bottom-0 inset-x-0 bg-black/60 text-[8px] font-bold text-white text-center py-0.5 truncate px-1">
+                        {prod.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-1">

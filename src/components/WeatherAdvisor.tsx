@@ -6,13 +6,12 @@ import {
   Droplets, 
   Wind, 
   AlertTriangle, 
-  Compass, 
   MapPin, 
   Loader2, 
-  Calendar, 
   CheckCircle, 
   Sprout 
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 interface WeatherData {
   location: string;
@@ -53,6 +52,9 @@ export default function WeatherAdvisor({
   defaultDistrict = "Pune",
   defaultSoilType = "Loamy"
 }: WeatherAdvisorProps) {
+  const { t, language } = useLanguage();
+  const wt = t.weather;
+
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
 
@@ -93,7 +95,8 @@ export default function WeatherAdvisor({
         district: districtName,
         soilType,
         season,
-        userId
+        userId,
+        preferredLanguage: language
       });
       setRecommendResult(res.data.result);
     } catch (err: any) {
@@ -116,7 +119,7 @@ export default function WeatherAdvisor({
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-100 flex items-center gap-1">
-                <MapPin className="w-3 h-3" /> Live Block Weather
+                <MapPin className="w-3 h-3" /> {wt.liveWeather}
               </span>
               <h3 className="text-xl font-bold mt-0.5">
                 {weather?.location || `${districtName}, ${stateName}`}
@@ -148,7 +151,7 @@ export default function WeatherAdvisor({
                   <Droplets className="w-5 h-5 text-blue-200" />
                 </div>
                 <div>
-                  <span className="text-[10px] block text-emerald-100/90">Air Humidity</span>
+                  <span className="text-[10px] block text-emerald-100/90">{wt.humidity}</span>
                   <span className="text-lg font-extrabold">{weather?.humidity}%</span>
                 </div>
               </div>
@@ -158,13 +161,13 @@ export default function WeatherAdvisor({
                   <Wind className="w-5 h-5 text-emerald-100" />
                 </div>
                 <div>
-                  <span className="text-[10px] block text-emerald-100/90">Wind Velocity</span>
+                  <span className="text-[10px] block text-emerald-100/90">{wt.windSpeed}</span>
                   <span className="text-lg font-extrabold">{weather?.wind} km/h</span>
                 </div>
               </div>
 
               <div className="col-span-2 md:col-span-1 flex flex-col justify-center">
-                <span className="text-[9px] text-emerald-100 uppercase tracking-widest font-bold">Rainfall expectation</span>
+                <span className="text-[9px] text-emerald-100 uppercase tracking-widest font-bold">{wt.rainfallOutlook}</span>
                 <p className="text-xs font-semibold mt-0.5">{weather?.rainfallPrediction}</p>
               </div>
             </div>
@@ -183,16 +186,16 @@ export default function WeatherAdvisor({
       <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm space-y-6">
         <div>
           <h4 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-1.5">
-            <Sprout className="w-5 h-5 text-emerald-600" /> Weather-Based Crop Recommendation
+            <Sprout className="w-5 h-5 text-emerald-600" /> {wt.cropAdvisorTitle}
           </h4>
           <p className="text-xs text-slate-400">
-            Analyze historical local seasons, pH soil profiles, and regional rainfall forecasts to match the perfect cash crop.
+            {wt.cropAdvisorSubtitle}
           </p>
         </div>
 
         <form onSubmit={handleRecommendSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-2xl border">
           <div className="text-xs">
-            <label className="block font-semibold text-slate-600 mb-1">State</label>
+            <label className="block font-semibold text-slate-600 mb-1">{wt.stateLabel}</label>
             <input 
               type="text" 
               value={stateName} 
@@ -203,7 +206,7 @@ export default function WeatherAdvisor({
           </div>
 
           <div className="text-xs">
-            <label className="block font-semibold text-slate-600 mb-1">District</label>
+            <label className="block font-semibold text-slate-600 mb-1">{wt.districtLabel}</label>
             <input 
               type="text" 
               value={districtName} 
@@ -214,30 +217,30 @@ export default function WeatherAdvisor({
           </div>
 
           <div className="text-xs">
-            <label className="block font-semibold text-slate-600 mb-1">Soil Type</label>
+            <label className="block font-semibold text-slate-600 mb-1">{wt.soilTypeLabel}</label>
             <select 
               value={soilType} 
               onChange={(e) => setSoilType(e.target.value)}
               className="w-full p-2.5 rounded-lg border bg-white outline-none focus:border-emerald-500 text-xs"
             >
-              <option value="Loamy">Loamy</option>
-              <option value="Clayey">Clayey</option>
-              <option value="Sandy">Sandy</option>
-              <option value="Silty">Silty</option>
-              <option value="Black Cotton Soil">Black Cotton Soil</option>
+              <option value="Loamy">{t.soils.loamy}</option>
+              <option value="Clayey">{t.soils.clayey}</option>
+              <option value="Sandy">{t.soils.sandy}</option>
+              <option value="Alluvial">{t.soils.alluvial}</option>
+              <option value="Black Cotton Soil">{t.soils.black}</option>
             </select>
           </div>
 
           <div className="text-xs">
-            <label className="block font-semibold text-slate-600 mb-1">Current Sowing Season</label>
+            <label className="block font-semibold text-slate-600 mb-1">{wt.seasonLabel}</label>
             <select 
               value={season} 
               onChange={(e) => setSeason(e.target.value)}
               className="w-full p-2.5 rounded-lg border bg-white outline-none focus:border-emerald-500 text-xs"
             >
-              <option value="Kharif (Monsoon / Sowing Jun-Jul)">Kharif (Monsoon / Sowing Jun-Jul)</option>
-              <option value="Rabi (Winter / Sowing Oct-Nov)">Rabi (Winter / Sowing Oct-Nov)</option>
-              <option value="Zaid (Summer / Sowing Mar-Apr)">Zaid (Summer / Sowing Mar-Apr)</option>
+              <option value="Kharif (Monsoon / Sowing Jun-Jul)">{t.seasons.kharif}</option>
+              <option value="Rabi (Winter / Sowing Oct-Nov)">{t.seasons.rabi}</option>
+              <option value="Zaid (Summer / Sowing Mar-Apr)">{t.seasons.zaid}</option>
             </select>
           </div>
 
@@ -249,7 +252,7 @@ export default function WeatherAdvisor({
               id="btn-submit-recommend"
             >
               {recommendLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sprout className="w-4 h-4" />}
-              Analyze Crop Suitability
+              {recommendLoading ? wt.analyzing : wt.getRecommendations}
             </button>
           </div>
         </form>
@@ -266,21 +269,21 @@ export default function WeatherAdvisor({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 bg-slate-50 border rounded-2xl text-xs space-y-1.5">
                 <span className="font-bold text-slate-800 flex items-center gap-1">
-                  <CloudSun className="w-4 h-4 text-emerald-600" /> Weather Outlook
+                  <CloudSun className="w-4 h-4 text-emerald-600" /> {wt.weatherAnalysis}
                 </span>
                 <p className="text-slate-600 leading-relaxed">{recommendResult.weatherAnalysis}</p>
               </div>
 
               <div className="p-4 bg-slate-50 border rounded-2xl text-xs space-y-1.5">
                 <span className="font-bold text-slate-800 flex items-center gap-1">
-                  <Droplets className="w-4 h-4 text-blue-500" /> Rainfall Expectation
+                  <Droplets className="w-4 h-4 text-blue-500" /> {wt.rainfallPrediction}
                 </span>
                 <p className="text-slate-600 leading-relaxed">{recommendResult.rainfallPrediction}</p>
               </div>
 
               <div className="p-4 bg-slate-50 border rounded-2xl text-xs space-y-1.5">
                 <span className="font-bold text-slate-800 flex items-center gap-1">
-                  <Thermometer className="w-4 h-4 text-amber-500 animate-pulse" /> Thermal Suitability
+                  <Thermometer className="w-4 h-4 text-amber-500 animate-pulse" /> {wt.temperatureInsights}
                 </span>
                 <p className="text-slate-600 leading-relaxed">{recommendResult.temperatureInsights}</p>
               </div>
@@ -288,7 +291,7 @@ export default function WeatherAdvisor({
 
             {/* Recommendations List */}
             <div className="space-y-3">
-              <h5 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Top Recommended Crops</h5>
+              <h5 className="font-bold text-slate-800 text-xs uppercase tracking-wider">{wt.recommendedCrops}</h5>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {recommendResult.recommendations?.map((crop, i) => (
                   <div key={i} className="p-4 bg-emerald-50/20 border border-emerald-100/30 rounded-2xl text-xs space-y-1.5">
@@ -296,8 +299,8 @@ export default function WeatherAdvisor({
                     <h4 className="text-sm font-bold text-emerald-950 flex items-center gap-1">
                       <CheckCircle className="w-4 h-4 text-emerald-600" /> {crop.cropName}
                     </h4>
-                    <p><strong>Ideal Sowing:</strong> {crop.suitableSowingPeriod}</p>
-                    <p><strong>Harvest Span:</strong> {crop.estimatedDaysToHarvest}</p>
+                    <p><strong>{wt.sowingWindow}:</strong> {crop.suitableSowingPeriod}</p>
+                    <p><strong>{wt.harvestDays}:</strong> {crop.estimatedDaysToHarvest}</p>
                     <p className="text-[11px] text-slate-500 italic mt-1 border-t border-slate-100/50 pt-1">
                       {crop.whyRecommended}
                     </p>
@@ -309,13 +312,13 @@ export default function WeatherAdvisor({
             {/* Sowing Advice & Warnings */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 bg-slate-50 rounded-2xl border text-xs space-y-1.5">
-                <h5 className="font-bold text-slate-800">Agronomist Sowing Wisdom</h5>
+                <h5 className="font-bold text-slate-800">{wt.farmingAdvice}</h5>
                 <p className="text-slate-600 leading-relaxed">{recommendResult.farmingAdvice}</p>
               </div>
 
               <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-100 text-xs space-y-1.5">
                 <h5 className="font-bold text-amber-900 flex items-center gap-1.5">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" /> Climate Risk & Pest Warnings
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" /> {wt.riskAlerts}
                 </h5>
                 <p className="text-amber-950 leading-relaxed">{recommendResult.riskAlerts}</p>
               </div>

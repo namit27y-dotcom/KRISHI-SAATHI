@@ -12,6 +12,7 @@ import {
   Loader2,
   AlertTriangle
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 interface FertilizerResult {
   recommendedFertilizer: string;
@@ -35,6 +36,9 @@ interface PlannersProps {
 }
 
 export default function Planners({ userId, defaultSoilType = "Loamy" }: PlannersProps) {
+  const { t, language } = useLanguage();
+  const plT = t.planners;
+
   const [activeTab, setActiveTab] = useState<"fertilizer" | "irrigation">("fertilizer");
 
   // Fertilizer States
@@ -66,7 +70,8 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
         growthStage: fertStage,
         soilType: fertSoil,
         fieldSize: parseFloat(fertSize),
-        userId
+        userId,
+        preferredLanguage: language
       });
       setFertResult(res.data.result);
     } catch (err: any) {
@@ -87,7 +92,8 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
         crop: irrigCrop,
         growthStage: irrigStage,
         soilType: irrigSoil,
-        userId
+        userId,
+        preferredLanguage: language
       });
       setIrrigResult(res.data.result);
     } catch (err: any) {
@@ -111,7 +117,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
           id="tab-fertilizer"
         >
           <Leaf className="w-4 h-4" />
-          Fertilizer Planner
+          {plT.fertilizerTab}
         </button>
         <button
           onClick={() => setActiveTab("irrigation")}
@@ -123,7 +129,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
           id="tab-irrigation"
         >
           <Droplets className="w-4 h-4" />
-          Smart Irrigation Planner
+          {plT.irrigationTab}
         </button>
       </div>
 
@@ -133,16 +139,16 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
           <div>
             <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-1.5">
               <Leaf className="w-5 h-5 text-emerald-600" />
-              Soil-Safe Fertilizer Planner
+              {plT.title} - {plT.fertilizerTab}
             </h3>
             <p className="text-xs text-slate-400">
-              Calculate tailored minimum chemical dosages and bio-compost requirements to prevent groundwater contamination.
+              {plT.subtitle}
             </p>
           </div>
 
           <form onSubmit={handleFertilizerSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-2xl border">
             <div className="text-xs">
-              <label className="block font-semibold text-slate-600 mb-1">Target Crop</label>
+              <label className="block font-semibold text-slate-600 mb-1">{plT.cropLabel}</label>
               <select 
                 value={fertCrop} 
                 onChange={(e) => setFertCrop(e.target.value)}
@@ -158,7 +164,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
             </div>
 
             <div className="text-xs">
-              <label className="block font-semibold text-slate-600 mb-1">Growth Stage</label>
+              <label className="block font-semibold text-slate-600 mb-1">{plT.growthStageLabel}</label>
               <select 
                 value={fertStage} 
                 onChange={(e) => setFertStage(e.target.value)}
@@ -172,22 +178,22 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
             </div>
 
             <div className="text-xs">
-              <label className="block font-semibold text-slate-600 mb-1">Soil Type</label>
+              <label className="block font-semibold text-slate-600 mb-1">{plT.soilTypeLabel}</label>
               <select 
                 value={fertSoil} 
                 onChange={(e) => setFertSoil(e.target.value)}
                 className="w-full p-2.5 rounded-lg border bg-white outline-none focus:border-emerald-500"
               >
-                <option value="Loamy">Loamy</option>
-                <option value="Clayey">Clayey</option>
-                <option value="Sandy">Sandy</option>
-                <option value="Silty">Silty</option>
-                <option value="Black Cotton Soil">Black Cotton Soil</option>
+                <option value="Loamy">{t.soils.loamy}</option>
+                <option value="Clayey">{t.soils.clayey}</option>
+                <option value="Sandy">{t.soils.sandy}</option>
+                <option value="Alluvial">{t.soils.alluvial}</option>
+                <option value="Black Cotton Soil">{t.soils.black}</option>
               </select>
             </div>
 
             <div className="text-xs">
-              <label className="block font-semibold text-slate-600 mb-1">Field Size (Acres)</label>
+              <label className="block font-semibold text-slate-600 mb-1">{plT.fieldSizeLabel}</label>
               <input 
                 type="number" 
                 step="0.1" 
@@ -206,7 +212,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
                 id="btn-submit-fertilizer"
               >
                 {fertLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sprout className="w-4 h-4" />}
-                Generate Plan
+                {fertLoading ? plT.generating : plT.calculateFertilizer}
               </button>
             </div>
           </form>
@@ -222,7 +228,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Safe fertilizer recom */}
                 <div className="p-4 bg-emerald-50/30 border border-emerald-100/50 rounded-2xl text-xs space-y-2">
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-800 block">Dose Requirement</span>
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-800 block">{plT.recommendedDosage}</span>
                   <h4 className="text-base font-bold text-emerald-900 flex items-center gap-1">
                     <CheckCircle className="w-5 h-5 text-emerald-600" />
                     {fertResult.recommendedFertilizer}
@@ -246,7 +252,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
               {/* Schedules and Methods */}
               <div className="p-4 bg-slate-50 rounded-2xl border text-xs space-y-2">
                 <h4 className="font-bold text-slate-800 flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-emerald-600" /> Split Dose Application Schedule
+                  <Calendar className="w-4 h-4 text-emerald-600" /> {plT.applicationMethod}
                 </h4>
                 <p className="text-slate-600 leading-relaxed font-mono">{fertResult.schedule}</p>
               </div>
@@ -254,7 +260,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
               {/* Organic/compost alternatives */}
               <div className="p-4 bg-emerald-50/20 border border-emerald-100/30 rounded-2xl text-xs space-y-2">
                 <h4 className="font-bold text-emerald-800 flex items-center gap-1.5">
-                  <Leaf className="w-4 h-4 text-emerald-600" /> Sustainable Organic / Bio alternatives
+                  <Leaf className="w-4 h-4 text-emerald-600" /> {plT.ecoImpact}
                 </h4>
                 <p className="text-slate-600 leading-relaxed">{fertResult.organicAlternatives}</p>
               </div>
@@ -278,19 +284,19 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
           <div>
             <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-1.5">
               <Droplets className="w-5 h-5 text-emerald-600" />
-              Smart Irrigation Planner
+              {plT.title} - {plT.irrigationTab}
             </h3>
             <p className="text-xs text-slate-400">
-              Set optimal moisture depth, early-morning frequencies, and soil evapotranspiration limits to protect resources.
+              {plT.subtitle}
             </p>
           </div>
 
           <form onSubmit={handleIrrigationSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border">
             <div className="text-xs">
-              <label className="block font-semibold text-slate-600 mb-1">Target Crop</label>
+              <label className="block font-semibold text-slate-600 mb-1">{plT.cropLabel}</label>
               <select 
                 value={irrigCrop} 
-                onChange={(e) => setFertCrop(e.target.value)}
+                onChange={(e) => setIrrigCrop(e.target.value)}
                 className="w-full p-2.5 rounded-lg border bg-white outline-none focus:border-emerald-500"
               >
                 <option value="Tomato">Tomato</option>
@@ -303,10 +309,10 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
             </div>
 
             <div className="text-xs">
-              <label className="block font-semibold text-slate-600 mb-1">Growth Stage</label>
+              <label className="block font-semibold text-slate-600 mb-1">{plT.growthStageLabel}</label>
               <select 
                 value={irrigStage} 
-                onChange={(e) => setFertStage(e.target.value)}
+                onChange={(e) => setIrrigStage(e.target.value)}
                 className="w-full p-2.5 rounded-lg border bg-white outline-none focus:border-emerald-500"
               >
                 <option value="Sowing / Transplanting">Sowing / Transplanting</option>
@@ -317,17 +323,17 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
             </div>
 
             <div className="text-xs">
-              <label className="block font-semibold text-slate-600 mb-1">Soil Type</label>
+              <label className="block font-semibold text-slate-600 mb-1">{plT.soilTypeLabel}</label>
               <select 
                 value={irrigSoil} 
-                onChange={(e) => setFertSoil(e.target.value)}
+                onChange={(e) => setIrrigSoil(e.target.value)}
                 className="w-full p-2.5 rounded-lg border bg-white outline-none focus:border-emerald-500"
               >
-                <option value="Loamy">Loamy</option>
-                <option value="Clayey">Clayey</option>
-                <option value="Sandy">Sandy</option>
-                <option value="Silty">Silty</option>
-                <option value="Black Cotton Soil">Black Cotton Soil</option>
+                <option value="Loamy">{t.soils.loamy}</option>
+                <option value="Clayey">{t.soils.clayey}</option>
+                <option value="Sandy">{t.soils.sandy}</option>
+                <option value="Alluvial">{t.soils.alluvial}</option>
+                <option value="Black Cotton Soil">{t.soils.black}</option>
               </select>
             </div>
 
@@ -339,7 +345,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
                 id="btn-submit-irrigation"
               >
                 {irrigLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Droplets className="w-4 h-4" />}
-                Generate Irrigation Schedule
+                {irrigLoading ? plT.generating : plT.calculateIrrigation}
               </button>
             </div>
           </form>
@@ -354,7 +360,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
             <div className="space-y-4 border-t border-slate-100 pt-6 animate-fade-in">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 bg-slate-50 border rounded-2xl text-xs space-y-1">
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Daily/Weekly Water Depth</span>
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">{plT.waterVolume}</span>
                   <div className="flex items-center gap-1 text-base font-bold text-emerald-800 mt-1">
                     <Compass className="w-5 h-5 text-emerald-600" />
                     {irrigResult.waterRequirement}
@@ -362,7 +368,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
                 </div>
 
                 <div className="p-4 bg-slate-50 border rounded-2xl text-xs space-y-1">
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Watering Frequency</span>
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">{plT.irrigationFrequency}</span>
                   <div className="flex items-center gap-1 text-base font-bold text-slate-800 mt-1">
                     <Calendar className="w-5 h-5 text-emerald-600" />
                     {irrigResult.frequency}
@@ -370,7 +376,7 @@ export default function Planners({ userId, defaultSoilType = "Loamy" }: Planners
                 </div>
 
                 <div className="p-4 bg-slate-50 border rounded-2xl text-xs space-y-1">
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Best Daily Timing</span>
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">{plT.wateringMethod}</span>
                   <div className="flex items-center gap-1 text-base font-bold text-amber-700 mt-1">
                     <Clock className="w-5 h-5 text-amber-500 animate-pulse" />
                     {irrigResult.bestTiming}

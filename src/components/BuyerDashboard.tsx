@@ -356,7 +356,12 @@ export default function BuyerDashboard({ user, onChatNavigate }: BuyerDashboardP
               <form onSubmit={handlePlaceOrder} className="space-y-4 text-xs">
                 <div className="flex gap-4 bg-slate-50 p-3 rounded-2xl border">
                   <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border bg-slate-200">
-                    <img src={selectedCrop.imageUrl} className="w-full h-full object-cover" />
+                    <img 
+                      src={selectedCrop.imageUrl} 
+                      alt={selectedCrop.cropName} 
+                      referrerPolicy="no-referrer" 
+                      className="w-full h-full object-cover" 
+                    />
                   </div>
                   <div className="text-xs flex-1 min-w-0 flex flex-col justify-center">
                     <span className="font-bold text-slate-800 truncate block">{selectedCrop.cropName}</span>

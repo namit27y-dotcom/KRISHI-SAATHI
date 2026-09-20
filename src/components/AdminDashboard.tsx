@@ -264,8 +264,13 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             ) : (
               <div className="space-y-3">
                 {cropsList.map((c) => (
-                  <div key={c.id} className="p-3 border rounded-2xl bg-slate-50/50 flex justify-between items-center text-xs">
-                    <div className="min-w-0 flex-1 pr-2">
+                  <div key={c.id} className="p-3 border rounded-2xl bg-slate-50/50 flex justify-between items-center text-xs gap-3">
+                    {c.imageUrl && (
+                      <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border bg-slate-200">
+                        <img src={c.imageUrl} alt={c.cropName} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1 pr-1">
                       <div className="flex items-center gap-1.5">
                         <span className="font-bold text-slate-800 truncate block leading-tight">{c.cropName}</span>
                         <span className={`text-[8px] font-bold uppercase px-1 rounded ${c.isVerified ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
@@ -303,8 +308,13 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             ) : (
               <div className="space-y-3">
                 {productsList.map((p) => (
-                  <div key={p.id} className="p-3 border rounded-2xl bg-slate-50/50 flex justify-between items-center text-xs">
-                    <div className="min-w-0 flex-1 pr-2">
+                  <div key={p.id} className="p-3 border rounded-2xl bg-slate-50/50 flex justify-between items-center text-xs gap-3">
+                    {p.imageUrl && (
+                      <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border bg-slate-200">
+                        <img src={p.imageUrl} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1 pr-1">
                       <div className="flex items-center gap-1.5">
                         <span className="font-bold text-slate-800 truncate block leading-tight">{p.name}</span>
                         <span className={`text-[8px] font-bold uppercase px-1 rounded ${p.isVerified ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>

@@ -13,6 +13,7 @@ import {
   Maximize2,
   ChevronRight
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 interface CropStep {
   title: string;
@@ -151,7 +152,7 @@ const CROP_GUIDES_DATA: CropGuide[] = [
     name: "Off-Season Cucumber",
     type: "off-season",
     season: "Monsoon Polyhouse (Off-Season)",
-    image: "https://images.unsplash.com/photo-1590378222684-d0517793b51a?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1604977042946-1eecc30f269e?auto=format&fit=crop&q=80&w=600",
     videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-vegetable-plantation-in-greenhouse-38891-large.mp4",
     videoLength: "3:45",
     description: "Growing high-value hybrid cucumbers in polyhouses during heavy rains protects yields and earns premium rates.",
@@ -204,7 +205,7 @@ const CROP_GUIDES_DATA: CropGuide[] = [
     name: "Hydroponic Cherry Tomato",
     type: "off-season",
     season: "Summer Controlled Sowing (Off-Season)",
-    image: "https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=600",
     videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-ripe-tomatoes-growing-in-a-greenhouse-38890-large.mp4",
     videoLength: "6:15",
     description: "Soothes hot summers by raising premium cherry tomatoes inside automated misting greenhouses.",
@@ -251,6 +252,112 @@ const CROP_GUIDES_DATA: CropGuide[] = [
         ]
       }
     }
+  },
+  {
+    id: "cotton",
+    name: "Organic Cotton",
+    type: "seasonal",
+    season: "Monsoon (Kharif)",
+    image: "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?auto=format&fit=crop&q=80&w=600",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-farmer-walking-in-a-rice-field-41551-large.mp4",
+    videoLength: "4:50",
+    description: "Cotton thrives in warm climates with black soil, requiring monitored square formation and pest trapping.",
+    soilType: "Deep Black Cotton Soil",
+    waterLevel: "Medium (Drip / Furrow)",
+    steps: [
+      { title: "Deep Tillage", desc: "Plough deeply in summer to expose dormant insect pupae to sun." },
+      { title: "Spacing & Sowing", desc: "Sow dibbled seeds at 90x60 cm or 120x45 cm spacing on ridges." },
+      { title: "Pest Scouting", desc: "Install pheromone traps to scout for pink bollworm and sucking pests." },
+      { title: "Defoliation & Picking", desc: "Pick fully opened, dry bolls in clean cotton bags during dry afternoons." }
+    ],
+    translations: {
+      hi: {
+        name: "कपास (कपास की खेती)",
+        season: "मानसून (खरीफ)",
+        description: "काली मिट्टी और गर्म जलवायु में कपास की फसल बंपर मुनाफा देती है।",
+        steps: [
+          { title: "गहरी जुताई", desc: "गर्मियों में गहरी जुताई करें ताकि कीटों के प्यूपा नष्ट हो जाएं।" },
+          { title: "दूरी और बुवाई", desc: "मेड़ों पर 90x60 सेमी की दूरी पर बीजों की बुवाई करें।" },
+          { title: "कीट नियंत्रण", desc: "गुलाबी सुंडी के लिए फेरोमोन ट्रैप स्थापित करें।" },
+          { title: "चुनाई", desc: "दोपहर में सूखे समय पर पूरी तरह खिले हुए टिंडों की चुनाई करें।" }
+        ]
+      },
+      mr: {
+        name: "कापूस शेती",
+        season: "पावसाळा (खरीप)",
+        description: "काळ्या कसदार जमिनीत योग्य व्यवस्थापनाने दर्जेदार कापूस उत्पादन घेता येते.",
+        steps: [
+          { title: "उन्हाळी नांगरणी", desc: "उन्हाळ्यात खोल नांगरट करून किडींचे कोष नष्ट करा." },
+          { title: "पेरणी अंतर", desc: "९०x६० किंवा १२०x४५ सेमी अंतरावर सरी-वरंब्यावर टोकण पद्धतीने बियाणे लावा." },
+          { title: "कामगंध सापळे", desc: "बोंडअळीच्या नियंत्रणासाठी हेक्टरी ५ कामगंध सापळे लावा." },
+          { title: "वेचणी", desc: "दुपारच्या कोरड्या हवेत पूर्ण उमललेल्या बोंडांची स्वच्छ वेचणी करा." }
+        ]
+      },
+      pa: {
+        name: "ਨਰਮਾ / ਕਪਾਹ",
+        season: "ਮਾਨਸੂਨ (ਖਰੀਫ)",
+        description: "ਕਪਾਹ ਗਰਮ ਜਲਵਾਯੂ ਵਿੱਚ ਕਾਲੀ ਤੇ ਦੋਮਟ ਮਿੱਟੀ ਵਿੱਚ ਉੱਤਮ ਝਾੜ ਦਿੰਦੀ ਹੈ।",
+        steps: [
+          { title: "ਡੂੰਘੀ ਵਾਹੀ", desc: "ਗਰਮੀਆਂ ਵਿੱਚ ਡੂੰਘੀ ਵਾਹੀ ਕਰੋ ਤਾਂ ਜੋ ਕੀੜੇ ਖਤਮ ਹੋ ਜਾਣ।" },
+          { title: "ਬਿਜਾਈ ਦੂਰੀ", desc: "90x60 ਸੈਂਟੀਮੀਟਰ ਦੀ ਦੂਰੀ 'ਤੇ ਕਤਾਰਾਂ ਵਿੱਚ ਬੀਜੋ।" },
+          { title: "ਸੁੰਡੀ ਦੀ ਰੋਕਥਾਮ", desc: "ਗੁਲਾਬੀ ਸੁੰਡੀ ਦੀ ਨਿਗਰਾਨੀ ਲਈ ਫੇਰੋਮੋਨ ਟਰੈਪ ਲਗਾਓ।" },
+          { title: "ਚੁਗਾਈ", desc: "ਖਿੜੇ ਹੋਏ ਟੀਂਡਿਆਂ ਦੀ ਚੁਗਾਈ ਦੁਪਹਿਰ ਸਮੇਂ ਸੁੱਕੇ ਮੌਸਮ ਵਿੱਚ ਕਰੋ।" }
+        ]
+      }
+    }
+  },
+  {
+    id: "sweet_corn",
+    name: "Golden Sweet Corn",
+    type: "seasonal",
+    season: "Round-the-year / Summer",
+    image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-wheat-field-under-a-blue-sky-41552-large.mp4",
+    videoLength: "4:10",
+    description: "Short duration, high-demand cash crop fetching swift returns in urban fresh vegetable markets.",
+    soilType: "Well-drained Loamy Soil",
+    waterLevel: "Moderate (Knee-high to tasseling)",
+    steps: [
+      { title: "Bed Preparation", desc: "Add generous compost or FYM to ensure friable, moist soil." },
+      { title: "Line Sowing", desc: "Maintain 60 cm between rows and 20 cm plant-to-plant." },
+      { title: "Critical Irrigation", desc: "Ensure steady moisture during silking and cob filling stages." },
+      { title: "Morning Harvest", desc: "Harvest cobs when silks turn brown and kernels burst with milky sap." }
+    ],
+    translations: {
+      hi: {
+        name: "स्वीट कॉर्न (मीठा भुट्टा)",
+        season: "वर्षभर / ग्रीष्मकालीन",
+        description: "कम समय में तैयार होने वाली नकदी फसल जो शहरी बाजारों में हाथों-हाथ बिकती है।",
+        steps: [
+          { title: "खेत की तैयारी", desc: "मिट्टी में अच्छी सड़ी हुई गोबर की खाद मिलाएं।" },
+          { title: "पंक्ति में बुवाई", desc: "पंक्तियों के बीच 60 सेमी और पौधों के बीच 20 सेमी की दूरी रखें।" },
+          { title: "समय पर पानी", desc: "सिल्किंग और दाना भरने की अवस्था में पानी की कमी न होने दें।" },
+          { title: "ताजी तुड़ाई", desc: "सुबह के समय जब बालियां दूधिया रस से भरी हों, तब तुड़ाई करें।" }
+        ]
+      },
+      mr: {
+        name: "गोड मका (स्वीट कॉर्न)",
+        season: "बारमाही / उन्हाळी",
+        description: "कमी कालावधीत भरघोस नफा देणारे आणि शहरांमध्ये भरपूर मागणी असलेले पीक.",
+        steps: [
+          { title: "जमीन मशागत", desc: "चांगले कुजलेले शेणखत मिसळून जमीन भुसभुशीत करा." },
+          { title: "ओळीत टोकण", desc: "दोन ओळीत ६० सेमी आणि दोन रोपांत २० सेमी अंतर ठेवून बियाणे टोका." },
+          { title: "तुरा येताना पाणी", desc: "कणसात दाणे भरण्याच्या आणि तुरा येण्याच्या नाजूक टप्प्यावर पाण्याचा ताण पडू देऊ नका." },
+          { title: "पहाटे काढणी", desc: "कणीस दुधाळ अवस्थेत असताना पहाटेच्या वेळी तोडणी करा." }
+        ]
+      },
+      pa: {
+        name: "ਸਵੀਟ ਕੌਰਨ (ਮਿੱਠੀ ਛੱਲੀ)",
+        season: "ਸਾਰਾ ਸਾਲ / ਗਰਮੀਆਂ",
+        description: "ਘੱਟ ਸਮੇਂ ਵਿੱਚ ਤਿਆਰ ਹੋਣ ਵਾਲੀ ਫਸਲ ਜੋ ਬਾਜ਼ਾਰ ਵਿੱਚ ਵਧੀਆ ਮੁਨਾਫਾ ਦਿੰਦੀ ਹੈ।",
+        steps: [
+          { title: "ਜ਼ਮੀਨ ਤਿਆਰੀ", desc: "ਖੇਤ ਵਿੱਚ ਚੰਗੀ ਤਰ੍ਹਾਂ ਰੂੜੀ ਦੀ ਖਾਦ ਪਾ ਕੇ ਜ਼ਮੀਨ ਤਿਆਰ ਕਰੋ।" },
+          { title: "ਕਤਾਰ ਬਿਜਾਈ", desc: "ਕਤਾਰਾਂ ਵਿੱਚ 60 ਸੈਂਟੀਮੀਟਰ ਅਤੇ ਬੂਟਿਆਂ ਵਿੱਚ 20 ਸੈਂਟੀਮੀਟਰ ਫਾਸਲਾ ਰੱਖੋ।" },
+          { title: "ਸਹੀ ਸਮੇਂ ਸਿੰਚਾਈ", desc: "ਛੱਲੀ ਵਿੱਚ ਦਾਣੇ ਭਰਨ ਸਮੇਂ ਪਾਣੀ ਦੀ ਘਾਟ ਨਾ ਆਉਣ ਦਿਓ।" },
+          { title: "ਸਵੇਰੇ ਤੁੜਾਈ", desc: "ਜਦੋਂ ਦਾਣਿਆਂ ਵਿੱਚ ਦੁੱਧ ਭਰ ਜਾਵੇ ਤਾਂ ਸਵੇਰੇ ਤਾਜ਼ੀਆਂ ਛੱਲੀਆਂ ਤੋੜੋ।" }
+        ]
+      }
+    }
   }
 ];
 
@@ -258,123 +365,41 @@ interface CropAcademyProps {
   preferredLanguage?: string;
 }
 
-export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyProps) {
+export default function CropAcademy({ preferredLanguage: propLang }: CropAcademyProps) {
+  const { t, language: contextLang } = useLanguage();
+  const currentLang = propLang || contextLang || "en";
+  const ac = t.academy;
+
   const [filterType, setFilterType] = useState<"all" | "seasonal" | "off-season">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeVideoGuide, setActiveVideoGuide] = useState<CropGuide | null>(null);
   const [playingState, setPlayingState] = useState(false);
   const [playbackTime, setPlaybackTime] = useState(0);
 
-  // Localization Dictionary
-  const translations: Record<string, Record<string, string>> = {
-    hi: {
-      "Crop Academy": "फसल अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "चरण-दर-चरण वीडियो पाठों के साथ मौसमी और गैर-मौसमी फसलें उगाएं।",
-      "Search crop guides...": "फसल गाइड खोजें...",
-      "All Guides": "सभी गाइड",
-      "Seasonal Crops": "मौसमी फसलें",
-      "Off-Season Crops": "गैर-मौसमी (ऑफ़-सीज़न)",
-      "Soil:": "मिट्टी का प्रकार:",
-      "Watering:": "सिंचाई आवश्यकता:",
-      "View Sowing Steps": "बुवाई के चरण देखें",
-      "Watch Lesson": "पाठ देखें",
-      "Sowing & Harvesting Steps": "बुवाई और कटाई के चरण",
-      "Video Tutorial Lesson": "वीडियो ट्यूटोरियल पाठ",
-      "Step": "चरण",
-      "Close": "बंद करें",
-      "Soil Context:": "मिट्टी संदर्भ:",
-      "Irrigation:": "सिंचाई:"
-    },
-    bho: {
-      "Crop Academy": "फसल अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "एगो-एगो कदम के वीडियो पाठ के साथ मौसमी अउर बिना-मौसम के फसल उगाईं।",
-      "Search crop guides...": "फसल गाइड खोजीं...",
-      "All Guides": "सब गाइड",
-      "Seasonal Crops": "मौसमी फसल",
-      "Off-Season Crops": "बिना-मौसम के फसल (ऑफ़-सीज़न)",
-      "Soil:": "मिट्टी के प्रकार:",
-      "Watering:": "सिंचाई के जरूरत:",
-      "View Sowing Steps": "बोआई के कदम देखीं",
-      "Watch Lesson": "वीडियो देखीं",
-      "Sowing & Harvesting Steps": "बोआई अउर कटाई के तरीका",
-      "Video Tutorial Lesson": "वीडियो ट्यूटोरियल पाठ",
-      "Step": "चरण",
-      "Close": "बंद करीं",
-      "Soil Context:": "मिट्टी संदर्भ:",
-      "Irrigation:": "सिंचाई:"
-    },
-    mr: {
-      "Crop Academy": "पीक अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "टप्प्याटप्प्याने मार्गदर्शक व्हिडिओद्वारे मौसमी आणि बिगर-हंगामी पिके उगवा.",
-      "Search crop guides...": "पीक मार्गदर्शक शोधा...",
-      "All Guides": "सर्व मार्गदर्शक",
-      "Seasonal Crops": "हंगामी पिके",
-      "Off-Season Crops": "बिगर-हंगामी (ऑफ-सीझन) पिके",
-      "Soil:": "मातीचा प्रकार:",
-      "Watering:": "सिंचन गरज:",
-      "View Sowing Steps": "लागवडीच्या पायऱ्या",
-      "Watch Lesson": "मार्गदर्शक व्हिडिओ",
-      "Sowing & Harvesting Steps": "लागवड व काढणीच्या पायऱ्या",
-      "Video Tutorial Lesson": "व्हिडिओ ट्यूटोरियल",
-      "Step": "टप्पा",
-      "Close": "बंद करा",
-      "Soil Context:": "योग्य माती:",
-      "Irrigation:": "पाणी व्यवस्थापन:"
-    },
-    pa: {
-      "Crop Academy": "ਫਸਲ ਅਕੈਡਮੀ",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "ਵੀਡੀਓ ਸਬਕਾਂ ਦੇ ਨਾਲ ਮੌਸਮੀ ਅਤੇ ਬੇਮੌਸਮੀ ਫਸਲਾਂ ਉਗਾਉਣਾ ਸਿੱਖੋ।",
-      "Search crop guides...": "ਫਸਲ ਗਾਈਡ ਲੱਭੋ...",
-      "All Guides": "ਸਾਰੀਆਂ ਫਸਲਾਂ",
-      "Seasonal Crops": "ਮੌਸਮੀ ਫਸਲਾਂ",
-      "Off-Season Crops": "ਬੇਮੌਸਮੀ ਫਸਲਾਂ",
-      "Soil:": "ਮਿੱਟੀ:",
-      "Watering:": "ਸਿੰਚਾਈ:",
-      "View Sowing Steps": "ਬਿਜਾਈ ਦੇ ਪੜਾਅ",
-      "Watch Lesson": "ਵੀਡੀਓ ਦੇਖੋ",
-      "Sowing & Harvesting Steps": "ਬਿਜਾਈ ਅਤੇ ਕਟਾਈ ਦੇ ਪੜਾਅ",
-      "Video Tutorial Lesson": "ਟਿਊਟੋਰਿਅਲ ਵੀਡੀਓ",
-      "Step": "ਪੜਾਅ",
-      "Close": "ਬੰਦ ਕਰੋ"
-    },
-    ta: {
-      "Crop Academy": "பயிர் அகாடமி",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "படி படியாக வீடியோ பாடங்களுடன் பருவகால மற்றும் மாற்றுப் பயிர்களை வளர்க்கவும்.",
-      "Search crop guides...": "பயிர் வழிகாட்டியைத் தேடுக...",
-      "All Guides": "அனைத்து வழிகாட்டிகள்",
-      "Seasonal Crops": "பருவகால பயிர்கள்",
-      "Off-Season Crops": "மாற்றுப் பருவ பயிர்கள்",
-      "Soil:": "மண் வகை:",
-      "Watering:": "நீர் தேவை:",
-      "View Sowing Steps": "சாகுபடி முறைகள்",
-      "Watch Lesson": "வகுப்பைக் காண்க",
-      "Sowing & Harvesting Steps": "சாகுபடி மற்றும் அறுவடை படிகள்",
-      "Video Tutorial Lesson": "வீடியோ பாடம்",
-      "Step": "படி"
-    },
-    te: {
-      "Crop Academy": "పంటల అకాడమీ",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "వీడియో పాఠాల ద్వారా కాలక్రమంగా మరియు అకాల పంటలను పండించడం నేర్చుకోండి.",
-      "Search crop guides...": "పంట మార్గదర్శిని వెతకండి...",
-      "All Guides": "అన్ని గైడ్లు",
-      "Seasonal Crops": "కాలపరిమితి పంటలు",
-      "Off-Season Crops": "అకాల పంటలు",
-      "Soil:": "నేల రకం:",
-      "Watering:": "నీటి అవసరం:",
-      "View Sowing Steps": "సాగు పద్ధతులు",
-      "Watch Lesson": "వీడియో గైడ్",
-      "Sowing & Harvesting Steps": "సాగు మరియు కోత విధానాలు",
-      "Video Tutorial Lesson": "వీడియో శిక్షణ",
-      "Step": "దశ"
+  const localT = (key: string): string => {
+    switch (key) {
+      case "Crop Academy": return ac.title;
+      case "Grow seasonal and off-season crops with step-by-step video lessons.": return ac.subtitle;
+      case "Search crop guides...": return ac.searchPlaceholder;
+      case "All Guides": return ac.allGuides;
+      case "Seasonal Crops": return ac.seasonalCrops;
+      case "Off-Season Crops": return ac.offSeasonCrops;
+      case "Soil:": return ac.soil;
+      case "Watering:": return ac.watering;
+      case "View Sowing Steps": return ac.viewSteps;
+      case "Watch Lesson": return ac.watchLesson;
+      case "Sowing & Harvesting Steps": return ac.sowingSteps;
+      case "Video Tutorial Lesson": return ac.videoTutorial;
+      case "Step": return ac.step;
+      case "Close": return ac.close;
+      case "Soil Context:": return ac.soilContext;
+      case "Irrigation:": return ac.irrigation;
+      default: return key;
     }
   };
 
-  const localT = (key: string) => {
-    return translations[preferredLanguage]?.[key] || translations["en"]?.[key] || key;
-  };
-
   const getLocalizedCrop = (guide: CropGuide) => {
-    const local = guide.translations[preferredLanguage];
+    const local = guide.translations[currentLang] || (currentLang === "bho" ? guide.translations["hi"] : undefined);
     return {
       ...guide,
       name: local?.name || guide.name,
@@ -477,6 +502,9 @@ export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyPro
                   alt={loc.name} 
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" 
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=600";
+                  }}
                 />
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/25 transition-all flex items-center justify-center">
                   <button

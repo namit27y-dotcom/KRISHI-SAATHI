@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { Database } from "./src/server/db.js";
+import { getCropImageUrl, getProductImageUrl } from "./src/data/unsplashImages.js";
 import { 
   identifyPlant, 
   detectDisease, 
@@ -235,7 +236,7 @@ async function startServer() {
         district: user.district,
         village: user.village,
         description,
-        imageUrl: imageUrl || "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=600",
+        imageUrl: imageUrl || getCropImageUrl(cropName),
         isVerified: false, // Must be verified by Admin
         createdAt: new Date().toISOString()
       };
@@ -357,7 +358,7 @@ async function startServer() {
         price: parseFloat(price),
         unit,
         inventory: parseInt(inventory),
-        imageUrl: imageUrl || "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&q=80&w=600",
+        imageUrl: imageUrl || getProductImageUrl(name, category),
         isVerified: false, // Pending Admin Approval
         createdAt: new Date().toISOString()
       };
@@ -1288,12 +1289,14 @@ async function startServer() {
   // --- Feature 2: Weather Crop Recommendation ---
   app.post("/api/weather/recommend", async (req, res) => {
     try {
-      const { state, district, soilType, season, userId } = req.body;
+      const { state, district, soilType, season, userId, preferredLanguage } = req.body;
       if (!state || !district || !soilType || !season) {
         return res.status(400).json({ error: "State, district, soil type and season are required" });
       }
 
-      const result = await recommendCrops(state, district, soilType, season);
+      const user = userId ? db.getUserById(userId) : null;
+      const lang = preferredLanguage || user?.preferredLanguage || "en";
+      const result = await recommendCrops(state, district, soilType, season, lang);
 
       // Cache a mock weather alert for notifications
       if (userId) {
@@ -1346,12 +1349,14 @@ async function startServer() {
   // --- Feature 3: Fertilizer Planner ---
   app.post("/api/plans/fertilizer", async (req, res) => {
     try {
-      const { crop, growthStage, soilType, fieldSize, userId } = req.body;
+      const { crop, growthStage, soilType, fieldSize, userId, preferredLanguage } = req.body;
       if (!crop || !growthStage || !soilType || !fieldSize) {
         return res.status(400).json({ error: "Crop, growth stage, soil type and field size are required" });
       }
 
-      const result = await planFertilizer(crop, growthStage, soilType, parseFloat(fieldSize));
+      const user = userId ? db.getUserById(userId) : null;
+      const lang = preferredLanguage || user?.preferredLanguage || "en";
+      const result = await planFertilizer(crop, growthStage, soilType, parseFloat(fieldSize), lang);
 
       if (userId) {
         db.addFertilizerPlan({
@@ -1388,12 +1393,14 @@ async function startServer() {
   // --- Feature 4: Irrigation Planner ---
   app.post("/api/plans/irrigation", async (req, res) => {
     try {
-      const { crop, growthStage, soilType, userId } = req.body;
+      const { crop, growthStage, soilType, userId, preferredLanguage } = req.body;
       if (!crop || !growthStage || !soilType) {
         return res.status(400).json({ error: "Crop, growth stage, and soil type are required" });
       }
 
-      const result = await planIrrigation(crop, growthStage, soilType);
+      const user = userId ? db.getUserById(userId) : null;
+      const lang = preferredLanguage || user?.preferredLanguage || "en";
+      const result = await planIrrigation(crop, growthStage, soilType, lang);
 
       if (userId) {
         db.addIrrigationPlan({
@@ -1426,13 +1433,16 @@ async function startServer() {
   // --- Feature 5: Government Schemes ---
   app.post("/api/schemes/query", async (req, res) => {
     try {
-      const { query, state, crop, landSize, userId } = req.body;
+      const { query, state, crop, landSize, userId, preferredLanguage } = req.body;
+      const user = userId ? db.getUserById(userId) : null;
+      const lang = preferredLanguage || user?.preferredLanguage || "en";
 
       const result = await queryGovernmentSchemes(
         query || "What schemes support marginal farmers?",
         state || "Maharashtra",
         crop || "Cotton",
-        landSize ? parseFloat(landSize) : 2
+        landSize ? parseFloat(landSize) : 2,
+        lang
       );
 
       res.json({ result });
@@ -1444,12 +1454,14 @@ async function startServer() {
   // --- Feature 6: AI Chat Farming Assistant ---
   app.post("/api/chat", async (req, res) => {
     try {
-      const { message, history, userId } = req.body;
+      const { message, history, userId, preferredLanguage } = req.body;
       if (!message) {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      const answer = await chatFarmingAssistant(message, history || []);
+      const user = userId ? db.getUserById(userId) : null;
+      const lang = preferredLanguage || user?.preferredLanguage || "en";
+      const answer = await chatFarmingAssistant(message, history || [], lang);
 
       if (userId) {
         db.addChatMessage({

@@ -855,10 +855,13 @@ export default function App() {
                       >
                         <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 relative">
                           <img 
-                            src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=200" 
+                            src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400" 
                             alt="Wheat Cultivation" 
                             className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
                             referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=400";
+                            }}
                           />
                           <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                             <Play className="w-4 h-4 text-white fill-white" />
@@ -880,10 +883,13 @@ export default function App() {
                       >
                         <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 relative">
                           <img 
-                            src="https://images.unsplash.com/photo-1449339044510-aab182404a0a?auto=format&fit=crop&q=80&w=200" 
+                            src="https://images.unsplash.com/photo-1604977042946-1eecc30f269e?auto=format&fit=crop&q=80&w=400" 
                             alt="Cucumber Greenhouse" 
                             className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
                             referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=400";
+                            }}
                           />
                           <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                             <Play className="w-4 h-4 text-white fill-white" />

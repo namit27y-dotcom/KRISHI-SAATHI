@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import CameraCapture from "./CameraCapture.tsx";
 import { ShieldAlert, ShieldCheck, Heart, AlertTriangle, Sprout, Loader2, RefreshCw } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { SupportedLanguage } from "../types.ts";
 
 interface DiseaseDiagnosis {
   cropName: string;
@@ -17,10 +19,14 @@ interface DiseaseDiagnosis {
 
 interface DiseaseDetectorProps {
   userId?: string;
-  preferredLanguage?: "en" | "hi" | "mr";
+  preferredLanguage?: SupportedLanguage;
 }
 
-export default function DiseaseDetector({ userId, preferredLanguage = "en" }: DiseaseDetectorProps) {
+export default function DiseaseDetector({ userId, preferredLanguage: propLang }: DiseaseDetectorProps) {
+  const { t, language: contextLang } = useLanguage();
+  const lang = propLang || contextLang || "en";
+  const disT = t.disease;
+
   const [photo, setPhoto] = useState<string | null>(null);
   const [diagnosis, setDiagnosis] = useState<DiseaseDiagnosis | null>(null);
   const [loading, setLoading] = useState(false);
@@ -36,7 +42,7 @@ export default function DiseaseDetector({ userId, preferredLanguage = "en" }: Di
       const response = await axios.post("/api/disease/analyze", {
         image: base64Image,
         userId,
-        preferredLanguage
+        preferredLanguage: lang
       });
 
       if (response.data.error) {
@@ -68,24 +74,24 @@ export default function DiseaseDetector({ userId, preferredLanguage = "en" }: Di
       <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
         <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
           <ShieldAlert className="w-6 h-6 text-emerald-600" />
-          AI Crop Disease Diagnosis
+          {disT.title}
         </h2>
         <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-          Upload or capture a photo of your crop's infected leaves, roots or stem. Our botanist-grade diagnostic vision model will estimate the infection, explain causes, and recommend organic-first treatments.
+          {disT.subtitle}
         </p>
 
         {!photo && (
           <CameraCapture
             onCapture={handleCapture}
-            title="Snap Crop Photo"
-            overlayText="Align infected areas clearly under focus"
+            title={disT.snapTitle}
+            overlayText={disT.snapOverlay}
           />
         )}
 
         {loading && (
           <div className="flex flex-col items-center justify-center py-12 text-slate-500">
             <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-3" />
-            <p className="text-sm font-medium animate-pulse">Running diagnostic checks... analyzing vein patterns...</p>
+            <p className="text-sm font-medium animate-pulse">{disT.analyzing}</p>
           </div>
         )}
 
@@ -96,7 +102,7 @@ export default function DiseaseDetector({ userId, preferredLanguage = "en" }: Di
               onClick={reset}
               className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-4 py-2 rounded-lg text-[11px] transition-all"
             >
-              Try Again
+              {disT.tryAgain}
             </button>
           </div>
         )}
@@ -115,12 +121,14 @@ export default function DiseaseDetector({ userId, preferredLanguage = "en" }: Di
                 <AlertTriangle className="w-8 h-8 text-rose-600 shrink-0 mt-0.5" />
               )}
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">Diagnosis Result</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">
+                  {isHealthy ? disT.healthyNotice : disT.diseaseDetected}
+                </span>
                 <h3 className="text-xl font-bold leading-tight mt-0.5">
                   {diagnosis.diseaseName}
                 </h3>
                 <p className="text-xs font-semibold mt-1 opacity-90">
-                  Target Crop: <span className="underline">{diagnosis.cropName}</span> | Confidence Score: {diagnosis.confidence}%
+                  {diagnosis.cropName} | {disT.confidence}: {diagnosis.confidence}%
                 </p>
               </div>
             </div>
@@ -135,14 +143,14 @@ export default function DiseaseDetector({ userId, preferredLanguage = "en" }: Di
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-1.5">
                   <h4 className="font-bold text-slate-800 flex items-center gap-1">
-                    <Sprout className="w-4 h-4 text-emerald-600" /> Detected Symptoms
+                    <Sprout className="w-4 h-4 text-emerald-600" /> {disT.symptoms}
                   </h4>
                   <p className="text-slate-600 leading-relaxed">{diagnosis.symptoms}</p>
                 </div>
 
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-1.5">
                   <h4 className="font-bold text-slate-800 flex items-center gap-1">
-                    <AlertTriangle className="w-4 h-4 text-amber-600" /> Root Causes
+                    <AlertTriangle className="w-4 h-4 text-amber-600" /> {disT.causes}
                   </h4>
                   <p className="text-slate-600 leading-relaxed">{diagnosis.causes}</p>
                 </div>
@@ -151,25 +159,25 @@ export default function DiseaseDetector({ userId, preferredLanguage = "en" }: Di
               {/* Organic First Treatment */}
               <div className="p-4 bg-emerald-50/40 border border-emerald-100 rounded-2xl text-xs space-y-1.5">
                 <h4 className="font-bold text-emerald-800 flex items-center gap-1">
-                  <Heart className="w-4 h-4 text-emerald-600 animate-pulse" /> Recommended Organic Treatments (Safe First)
+                  <Heart className="w-4 h-4 text-emerald-600 animate-pulse" /> {disT.organicTreatment}
                 </h4>
                 <p className="text-emerald-900 leading-relaxed font-medium">{diagnosis.organicTreatment}</p>
               </div>
 
               {/* Chemical Treatment */}
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-1.5">
-                <h4 className="font-bold text-slate-800">Chemical Treatments (Minimum Effective Dose / Last Resort)</h4>
+                <h4 className="font-bold text-slate-800">{disT.chemicalTreatment}</h4>
                 <p className="text-slate-600 leading-relaxed">{diagnosis.chemicalTreatment || "No severe chemical treatment recommended. Stick to clean biological solutions."}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-1.5">
-                  <h4 className="font-bold text-slate-800">Preventive Measures for Next Season</h4>
+                  <h4 className="font-bold text-slate-800">{disT.preventiveMeasures}</h4>
                   <p className="text-slate-600 leading-relaxed">{diagnosis.preventiveMeasures}</p>
                 </div>
 
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-1.5">
-                  <h4 className="font-bold text-slate-800">Estimated Recovery Time</h4>
+                  <h4 className="font-bold text-slate-800">{disT.recoveryTime}</h4>
                   <p className="text-slate-600 leading-relaxed font-semibold">{diagnosis.recoveryTime}</p>
                 </div>
               </div>
@@ -182,7 +190,7 @@ export default function DiseaseDetector({ userId, preferredLanguage = "en" }: Di
                 className="bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-5 py-3 rounded-2xl flex items-center gap-2 transition-all shadow-sm"
                 id="btn-recapture-disease"
               >
-                <RefreshCw className="w-4 h-4" /> Diagnose Another Plant
+                <RefreshCw className="w-4 h-4" /> {disT.tryAgain}
               </button>
             </div>
           </div>

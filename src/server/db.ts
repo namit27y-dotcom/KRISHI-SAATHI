@@ -19,6 +19,7 @@ import {
   PaymentRecord,
   TransactionRecord
 } from "../types.js";
+import { SEEDED_AGRICULTURAL_PRODUCTS } from "../data/marketplaceData.js";
 
 const DB_DIR = path.join(process.cwd(), "data");
 const DB_FILE = path.join(DB_DIR, "db.json");
@@ -96,6 +97,13 @@ export class Database {
         if (!this.data.agriculturalProducts || Object.keys(this.data.agriculturalProducts).length === 0) {
           this.data.agriculturalProducts = {};
           changed = true;
+        }
+        // Ensure all verified realistic agricultural products are loaded
+        for (const prod of SEEDED_AGRICULTURAL_PRODUCTS) {
+          if (!this.data.agriculturalProducts[prod.id]) {
+            this.data.agriculturalProducts[prod.id] = prod;
+            changed = true;
+          }
         }
         if (!this.data.marketplaceOrders) {
           this.data.marketplaceOrders = {};
@@ -491,6 +499,57 @@ export class Database {
         imageUrl: "https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&q=80&w=600",
         isVerified: true,
         createdAt: new Date().toISOString()
+      },
+      {
+        id: "crop-3",
+        farmerId: "u-farmer-1",
+        farmerName: "Ramesh Patil",
+        cropName: "Basmati Rice Grade-A (Paddy)",
+        quantity: 3200,
+        unit: "kg",
+        pricePerUnit: 42,
+        country: "India",
+        state: "Maharashtra",
+        district: "Nashik",
+        village: "Pimpalgaon",
+        description: "Aromatic long-grain Basmati paddy harvest. High grain recovery, cleaned and moisture-tested at 11%.",
+        imageUrl: "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&q=80&w=600",
+        isVerified: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "crop-4",
+        farmerId: "u-farmer-1",
+        farmerName: "Ramesh Patil",
+        cropName: "White Organic Cotton (Bt-II)",
+        quantity: 1400,
+        unit: "kg",
+        pricePerUnit: 68,
+        country: "India",
+        state: "Maharashtra",
+        district: "Nashik",
+        village: "Pimpalgaon",
+        description: "First-pick fluffy long-staple cotton fiber. High tensile strength, zero trash content.",
+        imageUrl: "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?auto=format&fit=crop&q=80&w=600",
+        isVerified: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "crop-5",
+        farmerId: "u-farmer-1",
+        farmerName: "Ramesh Patil",
+        cropName: "Golden Sweet Corn Cobs",
+        quantity: 1200,
+        unit: "kg",
+        pricePerUnit: 18,
+        country: "India",
+        state: "Maharashtra",
+        district: "Nashik",
+        village: "Pimpalgaon",
+        description: "Tender, high sugar retention sweet corn cobs harvested in early morning hours.",
+        imageUrl: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600",
+        isVerified: true,
+        createdAt: new Date().toISOString()
       }
     ];
 
@@ -498,53 +557,8 @@ export class Database {
       this.data.cropListings[crop.id] = crop;
     }
 
-    // Seeding Default Agricultural Products (listed by Agri-Grow Seller)
-    const seededProducts: AgriculturalProduct[] = [
-      {
-        id: "prod-1",
-        sellerId: "u-seller-1",
-        sellerName: "Agri-Grow Fertilisers & Tools Ltd",
-        name: "Premium NPK 19-19-19 Fertilizer",
-        category: "fertilizers",
-        description: "Water-soluble balanced chemical fertilizer. Highly effective for early growth, root branching, and crop yield booster.",
-        price: 480,
-        unit: "bag (25 kg)",
-        inventory: 45,
-        imageUrl: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&q=80&w=600",
-        isVerified: true,
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: "prod-2",
-        sellerId: "u-seller-1",
-        sellerName: "Agri-Grow Fertilisers & Tools Ltd",
-        name: "Organic Cold-Pressed Neem Oil Spray",
-        category: "pesticides",
-        description: "100% natural, biodegradable pest controller. Eradicates spider mites, aphids, whiteflies, and other leaf caterpillars.",
-        price: 290,
-        unit: "bottle (1 Liter)",
-        inventory: 85,
-        imageUrl: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=600",
-        isVerified: true,
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: "prod-3",
-        sellerId: "u-seller-1",
-        sellerName: "Agri-Grow Fertilisers & Tools Ltd",
-        name: "Manual Knapsack Battery Sprayer (16L)",
-        category: "sprayers",
-        description: "Heavy-duty double pump rechargeable sprayer. High pressure nozzle with adjustable lance for uniform pesticide coverage.",
-        price: 2850,
-        unit: "piece",
-        inventory: 12,
-        imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&q=80&w=600",
-        isVerified: true,
-        createdAt: new Date().toISOString()
-      }
-    ];
-
-    for (const prod of seededProducts) {
+    // Seeding Default Agricultural Products (Realistic Indian Agriculture Catalog)
+    for (const prod of SEEDED_AGRICULTURAL_PRODUCTS) {
       this.data.agriculturalProducts[prod.id] = prod;
     }
 

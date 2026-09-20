@@ -6,11 +6,11 @@ import {
   ExternalLink, 
   Calendar, 
   CheckSquare, 
-  Sprout, 
   ArrowRight, 
   Sparkles, 
   Loader2 
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 interface Scheme {
   name: string;
@@ -39,6 +39,9 @@ export default function GovSchemes({
   userLandArea = 1.5,
   userId
 }: GovSchemesProps) {
+  const { t, language } = useLanguage();
+  const scT = t.schemes;
+
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SchemeResult | null>(null);
@@ -47,17 +50,17 @@ export default function GovSchemes({
   const predefinedSchemes = [
     {
       name: "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
-      desc: "Get an income support of ₹6,000 per year in three equal installments to all landholding farmer families.",
+      desc: "Income support of ₹6,000 per year in three equal installments to all landholding farmer families.",
       type: "Income Support"
     },
     {
       name: "Pradhan Mantri Fasal Bima Yojana (PM-FBY)",
-      desc: "Robust crop insurance supporting farmers against yield loss due to natural calamities, pests or diseases.",
+      desc: "Crop insurance supporting farmers against yield loss due to natural calamities, pests or diseases.",
       type: "Crop Insurance"
     },
     {
       name: "Soil Health Card Scheme",
-      desc: "Promote balanced fertilizer application based on macro & micronutrient soil tests issued every 2 years.",
+      desc: "Balanced fertilizer application based on macro & micronutrient soil tests issued every 2 years.",
       type: "Soil Management"
     },
     {
@@ -82,7 +85,8 @@ export default function GovSchemes({
         state: userState,
         crop: userCrop,
         landSize: userLandArea,
-        userId
+        userId,
+        preferredLanguage: language
       });
 
       setResult(res.data.result);
@@ -99,10 +103,10 @@ export default function GovSchemes({
         <div>
           <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-1.5">
             <FileText className="w-5 h-5 text-emerald-600" />
-            Government Scheme AI Advisor
+            {scT.title}
           </h3>
           <p className="text-xs text-slate-400">
-            Find active subsidies, central schemes, and state benefits tailored to your {userLandArea} Acres in {userState}.
+            {scT.subtitle} ({userLandArea} Acres, {userState})
           </p>
         </div>
 
@@ -112,8 +116,8 @@ export default function GovSchemes({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="e.g. Subsidies for solar pumps or PM-KISAN eligibility..."
-            className="w-full pl-10 pr-24 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-xs outline-none focus:border-emerald-500 bg-white"
+            placeholder={scT.searchPlaceholder}
+            className="w-full pl-10 pr-28 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-xs outline-none focus:border-emerald-500"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5" />
           <button
@@ -123,7 +127,7 @@ export default function GovSchemes({
             id="btn-scheme-search"
           >
             {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-            Ask AI
+            {scT.queryAi}
           </button>
         </form>
 
@@ -132,22 +136,22 @@ export default function GovSchemes({
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quick Suggestions</span>
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={(e) => { setQuery("What subsidies exist for drip irrigation?"); handleSearch(e, "What subsidies exist for drip irrigation?"); }}
+              onClick={(e) => { setQuery("Subsidies for micro drip irrigation"); handleSearch(e, "Subsidies for micro drip irrigation"); }}
               className="text-[10px] bg-slate-50 hover:bg-slate-100 border text-slate-600 px-3 py-1.5 rounded-full transition-all"
             >
               Drip Subsidies
             </button>
             <button
-              onClick={(e) => { setQuery("Eligibility for small farmers crop insurance"); handleSearch(e, "Eligibility for small farmers crop insurance"); }}
+              onClick={(e) => { setQuery("Eligibility for small farmers crop insurance PM-FBY"); handleSearch(e, "Eligibility for small farmers crop insurance PM-FBY"); }}
               className="text-[10px] bg-slate-50 hover:bg-slate-100 border text-slate-600 px-3 py-1.5 rounded-full transition-all"
             >
               Crop Insurance (PM-FBY)
             </button>
             <button
-              onClick={(e) => { setQuery("How to get free soil health testing?"); handleSearch(e, "How to get free soil health testing?"); }}
+              onClick={(e) => { setQuery("How to get free soil health testing card"); handleSearch(e, "How to get free soil health testing card"); }}
               className="text-[10px] bg-slate-50 hover:bg-slate-100 border text-slate-600 px-3 py-1.5 rounded-full transition-all"
             >
-              Soil Testing Support
+              Soil Health Card
             </button>
           </div>
         </div>
@@ -174,7 +178,7 @@ export default function GovSchemes({
                     onClick={(e) => { setQuery(`Tell me about ${sch.name}`); handleSearch(e, `Tell me about ${sch.name}`); }}
                     className="text-[10px] font-bold text-emerald-600 flex items-center gap-1 hover:underline mt-2 self-start"
                   >
-                    Check Requirements <ArrowRight className="w-3 h-3" />
+                    {scT.eligibilityCheck} <ArrowRight className="w-3 h-3" />
                   </button>
                 </div>
               ))}
@@ -189,7 +193,7 @@ export default function GovSchemes({
             <div className="p-4 bg-emerald-50 text-emerald-900 rounded-2xl border border-emerald-100/50 text-xs flex gap-2">
               <Sparkles className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold block text-emerald-800">AI Personalized Eligibility Guide</span>
+                <span className="font-bold block text-emerald-800">{scT.eligibilityCheck}</span>
                 <p className="text-[11px] leading-relaxed mt-0.5">{result.personalizedAdvice}</p>
               </div>
             </div>
@@ -206,7 +210,7 @@ export default function GovSchemes({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-emerald-600 hover:text-emerald-700 p-1.5 rounded-lg bg-white border border-slate-100 shadow-sm"
-                      title="Apply online"
+                      title={scT.applyOnPortal}
                     >
                       <ExternalLink className="w-4 h-4" />
                     </a>
@@ -214,19 +218,19 @@ export default function GovSchemes({
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                     <div className="space-y-1">
-                      <strong className="text-slate-500 block text-[10px] uppercase font-mono">Who is Eligible:</strong>
+                      <strong className="text-slate-500 block text-[10px] uppercase font-mono">{scT.criteria}:</strong>
                       <p className="text-slate-600 leading-relaxed text-[11px]">{sch.eligibility}</p>
                     </div>
 
                     <div className="space-y-1">
-                      <strong className="text-slate-500 block text-[10px] uppercase font-mono">Financial/Material Benefits:</strong>
+                      <strong className="text-slate-500 block text-[10px] uppercase font-mono">{scT.benefits}:</strong>
                       <p className="text-slate-600 leading-relaxed text-[11px]">{sch.benefits}</p>
                     </div>
                   </div>
 
                   <div className="p-3 bg-white border rounded-xl space-y-1">
                     <strong className="text-slate-500 block text-[10px] uppercase font-mono flex items-center gap-1">
-                      <CheckSquare className="w-3.5 h-3.5 text-emerald-600" /> Required Application Documents:
+                      <CheckSquare className="w-3.5 h-3.5 text-emerald-600" /> {scT.documents}:
                     </strong>
                     <p className="text-slate-600 text-[11px] leading-relaxed pl-4.5">{sch.requiredDocuments}</p>
                   </div>

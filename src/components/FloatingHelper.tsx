@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { 
-  MessageSquare, 
   X, 
   Send, 
   Mic, 
@@ -10,10 +9,9 @@ import {
   VolumeX, 
   Loader2, 
   Sparkles,
-  HelpCircle,
-  TrendingUp,
-  CloudSun
+  HelpCircle
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 interface Message {
   role: "user" | "model";
@@ -22,52 +20,26 @@ interface Message {
 
 interface FloatingHelperProps {
   userId?: string;
-  preferredLanguage?: "en" | "hi" | "mr";
 }
 
-const translations = {
-  en: {
-    title: "Krishi Saathi Help Bot",
-    welcome: "Namaste! 🙏 I am here to help you navigate Krishi Saathi and solve your farm queries. Ask me anything!",
-    placeholder: "Type a query or ask a question...",
-    quickTips: [
-      "How do I convert Acres to Bighas?",
-      "Give me 3 organic fertilizer suggestions",
-      "How to run a plant health check?",
-      "Tell me about Government Schemes"
-    ],
-    listening: "Listening...",
-    close: "Close"
-  },
-  hi: {
-    title: "कृषि साथी हेल्प बॉट",
-    welcome: "नमस्ते! 🙏 मैं कृषि साथी को समझने और आपकी खेती के सवालों को हल करने में मदद के लिए यहाँ हूँ। कुछ भी पूछें!",
-    placeholder: "कोई सवाल लिखें या पूछें...",
-    quickTips: [
-      "एकड़ को बीघा में कैसे बदलें?",
-      "3 जैविक खादों का सुझाव दें",
-      "फसल स्वास्थ्य जांच कैसे करें?",
-      "सरकारी योजनाओं के बारे में बताएं"
-    ],
-    listening: "सुन रहा हूँ...",
-    close: "बंद करें"
-  },
-  mr: {
-    title: "कृषि साथी हेल्प बॉट",
-    welcome: "नमस्ते! 🙏 मी येथे तुम्हाला कृषी साथी वापरण्यास आणि तुमच्या शेतीच्या प्रश्नांचे निराकरण करण्यास मदत करण्यासाठी आहे. काहीही विचारा!",
-    placeholder: "प्रश्न टाईप करा किंवा विचारा...",
-    quickTips: [
-      "एकरचे बिघामध्ये रूपांतर कसे करावे?",
-      "३ सेंद्रिय खतांचे पर्याय सांगा",
-      "पीक आरोग्य तपासणी कशी करावी?",
-      "शासकीय योजनांबद्दल सांगा"
-    ],
-    listening: "ऐकत आहे...",
-    close: "बंद करा"
-  }
+const SPEECH_LANG_CODES: Record<string, string> = {
+  en: "en-IN",
+  hi: "hi-IN",
+  bho: "hi-IN",
+  mr: "mr-IN",
+  pa: "pa-IN",
+  ta: "ta-IN",
+  te: "te-IN",
+  bn: "bn-IN",
+  es: "es-ES",
+  vi: "vi-VN",
+  sw: "sw-KE"
 };
 
-export default function FloatingHelper({ userId, preferredLanguage = "en" }: FloatingHelperProps) {
+export default function FloatingHelper({ userId }: FloatingHelperProps) {
+  const { t, language } = useLanguage();
+  const helpBotT = t.helpBot;
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -78,17 +50,15 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  const t = translations[preferredLanguage] || translations.en;
-
   // Set default greeting on language change or mount
   useEffect(() => {
     setMessages([
       {
         role: "model",
-        text: t.welcome
+        text: helpBotT.welcome
       }
     ]);
-  }, [preferredLanguage]);
+  }, [language, helpBotT.welcome]);
 
   useEffect(() => {
     if (isOpen) {
@@ -97,14 +67,12 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
   }, [messages, loading, isOpen]);
 
   useEffect(() => {
-    // Initialize speech recognition if supported
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const rec = new SpeechRecognition();
       rec.continuous = false;
       rec.interimResults = false;
-      
-      rec.lang = preferredLanguage === "hi" ? "hi-IN" : preferredLanguage === "mr" ? "mr-IN" : "en-IN";
+      rec.lang = SPEECH_LANG_CODES[language] || "en-IN";
 
       rec.onstart = () => setIsListening(true);
       rec.onend = () => setIsListening(false);
@@ -130,7 +98,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
         window.speechSynthesis.cancel();
       }
     };
-  }, [preferredLanguage]);
+  }, [language]);
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
@@ -164,12 +132,19 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
       const res = await axios.post("/api/chat", {
         message: textToSend,
         history,
-        userId
+        userId,
+        preferredLanguage: language
       });
 
       setMessages((prev) => [...prev, { role: "model", text: res.data.response }]);
     } catch (err: any) {
-      setMessages((prev) => [...prev, { role: "model", text: preferredLanguage === "hi" ? "माफ़ कीजिये, नेटवर्क में कुछ व्यवधान आया है।" : "I apologize, I experienced a network disruption." }]);
+      setMessages((prev) => [
+        ...prev, 
+        { 
+          role: "model", 
+          text: t.common.error || "I apologize, I experienced a network disruption." 
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -195,13 +170,9 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
       const utterance = new SpeechSynthesisUtterance(text);
       
       const voices = window.speechSynthesis.getVoices();
-      if (preferredLanguage === "hi") {
-        const voice = voices.find((v) => v.lang.startsWith("hi") || v.lang.startsWith("in"));
-        if (voice) utterance.voice = voice;
-      } else if (preferredLanguage === "mr") {
-        const voice = voices.find((v) => v.lang.startsWith("mr") || v.lang.startsWith("in"));
-        if (voice) utterance.voice = voice;
-      }
+      const targetPrefix = language.toLowerCase();
+      const voice = voices.find((v) => v.lang.toLowerCase().startsWith(targetPrefix));
+      if (voice) utterance.voice = voice;
 
       utterance.onend = () => setSpeakingText(null);
       utterance.onerror = () => setSpeakingText(null);
@@ -225,7 +196,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
                 <Sparkles className="w-4 h-4 text-amber-300" />
               </div>
               <div>
-                <h3 className="font-bold text-xs uppercase tracking-wider">{t.title}</h3>
+                <h3 className="font-bold text-xs uppercase tracking-wider">{helpBotT.title}</h3>
                 <span className="text-[9px] text-emerald-100/95 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
                   Online Help Bot
@@ -238,7 +209,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
                 if ("speechSynthesis" in window) window.speechSynthesis.cancel();
               }}
               className="p-1.5 hover:bg-white/15 rounded-lg transition-all"
-              title={t.close}
+              title={helpBotT.close}
             >
               <X className="w-4 h-4" />
             </button>
@@ -276,9 +247,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
                       }`}
                     >
                       {speakingText === msg.text ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
-                      {speakingText === msg.text 
-                        ? (preferredLanguage === "hi" ? "आवाज़ बंद करें" : "Mute") 
-                        : (preferredLanguage === "hi" ? "बोलकर सुनाएं" : "Read Aloud")}
+                      <span>{speakingText === msg.text ? "Mute" : "Listen"}</span>
                     </button>
                   )}
                 </div>
@@ -291,7 +260,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 </div>
                 <div className="p-3 bg-white border border-slate-100 rounded-2xl rounded-tl-none text-slate-400 text-xs italic">
-                  Typing...
+                  {t.common.loading || "Typing..."}
                 </div>
               </div>
             )}
@@ -300,7 +269,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
 
           {/* Quick Help Tips Chips */}
           <div className="p-2 bg-slate-50 border-t border-slate-100/50 flex gap-1.5 overflow-x-auto shrink-0 scrollbar-none">
-            {t.quickTips.map((tip, i) => (
+            {helpBotT.quickTips.map((tip, i) => (
               <button
                 key={i}
                 disabled={loading}
@@ -331,7 +300,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={isListening ? t.listening : t.placeholder}
+              placeholder={isListening ? helpBotT.listening : helpBotT.placeholder}
               disabled={loading}
               className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 transition-all text-slate-700"
             />

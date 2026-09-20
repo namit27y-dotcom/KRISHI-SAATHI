@@ -1,3 +1,5 @@
+export type SupportedLanguage = "en" | "hi" | "bho" | "mr" | "pa" | "ta" | "te" | "bn" | "es" | "vi" | "sw";
+
 export interface User {
   id: string;
   name: string;
@@ -15,7 +17,7 @@ export interface User {
   companyName?: string; // (Seller/Buyer only)
   gstNumber?: string; // (Seller only)
   buyerType?: "retailer" | "wholesaler" | "exporter" | "food_processing"; // (Buyer only)
-  preferredLanguage: "en" | "hi" | "bho" | "mr" | "pa" | "ta" | "te" | "bn" | "es" | "vi" | "sw"; // Expanded list of supported languages
+  preferredLanguage: SupportedLanguage; // Expanded list of supported languages
   createdAt: string;
 }
 
@@ -160,6 +162,10 @@ export interface AgriculturalProduct {
   unit: string;
   inventory: number;
   imageUrl?: string;
+  rating?: number;
+  reviewsCount?: number;
+  brand?: string;
+  specifications?: string[];
   isVerified: boolean;
   createdAt: string;
 }

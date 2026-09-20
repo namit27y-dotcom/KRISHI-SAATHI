@@ -9,15 +9,15 @@ import {
   Loader2, 
   Sprout, 
   User, 
-  HelpCircle, 
-  FileText,
-  History,
-  Plus,
-  Trash2,
-  X,
-  MessageSquare
+  History, 
+  Plus, 
+  Trash2, 
+  X, 
+  MessageSquare 
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { SupportedLanguage } from "../types.ts";
 
 interface Message {
   role: "user" | "model";
@@ -33,10 +33,28 @@ interface ChatSession {
 
 interface AICompanionProps {
   userId?: string;
-  preferredLanguage?: "en" | "hi" | "mr";
+  preferredLanguage?: SupportedLanguage;
 }
 
-export default function AICompanion({ userId, preferredLanguage = "en" }: AICompanionProps) {
+const SPEECH_LANG_CODES: Record<string, string> = {
+  en: "en-IN",
+  hi: "hi-IN",
+  bho: "hi-IN",
+  mr: "mr-IN",
+  pa: "pa-IN",
+  ta: "ta-IN",
+  te: "te-IN",
+  bn: "bn-IN",
+  es: "es-ES",
+  vi: "vi-VN",
+  sw: "sw-KE"
+};
+
+export default function AICompanion({ userId, preferredLanguage: propLang }: AICompanionProps) {
+  const { t, language: contextLang } = useLanguage();
+  const lang = propLang || contextLang || "en";
+  const companionT = t.aiCompanion;
+
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string>("");
   const [showHistory, setShowHistory] = useState(false);
@@ -57,7 +75,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
       
       const defaultMsg: Message = {
         role: "model",
-        text: "Namaste! 🙏 I am Krishi Saathi, your personal farming companion. Ask me any questions about crop care, pest treatments, soil health, or government benefits. I support Hindi, Marathi and English!"
+        text: companionT.welcome
       };
       
       if (storedSessions) {
@@ -82,7 +100,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
       const initialSessionId = `session-${Date.now()}`;
       const initialSession: ChatSession = {
         id: initialSessionId,
-        title: "Welcome Chat",
+        title: companionT.title || "Welcome Chat",
         timestamp: new Date().toLocaleString("en-IN", { hour: "numeric", minute: "numeric", day: "numeric", month: "short" }),
         messages: [defaultMsg]
       };
@@ -92,7 +110,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
     } catch (e) {
       console.error("Failed to load sessions from localStorage", e);
     }
-  }, [userId]);
+  }, [userId, companionT.welcome, companionT.title]);
 
   // Save sessions to localStorage when they change
   useEffect(() => {
@@ -115,9 +133,8 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
     setSessions(prev => {
       return prev.map(session => {
         if (session.id === activeSessionId) {
-          // If title is just "Welcome Chat" or "New Conversation", update it with first user message
           let title = session.title;
-          if (title === "Welcome Chat" || title === "New Conversation") {
+          if (title === "Welcome Chat" || title === "New Conversation" || title === companionT.title) {
             const firstUserMessage = messages.find(m => m.role === "user");
             if (firstUserMessage) {
               title = firstUserMessage.text.length > 28 
@@ -134,7 +151,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
         return session;
       });
     });
-  }, [messages, activeSessionId]);
+  }, [messages, activeSessionId, companionT.title]);
 
   const startNewChat = () => {
     if ("speechSynthesis" in window) {
@@ -145,11 +162,11 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
     const newId = `session-${Date.now()}`;
     const defaultMsg: Message = {
       role: "model",
-      text: "Namaste! 🙏 I am Krishi Saathi, your personal farming companion. Ask me any questions about crop care, pest treatments, soil health, or government benefits. I support Hindi, Marathi and English!"
+      text: companionT.welcome
     };
     const newSession: ChatSession = {
       id: newId,
-      title: "New Conversation",
+      title: companionT.newChat || "New Chat",
       timestamp: new Date().toLocaleString("en-IN", { hour: "numeric", minute: "numeric", day: "numeric", month: "short" }),
       messages: [defaultMsg]
     };
@@ -182,12 +199,12 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
     if (remaining.length === 0) {
       const defaultMsg: Message = {
         role: "model",
-        text: "Namaste! 🙏 I am Krishi Saathi, your personal farming companion. Ask me any questions about crop care, pest treatments, soil health, or government benefits. I support Hindi, Marathi and English!"
+        text: companionT.welcome
       };
       const newId = `session-${Date.now()}`;
       const defaultSession: ChatSession = {
         id: newId,
-        title: "Welcome Chat",
+        title: companionT.title || "Welcome Chat",
         timestamp: new Date().toLocaleString("en-IN", { hour: "numeric", minute: "numeric", day: "numeric", month: "short" }),
         messages: [defaultMsg]
       };
@@ -208,15 +225,12 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
   }, [messages, loading]);
 
   useEffect(() => {
-    // Initialize speech recognition if supported
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const rec = new SpeechRecognition();
       rec.continuous = false;
       rec.interimResults = false;
-      
-      // Select appropriate language code
-      rec.lang = preferredLanguage === "hi" ? "hi-IN" : preferredLanguage === "mr" ? "mr-IN" : "en-IN";
+      rec.lang = SPEECH_LANG_CODES[lang] || "en-IN";
 
       rec.onstart = () => setIsListening(true);
       rec.onend = () => setIsListening(false);
@@ -242,7 +256,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
         window.speechSynthesis.cancel();
       }
     };
-  }, [preferredLanguage]);
+  }, [lang]);
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
@@ -271,21 +285,27 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
     setLoading(true);
 
     try {
-      // Reconstruct history
       const history = messages.slice(1).map((msg) => ({
-        role: msg.role === "user" ? "user" : "model",
+        role: msg.role === "user" ? ("user" as const) : ("model" as const),
         text: msg.text
       }));
 
       const res = await axios.post("/api/chat", {
         message: userMessage,
         history,
-        userId
+        userId,
+        preferredLanguage: lang
       });
 
       setMessages((prev) => [...prev, { role: "model", text: res.data.response }]);
     } catch (err: any) {
-      setMessages((prev) => [...prev, { role: "model", text: "I apologize, I experienced a network disruption. Please try asking again." }]);
+      setMessages((prev) => [
+        ...prev, 
+        { 
+          role: "model", 
+          text: companionT.networkError || "I apologize, I experienced a network disruption. Please try asking again." 
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -303,13 +323,9 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
       const utterance = new SpeechSynthesisUtterance(text);
       
       const voices = window.speechSynthesis.getVoices();
-      if (preferredLanguage === "hi") {
-        const voice = voices.find((v) => v.lang.startsWith("hi") || v.lang.startsWith("in"));
-        if (voice) utterance.voice = voice;
-      } else if (preferredLanguage === "mr") {
-        const voice = voices.find((v) => v.lang.startsWith("mr") || v.lang.startsWith("in"));
-        if (voice) utterance.voice = voice;
-      }
+      const targetPrefix = lang.toLowerCase();
+      const voice = voices.find((v) => v.lang.toLowerCase().startsWith(targetPrefix));
+      if (voice) utterance.voice = voice;
 
       utterance.onend = () => setSpeakingText(null);
       utterance.onerror = () => setSpeakingText(null);
@@ -330,9 +346,9 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
             <Sprout className="w-5 h-5 text-amber-200" />
           </div>
           <div>
-            <h3 className="font-bold text-sm leading-tight">Krishi Saathi Companion</h3>
+            <h3 className="font-bold text-sm leading-tight">{companionT.title}</h3>
             <span className="text-[10px] text-emerald-100/95 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse inline-block" /> Active Agronomist Bot
+              <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse inline-block" /> {companionT.statusActive}
             </span>
           </div>
         </div>
@@ -347,7 +363,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
                 ? "bg-white/20 text-white" 
                 : "text-emerald-100 hover:bg-white/10"
             }`}
-            title="Chat History"
+            title={companionT.chatHistory}
           >
             <History className="w-4 h-4" />
           </button>
@@ -357,10 +373,10 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
             type="button"
             onClick={startNewChat}
             className="flex items-center gap-1.5 text-xs text-emerald-100 bg-white/10 hover:bg-white/15 px-3 py-1.5 rounded-xl font-medium transition-all"
-            title="Start New Chat"
+            title={companionT.newChat}
           >
             <Plus className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">New Chat</span>
+            <span className="hidden sm:inline">{companionT.newChat}</span>
           </button>
         </div>
       </div>
@@ -393,7 +409,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
                 <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                     <History className="w-4 h-4 text-emerald-600" />
-                    Past Sessions
+                    {companionT.chatHistory}
                   </span>
                   <button
                     type="button"
@@ -451,12 +467,12 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
                         
                         const defaultMsg: Message = {
                           role: "model",
-                          text: "Namaste! 🙏 I am Krishi Saathi, your personal farming companion. Ask me any questions about crop care, pest treatments, soil health, or government benefits. I support Hindi, Marathi and English!"
+                          text: companionT.welcome
                         };
                         const newId = `session-${Date.now()}`;
                         const defaultSession: ChatSession = {
                           id: newId,
-                          title: "Welcome Chat",
+                          title: companionT.title || "Welcome Chat",
                           timestamp: new Date().toLocaleString("en-IN", { hour: "numeric", minute: "numeric", day: "numeric", month: "short" }),
                           messages: [defaultMsg]
                         };
@@ -468,7 +484,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
                     }}
                     className="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-xl transition-all border border-rose-100/60"
                   >
-                    Clear All History
+                    {companionT.clearChat}
                   </button>
                 </div>
               </motion.div>
@@ -505,10 +521,10 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
                             ? "bg-rose-50 text-rose-600 border-rose-100 animate-pulse"
                             : "bg-slate-50 hover:bg-slate-100 text-slate-500 border-slate-100"
                         }`}
-                        title={speakingText === msg.text ? "Mute Speech" : "Read Aloud"}
+                        title={speakingText === msg.text ? companionT.stopSpeaking : companionT.readAloud}
                       >
                         {speakingText === msg.text ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                        <span>{speakingText === msg.text ? "Mute" : "Listen"}</span>
+                        <span>{speakingText === msg.text ? companionT.stopSpeaking : companionT.readAloud}</span>
                       </button>
                     </div>
                   )}
@@ -530,7 +546,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
               </div>
               <div className="bg-white p-3.5 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm flex items-center gap-2">
                 <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />
-                <span className="text-xs text-slate-400">Typing advice...</span>
+                <span className="text-xs text-slate-400">{t.common.loading || "Typing..."}</span>
               </div>
             </div>
           )}
@@ -549,7 +565,7 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
               ? "bg-rose-500 text-white border-rose-400 animate-pulse"
               : "bg-slate-50 hover:bg-slate-100 text-slate-500 border-slate-100"
           }`}
-          title={isListening ? "Listening..." : "Speak Question"}
+          title={isListening ? companionT.listening : "Speak Question"}
           id="btn-voice-input"
         >
           {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
@@ -559,9 +575,9 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={isListening ? "Listening to your voice..." : "Type custom farming question here..."}
+          placeholder={isListening ? companionT.listening : companionT.placeholder}
           disabled={isListening}
-          className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none focus:border-emerald-500 bg-white"
+          className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none focus:border-emerald-500"
         />
 
         <button
