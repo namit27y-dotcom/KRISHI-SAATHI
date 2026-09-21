@@ -23,7 +23,8 @@ import {
   ArrowRight,
   Video,
   Play,
-  ShoppingBag
+  ShoppingBag,
+  Fish
 } from "lucide-react";
 
 import AuthScreen from "./components/AuthScreen.tsx";
@@ -38,6 +39,7 @@ import AnalyticsDashboard from "./components/AnalyticsDashboard.tsx";
 import NotificationPanel from "./components/NotificationPanel.tsx";
 import FloatingHelper from "./components/FloatingHelper.tsx";
 import CropAcademy from "./components/CropAcademy.tsx";
+import { LivestockDashboard } from "./components/livestock/LivestockDashboard.tsx";
 
 // Marketplace, Role-Based and Direct Chat Dashboards
 import MarketplaceBuy from "./components/MarketplaceBuy.tsx";
@@ -155,6 +157,8 @@ export default function App() {
       "Browse & Buy Crops 🌾": "फसलें देखें और खरीदें 🌾",
       "Admin Workspace ⚙️": "प्रशासक कार्यस्थान ⚙️",
       "Crop Academy 🎥": "फसल अकादमी 🎥",
+      "Animal & Fish Farming 🐟": "पशुपालन एवं मत्स्य पालन 🐟",
+      "Animal & Fish Farming": "पशुपालन एवं मत्स्य पालन",
       "Featured Sowing Lessons": "विशेष बुवाई पाठ",
       "View All Academy": "सभी अकादमी देखें",
       "Winter Rabi": "सर्दियों की रबी",
@@ -209,6 +213,8 @@ export default function App() {
       "Browse & Buy Crops 🌾": "फसल देखीं आ खरीदीं 🌾",
       "Admin Workspace ⚙️": "व्यवस्थापक केंद्र ⚙️",
       "Crop Academy 🎥": "फसल अकादमी 🎥",
+      "Animal & Fish Farming 🐟": "पशुपालन अउर मछली पालन 🐟",
+      "Animal & Fish Farming": "पशुपालन अउर मछली पालन",
       "Featured Sowing Lessons": "विशेष बोआई पाठ",
       "View All Academy": "सब अकादमी देखीं",
       "Winter Rabi": "जाड़ा के रबी",
@@ -263,6 +269,8 @@ export default function App() {
       "Browse & Buy Crops 🌾": "पिके पहा आणि खरेदी करा 🌾",
       "Admin Workspace ⚙️": "प्रशासक केंद्र ⚙️",
       "Crop Academy 🎥": "पीक अकादमी 🎥",
+      "Animal & Fish Farming 🐟": "पशुसंवर्धन आणि मत्स्यपालन 🐟",
+      "Animal & Fish Farming": "पशुसंवर्धन आणि मत्स्यपालन",
       "Featured Sowing Lessons": "निवडक लागवड धडे",
       "View All Academy": "सर्व अकादमी पहा",
       "Winter Rabi": "हिवाळी रब्बी पीक",
@@ -317,6 +325,8 @@ export default function App() {
       "Browse & Buy Crops 🌾": "फसल देखू आ खरीदू 🌾",
       "Admin Workspace ⚙️": "व्यवस्थापक केंद्र ⚙️",
       "Crop Academy 🎥": "फसल अकादमी 🎥",
+      "Animal & Fish Farming 🐟": "पशुपालन आ मत्स्य पालन 🐟",
+      "Animal & Fish Farming": "पशुपालन आ मत्स्य पालन",
       "Featured Sowing Lessons": "विशेष बोआई पाठ",
       "View All Academy": "सभ अकादमी देखू",
       "Winter Rabi": "जाड़क रबी",
@@ -810,6 +820,7 @@ export default function App() {
                 { id: "dashboard", label: "Dashboard Hub", icon: Sprout },
                 { id: "farmer-buy", label: "Buy Fertilizers & Equipment 🏪", icon: ShoppingBag, highlight: true },
                 { id: "farmer-sell", label: "Sell Crops 🌾", icon: Sprout, highlight: true },
+                { id: "livestock", label: "Animal & Fish Farming 🐟", icon: Fish, highlight: true },
                 { id: "order-history", label: "Order History 🧾", icon: FileText },
                 { id: "chats", label: "Direct Trade Chats 💬", icon: MessageSquare },
                 { id: "snap", label: "Snap & Know ID", icon: Camera },
@@ -821,17 +832,20 @@ export default function App() {
                 { id: "charts", label: "Analytics Yield", icon: BarChart3 }
               ] : user.role === "seller" ? [
                 { id: "seller-dashboard", label: "My Dealer Store 🏪", icon: ShoppingBag, highlight: true },
+                { id: "livestock", label: "Animal & Fish Farming 🐟", icon: Fish, highlight: true },
                 { id: "order-history", label: "Order History 🧾", icon: FileText },
                 { id: "chats", label: "Direct Trade Chats 💬", icon: MessageSquare },
                 { id: "weather", label: "Regional Weather 🌦️", icon: Droplets },
                 { id: "schemes", label: "Govt Schemes 📄", icon: FileText }
               ] : user.role === "buyer" ? [
                 { id: "buyer-dashboard", label: "Browse & Buy Crops 🌾", icon: Sprout, highlight: true },
+                { id: "livestock", label: "Animal & Fish Farming 🐟", icon: Fish, highlight: true },
                 { id: "order-history", label: "Order History 🧾", icon: FileText },
                 { id: "chats", label: "Direct Trade Chats 💬", icon: MessageSquare },
                 { id: "weather", label: "Weather & Market 🌦️", icon: Droplets }
               ] : [
                 { id: "admin-dashboard", label: "Admin Workspace ⚙️", icon: ShieldAlert, highlight: true },
+                { id: "livestock", label: "Animal & Fish Farming 🐟", icon: Fish, highlight: true },
                 { id: "order-history", label: "Order History 🧾", icon: FileText },
                 { id: "chats", label: "Direct Trade Chats 💬", icon: MessageSquare }
               ]).map((item) => {
@@ -1054,6 +1068,32 @@ export default function App() {
                         </div>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Animal & Fish Farming Section Spotlight Card */}
+                  <div className="bg-gradient-to-br from-teal-900 to-slate-900 text-white rounded-3xl p-5 md:p-6 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-5 border border-teal-800/40">
+                    <div className="space-y-2 z-10 max-w-xl">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-400/30 px-2.5 py-0.5 rounded-full">
+                          {t("Animal & Fish Farming")}
+                        </span>
+                        <span className="text-[10px] text-teal-200/70 font-bold">8 Categories • Dairy, Poultry, Fishery & More</span>
+                      </div>
+                      <h4 className="text-base md:text-lg font-black text-white leading-snug">
+                        Dairy, Sheep, Goat, Poultry, Pigs, Bees, Fisheries & Circular Systems
+                      </h4>
+                      <p className="text-xs text-teal-100/80 leading-relaxed">
+                        Explore complete step-by-step masterclasses, scientific feeding charts, disease alerts, project calculators, and circular integrated farming setups.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab("livestock")}
+                      className="shrink-0 bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs px-5 py-3 rounded-2xl transition-all shadow-lg flex items-center gap-2 cursor-pointer z-10"
+                      id="btn-hub-open-livestock"
+                    >
+                      <span>{t("Animal & Fish Farming 🐟")}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
 
                   {/* Grid showing recent ID logs, active plans, alert alerts */}
@@ -1334,6 +1374,16 @@ export default function App() {
                   defaultState={user.state} 
                   defaultDistrict={user.district} 
                   defaultSoilType={user.soilType || "Loamy"} 
+                />
+              )}
+
+              {/* Tab: Animal & Fish Farming Dedicated Section */}
+              {activeTab === "livestock" && (
+                <LivestockDashboard 
+                  currentUser={user}
+                  onOpenAIChat={() => {
+                    setActiveTab("chat");
+                  }}
                 />
               )}
             </>

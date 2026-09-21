@@ -224,3 +224,217 @@ export interface TransactionRecord {
   timestamp: string;
 }
 
+// ==========================================
+// ANIMAL & FISH FARMING DATA MODELS
+// Future MySQL Tables: farming_categories, farming_subcategories, courses,
+// course_modules, lessons, lesson_translations, videos, quizzes, quiz_questions,
+// quiz_attempts, user_farming_interests, user_lesson_progress, calculator_types, calculator_history
+// ==========================================
+
+export type LivestockCategoryCode = 
+  | "dairy"
+  | "sheep"
+  | "goat"
+  | "poultry"
+  | "pig"
+  | "beekeeping"
+  | "fisheries"
+  | "integrated";
+
+export interface FarmingCategory {
+  id: string;
+  code: LivestockCategoryCode;
+  nameEn: string;
+  nameRegional: Record<SupportedLanguage, string>;
+  descriptionEn: string;
+  descriptionRegional: Record<SupportedLanguage, string>;
+  iconName: string;
+  imageUrl?: string;
+  displayOrder: number;
+  totalLessons: number;
+}
+
+export interface FarmingSubcategory {
+  id: string;
+  categoryId: string;
+  code: string;
+  nameEn: string;
+  nameRegional: Record<SupportedLanguage, string>;
+  descriptionEn: string;
+  descriptionRegional: Record<SupportedLanguage, string>;
+  displayOrder: number;
+}
+
+export interface Course {
+  id: string;
+  categoryId: string;
+  subcategoryId?: string;
+  titleEn: string;
+  titleRegional: Record<SupportedLanguage, string>;
+  summaryEn: string;
+  summaryRegional: Record<SupportedLanguage, string>;
+  level: "beginner" | "intermediate" | "advanced";
+  estimatedMinutes: number;
+  totalModules: number;
+  isPublished: boolean;
+}
+
+export interface CourseModule {
+  id: string;
+  courseId: string;
+  orderNumber: number;
+  titleEn: string;
+  titleRegional: Record<SupportedLanguage, string>;
+  descriptionEn: string;
+  descriptionRegional: Record<SupportedLanguage, string>;
+}
+
+export interface EducationalVideo {
+  id: string;
+  lessonId: string;
+  videoUrl?: string; // Configurable video URL (e.g. YouTube embed or HLS stream)
+  durationSeconds: number;
+  thumbnailUrl?: string;
+  aspectRatio?: string;
+  isConfigurable: boolean;
+}
+
+export interface LessonTranslation {
+  id: string;
+  lessonId: string;
+  language: SupportedLanguage;
+  title: string;
+  description: string;
+  keyPoints: string[];
+  safetyNotes: string;
+}
+
+export interface QuizQuestion {
+  id: string;
+  quizId: string;
+  questionEn: string;
+  questionRegional: Record<SupportedLanguage, string>;
+  optionsEn: string[];
+  optionsRegional: Record<SupportedLanguage, string[]>;
+  correctOptionIndex: number;
+  explanationEn: string;
+  explanationRegional: Record<SupportedLanguage, string>;
+}
+
+export interface Quiz {
+  id: string;
+  lessonId: string;
+  titleEn: string;
+  titleRegional: Record<SupportedLanguage, string>;
+  questions: QuizQuestion[];
+  passingScore: number;
+}
+
+export interface Lesson {
+  id: string;
+  moduleId: string;
+  categoryId: LivestockCategoryCode;
+  orderNumber: number;
+  topicNumber?: number;
+  titleEn: string;
+  titleRegional: Record<SupportedLanguage, string>;
+  descriptionEn: string;
+  descriptionRegional: Record<SupportedLanguage, string>;
+  durationMinutes: number;
+  keyPointsEn: string[];
+  keyPointsRegional: Record<SupportedLanguage, string[]>;
+  safetyNotesEn: string;
+  safetyNotesRegional: Record<SupportedLanguage, string>;
+  video?: EducationalVideo;
+  quiz?: Quiz;
+  isPublished: boolean;
+}
+
+export interface UserLessonProgress {
+  id: string;
+  userId: string;
+  lessonId: string;
+  categoryId: LivestockCategoryCode;
+  isCompleted: boolean;
+  videoWatched: boolean;
+  videoSecondsWatched: number;
+  completedAt?: string;
+  updatedAt: string;
+}
+
+export interface QuizAttempt {
+  id: string;
+  userId: string;
+  quizId: string;
+  lessonId: string;
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  isPassed: boolean;
+  attemptedAt: string;
+}
+
+export interface UserFarmingInterest {
+  id: string;
+  userId: string;
+  categoryCodes: LivestockCategoryCode[];
+  updatedAt: string;
+}
+
+export type LivestockCalculatorType = "dairy" | "sheep" | "goat" | "poultry" | "fisheries";
+
+export interface LivestockCalculatorInput {
+  type: LivestockCalculatorType;
+  // Dairy params
+  animalCount?: number;
+  dailyFeedCostPerAnimal?: number;
+  dailyMilkYieldLiters?: number;
+  milkPricePerLiter?: number;
+  monthlyHealthCost?: number;
+  monthlyLabourCost?: number;
+  otherMonthlyExpenses?: number;
+  
+  // Sheep / Goat params
+  flockSize?: number;
+  annualFeedCostPerHead?: number;
+  healthCostPerHead?: number;
+  labourAnnualCost?: number;
+  expectedSalePricePerHead?: number;
+  sellingCount?: number;
+  milkIncomeMonthly?: number;
+
+  // Poultry params
+  birdCount?: number;
+  chickCostPerBird?: number;
+  feedCostPerBatch?: number;
+  medicineCostPerBatch?: number;
+  electricityCostPerBatch?: number;
+  mortalityRatePercent?: number;
+  averageWeightKg?: number;
+  sellingPricePerKg?: number;
+
+  // Fisheries params
+  pondSizeAcres?: number;
+  fingerlingsCount?: number;
+  fingerlingUnitCost?: number;
+  fishFeedCostPerCycle?: number;
+  pondLabourCost?: number;
+  otherCycleExpenses?: number;
+  expectedHarvestKg?: number;
+  sellingPricePerKgFish?: number;
+}
+
+export interface LivestockCalculatorResult {
+  type: LivestockCalculatorType;
+  estimatedCost: number;
+  estimatedRevenue: number;
+  estimatedProfit: number;
+  profitMarginPercent: number;
+  breakdown: {
+    labelEn: string;
+    labelRegional: Record<SupportedLanguage, string>;
+    amount: number;
+  }[];
+  calculatedAt: string;
+}
+

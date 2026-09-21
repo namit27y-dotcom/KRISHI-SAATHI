@@ -312,7 +312,135 @@ function getChatFarmingAssistantFallback(message: string, preferredLanguage: str
     return `${enText}\n\n---\n\n${subText}`;
   }
 
-  if (query.includes("fertilizer") || query.includes("urea") || query.includes("dap") || query.includes("npk") || query.includes("compost")) {
+  if (query.includes("dairy") || query.includes("cow") || query.includes("buffalo") || query.includes("milk") || query.includes("cattle") || query.includes("mastitis")) {
+    const enText = `🐄 **Dairy Cattle Nutrition & Health Guide:**
+
+1. **Daily Balanced Ration (per milch animal):**
+   - Green Fodder: 20-25 kg (Berseem, Maize, Sorghum, or Napier grass).
+   - Dry Fodder: 4-5 kg (Wheat straw or paddy straw).
+   - Concentrate / Balanced Cattle Feed: 1.5 kg for body maintenance + 400g per liter of milk produced.
+   - Mineral Mixture: 50-60g daily with clean drinking water (70-90 liters/day).
+
+2. **Mastitis Prevention & Hygiene:**
+   - Always wash teats with mild potassium permanganate or antiseptic solution before and after milking.
+   - Dip teats in post-milking teat dip (povidone-iodine). Keep cows standing for 30 minutes after milking while teat sphincters close.
+
+3. **Critical Vaccination Schedule:**
+   - Foot and Mouth Disease (FMD / खुरपका-मुंहपका): Twice a year (pre-monsoon & winter).
+   - Hemorrhagic Septicemia (HS / गलघोंटू) & Black Quarter (BQ / लंगड़ा बुखार): Annually before monsoon.
+
+⚠️ **Veterinary Disclaimer:** This information is for educational guidance only. If your animal exhibits fever, udder swelling, or refusal to eat, consult a qualified veterinarian immediately for clinical examination.`;
+
+    if (!isBilingual) return enText;
+
+    const subText = preferredLanguage === "bho"
+      ? `🐄 **डेयरी पशु आहार आ स्वास्थ्य सलाह:**\n\n1. **संतुलित आहार:** प्रति दिन 20-25 किलो हरियर चारा, 4-5 किलो सूखा भूसा, आ दूध के हिसाब से पशु आहार (प्रति लीटर दूध पर 400 ग्राम) दीं। 50 ग्राम मिनरल मिक्सचर जरूर मिलाईं।\n2. **थनैला (Mastitis) से बचाव:** दुहाई से पहिले आ बाद में थन के बढ़िया से धोईं। दुहाई के बाद 30 मिनट ले गाय के बईठे मत दीं।\n3. **टीकाकरण:** खुरपका-मुंहपका (FMD) आ गलघोंटू के टीका समय से लगवावे के चाहीं।\n\n⚠️ **चेतावनी:** ई केवल सलाह बा। पशु के तबियत खराब होखे पर तुरंत सरकारी पशु डॉक्टर से जांच करवाईं।`
+      : preferredLanguage === "hi"
+      ? `🐄 **दुधारू पशु आहार एवं स्वास्थ्य प्रबंधन:**\n\n1. **संतुलित दैनिक आहार:** प्रति पशु 20-25 किग्रा हरा चारा, 4-5 किग्रा सूखा भूसा, तथा शरीर रक्षा हेतु 1.5 किग्रा + प्रति लीटर दूध पर 400 ग्राम संतुलित दाना दें। 50-60 ग्राम खनिज मिश्रण (Mineral Mixture) अवश्य खिलाएं।\n2. **थनैला रोग से सुरक्षा:** दुहाई से पहले व बाद में थनों को पोटाश या आयोडीन घोल से साफ करें। दुहाई के बाद गाय को कम से कम 30 मिनट तक बैठने न दें।\n3. **अनिवार्य टीकाकरण:** खुरपका-मुंहपका (FMD) साल में दो बार तथा गलघोंटू (HS) मानसून से पहले अवश्य लगवाएं।\n\n⚠️ **चिकित्सकीय अस्वीकरण:** यह केवल शैक्षणिक मार्गदर्शन है। बुखार या थन में सूजन दिखने पर तुरंत योग्य पशु चिकित्सक से परीक्षण कराएं।`
+      : preferredLanguage === "mr"
+      ? `🐄 **दुग्ध व्यवसाय पशु आहार व आरोग्य सल्ला:**\n\n1. **समतोल आहार:** दररोज 20-25 किलो हिरवा चारा, 4-5 किलो सुका चारा, आणि दुधाच्या प्रमाणानुसार खुराक (प्रति लिटर दुधामागे 400 ग्रॅम) द्या. 50 ग्रॅम खनिज मिश्रण नियमित द्या.\n2. **स्तनदाह (मस्टायटिस) प्रतिबंध:** धार काढण्यापूर्वी व नंतर कास स्वच्छ धुवा. धार काढल्यानंतर अर्धा तास जनावराला बसू देऊ नका.\n3. **लसीकरण:** लाळ्या खुरकूत (FMD) आणि घटसर्प (HS) लस वेळेवर टोचून घ्या.\n\n⚠️ **वैद्यकीय सूचना:** हा केवळ शैक्षणिक सल्ला आहे. आजारपणाच्या लक्षणांवर पशुवैद्यकीय डॉक्टरांचा प्रत्यक्ष सल्ला घ्या.`
+      : `🐄 **दुधारू पशु आहार आ स्वास्थ्य प्रबंधन:**\n\n1. **संतुलित आहार:** 20-25 किलो हरियर चारा, 4-5 किलो भूसा, आ दूधक हिसाब सँ संतुलित दाना (प्रति लीटर दूध पर 400 ग्राम) दियौक। 50 ग्राम मिनरल मिक्चर अवश्य मिलाऊ।\n2. **थनैला सँ बचाव:** दुहाईक बाद थन के साफ राखू आ 30 मिनट धरि बैसय नहि दियौक।\n3. **टीकाकरण:** खुरपका आ गलघोंटूक टीका समय पर लगावू।\n\n⚠️ **पशु चिकित्सक सलाह:** ई केवल जानकारी अछि। बीमार भेला पर पशु डॉक्टर सँ जांच कराऊ।`;
+
+    return `${enText}\n\n---\n\n${subText}`;
+  }
+
+  if (query.includes("sheep") || query.includes("goat") || query.includes("bakri") || query.includes("bhed") || query.includes("lamb") || query.includes("kid")) {
+    const enText = `🐐 **Goat & Sheep Farming Scientific Care:**
+
+1. **Stall-Feeding & Nutrition:**
+   - Offer leguminous green fodder (Lucerne, Berseem, Subabul leaves) rich in protein.
+   - Supplement with 150-250g concentrate mixture daily per adult goat/sheep.
+   - Provide clean salt licking blocks to prevent mineral deficiencies.
+
+2. **Crucial Preventive Health:**
+   - **Deworming:** Administer broad-spectrum anthelmintics (Albendazole / Fenbendazole) 3-4 times a year, rotating active chemicals to prevent resistance.
+   - **PPR Vaccine (Peste des Petits Ruminants / बकरी प्लेग):** Mandatory once in 3 years.
+   - **ET Vaccine (Enterotoxemia / फिड़किया):** Annually before new flush of lush monsoon grazing.
+
+3. **Shed Hygiene:** Elevated slatted wooden or bamboo floors keep goats dry, preventing pneumonia and hoof rot.
+
+⚠️ **Veterinary Disclaimer:** Always verify dewormer dosage according to live body weight. Consult a registered veterinarian for sick animals.`;
+
+    if (!isBilingual) return enText;
+
+    const subText = preferredLanguage === "bho"
+      ? `🐐 **बकरी आ भेड़ पालन जरूरी सलाह:**\n\n1. **आहार:** सुबबूल, बरसीम, आ अरहर के पत्ता के साथे 150-250 ग्राम दाना रोज दीं। शेड में नमक के ढेला (Salt licks) जरूर राखीं।\n2. **कीड़े के दवा (Deworming):** साल में 3-4 बेर पेट के कीड़ा के दवा बदली-बदली के पियाईं।\n3. **टीकाकरण:** पीपीआर (PPR) के टीका 3 साल में एक बेर आ फिड़किया (ET) के टीका बरसात से पहिले लगवावे के चाहीं।\n\n⚠️ **सलाह:** वजन के हिसाब से दवा के मात्रा तय करे खातिर पशु डॉक्टर से सलाह लीं।`
+      : preferredLanguage === "hi"
+      ? `🐐 **बकरी एवं भेड़ पालन वैज्ञानिक प्रबंधन:**\n\n1. **आहार एवं पोषण:** सुबबूल, बरसीम और लोबिया जैसे दलहनी चारे के साथ प्रति वयस्क 150-250 ग्राम संतुलित दाना दें। शेड में खनिज ईंट (Mineral Lick Block) रखें।\n2. **कृमिनाशक दवा (Deworming):** साल में 3 से 4 बार पेट के कीड़ों की दवा (अल्बेंडाजोल / फेनबेंडाजोल) बदल-बदल कर दें।\n3. **टीकाकरण:** पीपीआर (PPR - बकरी प्लेग) का टीका 3 वर्ष में एक बार तथा फिड़किया (Enterotoxemia) का टीका बरसात शुरू होने से पूर्व अवश्य लगवाएं।\n\n⚠️ **चिकित्सकीय परामर्श:** दवा की सही खुराक और उपचार के लिए स्थानीय पशु चिकित्सक से संपर्क करें।`
+      : preferredLanguage === "mr"
+      ? `🐐 **शेळी व मेंढी पालन शास्त्रीय व्यवस्थापन:**\n\n1. **समतोल आहार:** सुबाभूळ, ल्युसर्न यांसारखा हिरवा चारा आणि दररोज 150-250 ग्रॅम खुराक द्या. खनिज चाटण विटा उपलब्ध ठेवा.\n2. **जंतनिर्मूलन:** वर्षातून 3 ते 4 वेळा विविध औषधे बदलून जंतांचे औषध द्या.\n3. **लसीकरण:** पीपीआर (PPR) आणि आंत्रविषार (ET) लस न चुकता टोचा.\n\n⚠️ **पशुवैद्यकीय सूचना:** योग्य मात्रा आणि उपचारांसाठी पशुवैद्यकांचा सल्ला घ्या.`
+      : `🐐 **बकरी आ भेड़ पालनक मुख्य जानकारी:**\n\n1. **आहार:** सुबबूल, बरसीम आ 150-250 ग्राम संतुलित दाना रोज दियौक।\n2. **कीड़ाक दवा:** वर्ष मे 3-4 बेर पेटक कीड़ाक दवा बदल-बदल कऽ पिबाउ।\n3. **टीका:** पीपीआर (PPR) आ फिड़कियाक टीका समय पर लगाउ।\n\n⚠️ **सलाह:** बीमार भेला पर पशु चिकित्सक सँ संपर्क करू।`;
+
+    return `${enText}\n\n---\n\n${subText}`;
+  }
+
+  if (query.includes("poultry") || query.includes("chicken") || query.includes("broiler") || query.includes("murgi") || query.includes("layer") || query.includes("egg") || query.includes("ranikhet")) {
+    const enText = `🐔 **Poultry Farming Brooding & Disease Prevention:**
+
+1. **Brooding Management (First 2 Weeks):**
+   - Maintain brooding temperature at 33-35°C (95°F) for day-old chicks, reducing by 3°C weekly until room temperature.
+   - Provide clean electrolyte & glucose water upon arrival to relieve transport stress.
+   - Spread 2-3 inches of dry rice husk as bedding (litter) and stir daily to prevent ammonia build-up.
+
+2. **Standard Vaccine Schedule:**
+   - Day 1: Marek's Disease (at hatchery).
+   - Day 5-7: Newcastle Disease (Ranikhet / Lasota F1 eye drops).
+   - Day 14: Infectious Bursal Disease (IBD / Gumboro).
+   - Day 21-24: Ranikhet booster (Lasota).
+
+3. **Biosecurity Protocol:**
+   - Strictly prohibit outside visitors and wild bird access to the shed.
+   - Provide potassium permanganate footbaths at shed entry points.
+
+⚠️ **Veterinary Disclaimer:** Sudden flock mortality, respiratory gasping, or greenish diarrhea requires immediate isolation and consultation with an avian veterinarian or government veterinary officer.`;
+
+    if (!isBilingual) return enText;
+
+    const subText = preferredLanguage === "bho"
+      ? `🐔 **मुर्गी पालन एवं चूजा प्रबंधन सलाह:**\n\n1. **ब्रूडिंग तापमान:** पहिलका हफ्ता चूजा खातिर 33-35°C तापमान राखीं। बिछावन (धान के भूसी) सूखा राखीं ताकि अमोनिया गैस ना बने।\n2. **टीकाकरण:** 5-7 दिन पर रानीखेत (Lasota) के बूंद आंख में डालीं आ 14वां दिन गम्बोरो (IBD) के टीका दीं।\n3. **जैव सुरक्षा:** शेड के बाहर चूना आ पोटाश के पैर धोने वाला गड्ढा बनाईं। बाहरी लोग के शेड में मत आवे दीं।\n\n⚠️ **चेतावनी:** अचानक चूजा मरे या सांस लेवे में दिक्कत होखे त तुरंत पोल्ट्री डॉक्टर के बोलावे के चाहीं।`
+      : preferredLanguage === "hi"
+      ? `🐔 **कुक्कुट (मुर्गी) पालन ब्रूडिंग एवं रोग नियंत्रण:**\n\n1. **ब्रूडिंग तापमान प्रबंधन:** पहले सप्ताह चूजों के लिए 33-35°C तापमान रखें तथा हर सप्ताह 3°C कम करें। बिछावन में 2-3 इंच सूखी धान की भूसी रखें और रोज हिलाएं।\n2. **आवश्यक टीकाकरण:** 5 से 7 दिन पर रानीखेत (Lasota/F1) आई-ड्रॉप तथा 14वें दिन गम्बोरो (IBD) का टीका पिलाएं।\n3. **जैव सुरक्षा:** शेड में जंगली पक्षियों का प्रवेश रोकें और दरवाजे पर पोटेशियम परमैंगनेट का फुटबाथ रखें।\n\n⚠️ **पशु चिकित्सक चेतावनी:** मुर्गियों में छींक, हरी दस्त या अचानक मृत्यु होने पर तुरंत पक्षी रोग विशेषज्ञ या पशु चिकित्सक से जांच कराएं।`
+      : preferredLanguage === "mr"
+      ? `🐔 **कुक्कुटपालन ब्रुडिंग व आरोग्य व्यवस्थापन:**\n\n1. **तापमान नियंत्रण:** पहिल्या आठवड्यात 33-35°C तापमान ठेवा. गादी (तूस) सुकी ठेवा जेणेकरून अमोनिया तयार होणार नाही.\n2. **लसीकरण:** 5-7 दिवसांनी राणीखेत (लासोटा) व 14 व्या दिवशी गंबोरो लस द्या.\n3. **सुरक्षा:** शेडच्या प्रवेशद्वारावर जंतुनाशक पायधुणी ठेवा.\n\n⚠️ **पशुवैद्यकीय इशारा:** कोंबड्या आजारी पडल्यास तातडीने तज्ज्ञ पशुवैद्यकांचा सल्ला घ्या.`
+      : `🐔 **मुर्गी पालन एवं ब्रूडिंग व्यवस्थापन:**\n\n1. **तापमान:** पहिल सप्ताह मे 33-35°C तापमान राखू।\n2. **टीका:** 5-7 दिन पर रानीखेत (Lasota) आ 14 दिन पर गम्बोरोक टीका दियौक।\n3. **बायोसिक्योरिटी:** शेड के पूर्णतः साफ आ सूखा राखू।\n\n⚠️ **सलाह:** बीमारीक लक्षण दिखला पर पशु चिकित्सक सँ संपर्क करू।`;
+
+    return `${enText}\n\n---\n\n${subText}`;
+  }
+
+  if (query.includes("fish") || query.includes("fisheries") || query.includes("pond") || query.includes("machhali") || query.includes("matsya") || query.includes("fingerling")) {
+    const enText = `🐟 **Fish Pond Aquaculture Management:**
+
+1. **Pre-Stocking Pond Preparation:**
+   - Drain or dry pond bottom until cracks appear to eradicate wild predatory fish and pathogens.
+   - Apply Agricultural Lime (CaCO3): 200-250 kg/acre to stabilize water pH between 7.5 - 8.5.
+   - Manure with decomposed cow dung (1,000 kg/acre) to stimulate rich green zooplankton/phytoplankton bloom.
+
+2. **Polyculture Stocking Combination (Composite Fish Culture):**
+   - Surface feeders: Catla (30-40%)
+   - Column feeders: Rohu (30%)
+   - Bottom feeders: Mrigal (30-40%)
+   - Stocking density: 3,000 - 4,000 healthy fingerlings (8-10 cm size) per acre.
+
+3. **Water Quality & Dissolved Oxygen:**
+   - Maintain dissolved oxygen (DO) above 5 mg/liter.
+   - If fish surface to gulp air at early morning dawn, splash water or run an aerator immediately.
+
+⚠️ **Aquaculture Disclaimer:** Water chemistry parameters (pH, ammonia, dissolved oxygen) require regular testing kits. Consult a state fisheries extension officer for disease outbreaks.`;
+
+    if (!isBilingual) return enText;
+
+    const subText = preferredLanguage === "bho"
+      ? `🐟 **मछली पालन आ तालाब तैयारी सलाह:**\n\n1. **तालाब तैयारी:** तालाब सुखा के प्रति एकड़ 200-250 किलो कृषि चूना डालीं ताकि पानी के pH 7.5-8.5 के बीच रहे। 1000 किलो सड़ा गोबर डाल के प्लवक (प्राकृतिक चारा) तैयार करीं।\n2. **मिश्रित मछली पालन:** कतला (सतह पर), रोहू (बीच में) आ मृगल (तली में) के जीरा 3000-4000 प्रति एकड़ डालीं।\n3. **ऑक्सीजन प्रबंधन:** भोर में अगर मछलियां मुंह निकाल के सांस लेत बाड़ी, त तुरंत पानी चला के या बांस से पानी पीट के ऑक्सीजन बढ़ाईं।\n\n⚠️ **सलाह:** पानी के pH आ अमोनिया के जांच नियमित करीं आ मत्स्य प्रसार अधिकारी से राय लीं।`
+      : preferredLanguage === "hi"
+      ? `🐟 **मत्स्य पालन एवं तालाब जल प्रबंधन:**\n\n1. **तालाब की प्रारंभिक तैयारी:** तालाब सुखाकर 200-250 किग्रा/एकड़ कृषि चूना डालें ताकि पानी का pH 7.5 से 8.5 बना रहे। 1,000 किग्रा सड़ा गोबर डालकर प्राकृतिक प्लवक (Plankton) तैयार करें।\n2. **मिश्रित मत्स्य पालन (Composite Culture):** कतला (30-40%), रोहू (30%) तथा नैन/मृगल (30-40%) का संचयन करें। प्रति एकड़ 3,000 से 4,000 उंगली के आकार (8-10 सेमी) के फिंगरलिंग डालें।\n3. **ऑक्सीजन सुरक्षा:** सुबह के समय घुलित ऑक्सीजन कम होने पर पानी में फव्वारा चलाएं या एरिएटर का प्रयोग करें।\n\n⚠️ **मत्स्य विशेषज्ञ सलाह:** जल गुणवत्ता (अमोनिया, पीएच, ऑक्सीजन) की नियमित जांच करें। बीमारी दिखने पर राज्य मत्स्य विकास अधिकारी से संपर्क करें।`
+      : preferredLanguage === "mr"
+      ? `🐟 **मत्स्यपालन व तळे व्यवस्थापन सल्ला:**\n\n1. **तळ्याची तयारी:** तळे सुकवून एकरी 200-250 किलो चुना टाका. 1000 किलो शेणखत टाकून प्लवंग (नैसर्गिक अन्न) तयार करा.\n2. **मिश्र मत्स्यपालन:** कटला, रोहू आणि म्रिगल या तिन्ही थरांतील माशांचे एकरी 3000-4000 बोटुकली (Fingerlings) सोडा.\n3. **ऑक्सिजन काळजी:** सकाळी मासे पाण्यावर तरंगत असल्यास पाण्याचे एरिएशन करा.\n\n⚠️ **तज्ज्ञ सल्ला:** पाण्याचा pH आणि अमोनिया नियमित तपासा.`
+      : `🐟 **मत्स्य पालन आ तालाब प्रबंधन:**\n\n1. **तालाबक तैयारी:** 200-250 किलो चूना आ 1000 किलो सड़ा गोबर दऽ कऽ प्राकृतिक चारा बनाउ।\n2. **मिश्रित पालन:** कतला, रोहू आ मृगल के 3000-4000 जीरा प्रति एकड़ संचित करू।\n3. **ऑक्सीजन प्रबंधन:** सबेरे पानी चला कऽ ऑक्सीजनक स्तर ठीक राखू।\n\n⚠️ **सलाह:** मत्स्य प्रसार पदाधिकारी सँ परामर्श लियौक।`;
+
+    return `${enText}\n\n---\n\n${subText}`;
+  }
+
+  if (query.includes("fertilizer") || query.includes("soil") || query.includes("khad") || query.includes("urea") || query.includes("dap") || query.includes("npk") || query.includes("mitti")) {
     const enText = `🌱 **Soil & Fertilizer Advice for your field:**
 
 1. **Balanced NPK Ratio:** Maintain a standard 4:2:1 (N:P:K) ratio for cereals, or 1:2:1 for legumes and pulses.
@@ -911,14 +1039,19 @@ export async function chatFarmingAssistant(message: string, history: { role: str
 
   const systemInstruction = isBilingualMode
     ? `
-        You are Krishi Saathi's flagship AI Farming Assistant, an expert agronomist, plant biologist, and soil scientist serving Indian farmers.
-        Your goal is to provide sustainable, highly accurate, and friendly farming advice.
+        You are Krishi Saathi's flagship AI Farming Assistant, an expert agronomist, plant biologist, soil scientist, and animal & fish husbandry specialist serving Indian farmers.
+        Your goal is to provide sustainable, highly accurate, and friendly advice across both crop agriculture and livestock/fish farming.
         Always promote:
-        - Soil-safe, organic-first practices.
-        - Proper water-saving irrigation practices.
-        - Integrated Pest Management (IPM) rather than chemical sprays.
-        - Environmentally safe, minimal chemical dosages if synthetic is mentioned.
+        - Soil-safe, organic-first crop practices and integrated pest management (IPM).
+        - Scientific animal nutrition (balanced rations, clean drinking water, mineral mixtures).
+        - Proactive biosecurity, disease prevention, and vaccination schedules for dairy cattle, sheep, goats, poultry, and fish ponds.
+        - Circular resource reuse (cow dung for biogas/slurry, poultry litter composting, integrated aquaculture).
         
+        CRITICAL ANIMAL & FISH HEALTH GUIDELINES:
+        - For animal or fish health inquiries, provide general educational guidance and warning signs only.
+        - Never claim a definitive clinical diagnosis.
+        - Always advise the farmer to consult a registered veterinarian or local fisheries officer for clinical examination, prescription treatments, and on-site inspection.
+
         CRITICAL MANDATORY BILINGUAL FORMAT REQUIREMENT:
         The BASE LANGUAGE of Krishi Saathi is ENGLISH.
         The user has selected the regional language: ${targetLangName} (code: "${preferredLanguage}").
@@ -929,16 +1062,13 @@ export async function chatFarmingAssistant(message: string, history: { role: str
         First: Clear, practical English response summary or main advice.
         Immediately followed by: Accurate, fluent translation or response in ${targetLangName}.
         
-        Example format:
-        Wheat needs crown root irrigation (CRI) 20-25 days after sowing to develop strong tillers.
-        गेहूं में बोआई के 20-25 दिन बाद मुख्य जड़ (CRI) सिंचाई जरूरी है ताकि मजबूत कल्ले निकल सकें।
-        
         Keep answers practical, accurate, humble, and easy for farmers to understand.
       `
     : `
-        You are Krishi Saathi's flagship AI Farming Assistant, an expert agronomist, plant biologist, and soil scientist serving farmers.
-        Your goal is to provide sustainable, highly accurate, and friendly farming advice in clear, concise English.
-        Promote organic-first practices, IPM pest control, and efficient water management.
+        You are Krishi Saathi's flagship AI Farming Assistant, an expert agronomist, soil scientist, and animal & fish husbandry specialist serving farmers.
+        Your goal is to provide sustainable, highly accurate, and friendly farming advice in clear, concise English across crops, dairy, sheep, goat, poultry, pigs, beekeeping, and fisheries.
+        For animal/fish health issues, provide educational guidance and caution, always recommending consultation with a qualified veterinarian or fisheries officer.
+        Promote organic-first practices, IPM pest control, balanced livestock nutrition, and circular farming.
         Keep answers practical, accurate, and easy for farmers to understand.
       `;
 
