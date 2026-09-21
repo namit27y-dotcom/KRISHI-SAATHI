@@ -36,6 +36,17 @@ interface Props {
   onOpenAIChat?: (prompt?: string) => void;
 }
 
+const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {
+  dairy: "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800&auto=format&fit=crop&q=80",
+  sheep: "https://images.unsplash.com/photo-1484557052118-f32bd25b45b5?w=800&auto=format&fit=crop&q=80",
+  goat: "https://images.unsplash.com/photo-1524024973431-2ad916746881?w=800&auto=format&fit=crop&q=80",
+  poultry: "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=800&auto=format&fit=crop&q=80",
+  pig: "https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=800&auto=format&fit=crop&q=80",
+  beekeeping: "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?w=800&auto=format&fit=crop&q=80",
+  fisheries: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80",
+  integrated: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&auto=format&fit=crop&q=80",
+};
+
 export const LivestockDashboard: React.FC<Props> = ({ currentUser, onOpenAIChat }) => {
   const { language } = useLanguage();
   

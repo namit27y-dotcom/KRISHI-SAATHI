@@ -41,7 +41,7 @@ export const LIVESTOCK_CATEGORIES: FarmingCategory[] = [
       sw: "Usimamizi wa maziwa bora"
     },
     iconName: "Milk",
-    imageUrl: "https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?w=800&auto=format&fit=crop&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800&auto=format&fit=crop&q=80",
     displayOrder: 1,
     totalLessons: 14
   },

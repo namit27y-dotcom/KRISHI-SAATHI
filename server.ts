@@ -11,7 +11,8 @@ import {
   planIrrigation, 
   queryGovernmentSchemes, 
   chatFarmingAssistant,
-  forecastYield
+  forecastYield,
+  transcribeAudio
 } from "./src/server/gemini.js";
 
 async function startServer() {
@@ -1476,6 +1477,22 @@ async function startServer() {
       res.json({ response: answer });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  });
+
+  // --- Voice-to-Text Audio Transcription API ---
+  app.post("/api/audio/transcribe", async (req, res) => {
+    try {
+      const { audio, mimeType, preferredLanguage } = req.body;
+      if (!audio) {
+        return res.status(400).json({ error: "Audio data is required" });
+      }
+
+      const result = await transcribeAudio(audio, mimeType || "audio/webm", preferredLanguage);
+      res.json(result);
+    } catch (err: any) {
+      console.error("[Transcribe Audio Error]:", err);
+      res.status(500).json({ error: err.message || "Failed to transcribe audio" });
     }
   });
 

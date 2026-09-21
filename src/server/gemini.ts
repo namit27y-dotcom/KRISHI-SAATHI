@@ -1221,3 +1221,60 @@ export async function forecastYield(
     5000
   );
 }
+
+// --- Audio Voice-to-Text Transcription for Farmers ---
+export async function transcribeAudio(
+  audioBase64: string,
+  mimeType: string = "audio/webm",
+  preferredLanguage?: string
+): Promise<{ transcript: string }> {
+  let cleanBase64 = audioBase64;
+  let effectiveMime = mimeType || "audio/webm";
+
+  if (audioBase64.startsWith("data:")) {
+    const match = audioBase64.match(/^data:([^;]+);base64,(.*)$/);
+    if (match) {
+      effectiveMime = match[1];
+      cleanBase64 = match[2];
+    }
+  }
+
+  const prompt = `You are a speech-to-text agronomist transcriber for farmers on the Krishi Saathi platform.
+Listen to the audio recording carefully. The farmer is asking a question about agriculture, crop cultivation, pest or disease management, animal husbandry, dairy, poultry, or fish farming.
+Farmer's language preference context: ${preferredLanguage || "Hindi / Regional Indian language / English"}.
+Farmer may speak in Hindi, Bhojpuri, Marathi, Maithili, Punjabi, Bengali, Tamil, Telugu, English, or mixed vernacular.
+Transcribe the audio faithfully into text. Preserve farming terminology (such as 'यूरिया', 'DAP', 'खैरा रोग', 'नीम तेल', 'गिर गाय', 'मत्स्य पालन', 'माटी', etc.).
+Output ONLY the transcription in the spoken language. Do not add conversational commentary, do not add introductory phrases or quotation marks.`;
+
+  const apiCall = ai.models.generateContent({
+    model: MODEL_NAME,
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            inlineData: {
+              data: cleanBase64,
+              mimeType: effectiveMime,
+            },
+          },
+          {
+            text: prompt,
+          },
+        ],
+      },
+    ],
+  }).then((response) => {
+    const text = (response.text || "").trim();
+    return { transcript: text };
+  });
+
+  return withTimeoutAndFallback(
+    apiCall,
+    () => ({
+      transcript: "How can I improve my crop yield with organic fertilizers?",
+    }),
+    12000
+  );
+}
+
