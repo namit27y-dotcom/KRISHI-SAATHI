@@ -119,7 +119,7 @@ export default function WeatherAdvisor({
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-100 flex items-center gap-1">
-                <MapPin className="w-3 h-3" /> {wt.liveWeather}
+                <MapPin className="w-3 h-3" /> {wt.liveBlockWeather}
               </span>
               <h3 className="text-xl font-bold mt-0.5">
                 {weather?.location || `${districtName}, ${stateName}`}
@@ -141,7 +141,7 @@ export default function WeatherAdvisor({
                   <Thermometer className="w-5 h-5 text-amber-200" />
                 </div>
                 <div>
-                  <span className="text-[10px] block text-emerald-100/90">Temperature</span>
+                  <span className="text-[10px] block text-emerald-100/90">{wt.temperature}</span>
                   <span className="text-lg font-extrabold">{weather?.temp}°C</span>
                 </div>
               </div>
@@ -167,7 +167,7 @@ export default function WeatherAdvisor({
               </div>
 
               <div className="col-span-2 md:col-span-1 flex flex-col justify-center">
-                <span className="text-[9px] text-emerald-100 uppercase tracking-widest font-bold">{wt.rainfallOutlook}</span>
+                <span className="text-[9px] text-emerald-100 uppercase tracking-widest font-bold">{wt.rainfallForecast}</span>
                 <p className="text-xs font-semibold mt-0.5">{weather?.rainfallPrediction}</p>
               </div>
             </div>
@@ -186,10 +186,10 @@ export default function WeatherAdvisor({
       <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm space-y-6">
         <div>
           <h4 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-1.5">
-            <Sprout className="w-5 h-5 text-emerald-600" /> {wt.cropAdvisorTitle}
+            <Sprout className="w-5 h-5 text-emerald-600" /> {wt.cropRecommendationTitle}
           </h4>
           <p className="text-xs text-slate-400">
-            {wt.cropAdvisorSubtitle}
+            {wt.cropRecommendationSubtitle}
           </p>
         </div>
 
@@ -252,7 +252,7 @@ export default function WeatherAdvisor({
               id="btn-submit-recommend"
             >
               {recommendLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sprout className="w-4 h-4" />}
-              {recommendLoading ? wt.analyzing : wt.getRecommendations}
+              {recommendLoading ? wt.analyzing : wt.analyzeSuitability}
             </button>
           </div>
         </form>

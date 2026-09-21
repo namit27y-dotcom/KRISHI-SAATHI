@@ -391,9 +391,9 @@ export default function CropAcademy({ preferredLanguage: propLang }: CropAcademy
       case "Sowing & Harvesting Steps": return ac.sowingSteps;
       case "Video Tutorial Lesson": return ac.videoTutorial;
       case "Step": return ac.step;
-      case "Close": return ac.close;
-      case "Soil Context:": return ac.soilContext;
-      case "Irrigation:": return ac.irrigation;
+      case "Close": return t.common.close;
+      case "Soil Context:": return ac.soil;
+      case "Irrigation:": return ac.watering;
       default: return key;
     }
   };

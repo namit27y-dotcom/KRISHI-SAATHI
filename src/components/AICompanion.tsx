@@ -53,7 +53,24 @@ const SPEECH_LANG_CODES: Record<string, string> = {
 export default function AICompanion({ userId, preferredLanguage: propLang }: AICompanionProps) {
   const { t, language: contextLang } = useLanguage();
   const lang = propLang || contextLang || "en";
-  const companionT = t.aiCompanion;
+  const companionT = t?.aiCompanion || {
+    title: "Krishi Saathi Companion",
+    statusActive: "Active Agronomist Bot",
+    welcome: "Namaste! 🙏 I am Krishi Saathi, your dedicated farming assistant. Ask me anything about crop diseases, fertilizers, weather protection, or government schemes!",
+    placeholder: "Ask any farming question or describe a symptom...",
+    listening: "Listening to your voice...",
+    quickTipsTitle: "Quick Inquiries",
+    quickTip1: "How to prepare land for high-yield wheat?",
+    quickTip2: "Best organic pesticide for tomato leaf curl?",
+    quickTip3: "How to apply for PM-Kisan subsidy?",
+    quickTip4: "Water-saving drip irrigation schedule for cotton",
+    readAloud: "Listen",
+    stopSpeaking: "Stop",
+    clearChat: "Clear Chat",
+    chatHistory: "History",
+    newChat: "New Conversation",
+    networkError: "I apologize, I experienced a network disruption. Please ask your question again."
+  };
 
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string>("");

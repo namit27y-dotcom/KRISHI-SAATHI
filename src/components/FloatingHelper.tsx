@@ -20,6 +20,7 @@ interface Message {
 
 interface FloatingHelperProps {
   userId?: string;
+  preferredLanguage?: string;
 }
 
 const SPEECH_LANG_CODES: Record<string, string> = {
@@ -36,9 +37,24 @@ const SPEECH_LANG_CODES: Record<string, string> = {
   sw: "sw-KE"
 };
 
-export default function FloatingHelper({ userId }: FloatingHelperProps) {
-  const { t, language } = useLanguage();
-  const helpBotT = t.helpBot;
+export default function FloatingHelper({ userId, preferredLanguage: propLang }: FloatingHelperProps) {
+  const { t, language: contextLang } = useLanguage();
+  const language = propLang || contextLang || "en";
+
+  const helperT = t?.floatingHelper || {
+    title: "Krishi Saathi Help Bot",
+    welcome: "Namaste! 🙏 I am here to help you navigate Krishi Saathi and solve your farm queries. Ask me anything!",
+    placeholder: "Type a query or ask a question...",
+    listening: "Listening...",
+    close: "Close"
+  };
+
+  const quickTips = [
+    t?.aiCompanion?.quickTip1 || "How to prepare land for high-yield wheat?",
+    t?.aiCompanion?.quickTip2 || "Best organic pesticide for tomato leaf curl?",
+    t?.aiCompanion?.quickTip3 || "How to apply for PM-Kisan subsidy?",
+    t?.aiCompanion?.quickTip4 || "Water-saving drip irrigation schedule"
+  ];
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -55,10 +71,10 @@ export default function FloatingHelper({ userId }: FloatingHelperProps) {
     setMessages([
       {
         role: "model",
-        text: helpBotT.welcome
+        text: helperT.welcome || "Namaste! 🙏 How can I assist you with your farming needs today?"
       }
     ]);
-  }, [language, helpBotT.welcome]);
+  }, [language, helperT.welcome]);
 
   useEffect(() => {
     if (isOpen) {
@@ -196,7 +212,7 @@ export default function FloatingHelper({ userId }: FloatingHelperProps) {
                 <Sparkles className="w-4 h-4 text-amber-300" />
               </div>
               <div>
-                <h3 className="font-bold text-xs uppercase tracking-wider">{helpBotT.title}</h3>
+                <h3 className="font-bold text-xs uppercase tracking-wider">{helperT.title}</h3>
                 <span className="text-[9px] text-emerald-100/95 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
                   Online Help Bot
@@ -209,7 +225,7 @@ export default function FloatingHelper({ userId }: FloatingHelperProps) {
                 if ("speechSynthesis" in window) window.speechSynthesis.cancel();
               }}
               className="p-1.5 hover:bg-white/15 rounded-lg transition-all"
-              title={helpBotT.close}
+              title={helperT.close}
             >
               <X className="w-4 h-4" />
             </button>
@@ -269,7 +285,7 @@ export default function FloatingHelper({ userId }: FloatingHelperProps) {
 
           {/* Quick Help Tips Chips */}
           <div className="p-2 bg-slate-50 border-t border-slate-100/50 flex gap-1.5 overflow-x-auto shrink-0 scrollbar-none">
-            {helpBotT.quickTips.map((tip, i) => (
+            {quickTips.map((tip, i) => (
               <button
                 key={i}
                 disabled={loading}
@@ -300,7 +316,7 @@ export default function FloatingHelper({ userId }: FloatingHelperProps) {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={isListening ? helpBotT.listening : helpBotT.placeholder}
+              placeholder={isListening ? helperT.listening : helperT.placeholder}
               disabled={loading}
               className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 transition-all text-slate-700"
             />
