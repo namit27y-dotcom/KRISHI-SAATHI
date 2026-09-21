@@ -52,7 +52,7 @@ export default function WeatherAdvisor({
   defaultDistrict = "Pune",
   defaultSoilType = "Loamy"
 }: WeatherAdvisorProps) {
-  const { t, language } = useLanguage();
+  const { t, language, b, bt } = useLanguage();
   const wt = t.weather;
 
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -119,7 +119,7 @@ export default function WeatherAdvisor({
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-100 flex items-center gap-1">
-                <MapPin className="w-3 h-3" /> {wt.liveBlockWeather}
+                <MapPin className="w-3 h-3" /> {b("Live Block Weather", wt.liveBlockWeather)}
               </span>
               <h3 className="text-xl font-bold mt-0.5">
                 {weather?.location || `${districtName}, ${stateName}`}
@@ -141,7 +141,7 @@ export default function WeatherAdvisor({
                   <Thermometer className="w-5 h-5 text-amber-200" />
                 </div>
                 <div>
-                  <span className="text-[10px] block text-emerald-100/90">{wt.temperature}</span>
+                  <div className="text-[10px] block text-emerald-100/90">{b("Temperature", wt.temperature)}</div>
                   <span className="text-lg font-extrabold">{weather?.temp}°C</span>
                 </div>
               </div>
@@ -151,7 +151,7 @@ export default function WeatherAdvisor({
                   <Droplets className="w-5 h-5 text-blue-200" />
                 </div>
                 <div>
-                  <span className="text-[10px] block text-emerald-100/90">{wt.humidity}</span>
+                  <div className="text-[10px] block text-emerald-100/90">{b("Air Humidity", wt.humidity)}</div>
                   <span className="text-lg font-extrabold">{weather?.humidity}%</span>
                 </div>
               </div>
@@ -161,13 +161,15 @@ export default function WeatherAdvisor({
                   <Wind className="w-5 h-5 text-emerald-100" />
                 </div>
                 <div>
-                  <span className="text-[10px] block text-emerald-100/90">{wt.windSpeed}</span>
+                  <div className="text-[10px] block text-emerald-100/90">{b("Wind Speed", wt.windSpeed)}</div>
                   <span className="text-lg font-extrabold">{weather?.wind} km/h</span>
                 </div>
               </div>
 
               <div className="col-span-2 md:col-span-1 flex flex-col justify-center">
-                <span className="text-[9px] text-emerald-100 uppercase tracking-widest font-bold">{wt.rainfallForecast}</span>
+                <div className="text-[9px] text-emerald-100 uppercase tracking-widest font-bold">
+                  {b("Rainfall Forecast", wt.rainfallForecast)}
+                </div>
                 <p className="text-xs font-semibold mt-0.5">{weather?.rainfallPrediction}</p>
               </div>
             </div>
@@ -186,16 +188,26 @@ export default function WeatherAdvisor({
       <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm space-y-6">
         <div>
           <h4 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-1.5">
-            <Sprout className="w-5 h-5 text-emerald-600" /> {wt.cropRecommendationTitle}
+            <Sprout className="w-5 h-5 text-emerald-600 shrink-0" />
+            {b("Crop Recommendation", wt.cropRecommendationTitle, {
+              variant: "heading",
+              enClassName: "text-lg font-bold text-gray-900",
+              subClassName: "text-sm font-semibold text-emerald-700"
+            })}
           </h4>
-          <p className="text-xs text-slate-400">
-            {wt.cropRecommendationSubtitle}
-          </p>
+          <div className="text-xs text-slate-500 mt-1">
+            {b("Get AI-powered recommendations tailored to your local seasonal patterns.", wt.cropRecommendationSubtitle, {
+              enClassName: "text-xs text-slate-600 font-medium",
+              subClassName: "text-xs text-emerald-700/90 font-normal"
+            })}
+          </div>
         </div>
 
         <form onSubmit={handleRecommendSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-2xl border">
           <div className="text-xs">
-            <label className="block font-semibold text-slate-600 mb-1">{wt.stateLabel}</label>
+            <label className="block font-semibold text-slate-600 mb-1">
+              {b("State", wt.stateLabel)}
+            </label>
             <input 
               type="text" 
               value={stateName} 
@@ -206,7 +218,9 @@ export default function WeatherAdvisor({
           </div>
 
           <div className="text-xs">
-            <label className="block font-semibold text-slate-600 mb-1">{wt.districtLabel}</label>
+            <label className="block font-semibold text-slate-600 mb-1">
+              {b("District", wt.districtLabel)}
+            </label>
             <input 
               type="text" 
               value={districtName} 
@@ -217,7 +231,9 @@ export default function WeatherAdvisor({
           </div>
 
           <div className="text-xs">
-            <label className="block font-semibold text-slate-600 mb-1">{wt.soilTypeLabel}</label>
+            <label className="block font-semibold text-slate-600 mb-1">
+              {b("Soil Type", wt.soilTypeLabel)}
+            </label>
             <select 
               value={soilType} 
               onChange={(e) => setSoilType(e.target.value)}
@@ -232,7 +248,9 @@ export default function WeatherAdvisor({
           </div>
 
           <div className="text-xs">
-            <label className="block font-semibold text-slate-600 mb-1">{wt.seasonLabel}</label>
+            <label className="block font-semibold text-slate-600 mb-1">
+              {b("Sowing Season", wt.seasonLabel)}
+            </label>
             <select 
               value={season} 
               onChange={(e) => setSeason(e.target.value)}
@@ -248,11 +266,14 @@ export default function WeatherAdvisor({
             <button
               type="submit"
               disabled={recommendLoading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2"
               id="btn-submit-recommend"
             >
-              {recommendLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sprout className="w-4 h-4" />}
-              {recommendLoading ? wt.analyzing : wt.analyzeSuitability}
+              {recommendLoading ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : <Sprout className="w-4 h-4 shrink-0" />}
+              {recommendLoading 
+                ? b("Analyzing...", wt.analyzing, { variant: "button" })
+                : b("Analyze Crop Suitability", wt.analyzeSuitability, { variant: "button" })
+              }
             </button>
           </div>
         </form>

@@ -1,4 +1,4 @@
-export type SupportedLanguage = "en" | "hi" | "bho" | "mr" | "pa" | "ta" | "te" | "bn" | "es" | "vi" | "sw";
+export type SupportedLanguage = "en" | "hi" | "mr" | "mai" | "bho" | "pa" | "ta" | "te" | "bn" | "es" | "vi" | "sw";
 
 export interface User {
   id: string;
@@ -39,7 +39,7 @@ export interface PlantSpecies {
 export interface PlantLocalName {
   id: string;
   plantSpeciesId: string;
-  language: "en" | "hi" | "bho" | "mr" | "pa" | "ta" | "te" | "bn" | "es" | "vi" | "sw";
+  language: "en" | "hi" | "mr" | "mai" | "bho" | "pa" | "ta" | "te" | "bn" | "es" | "vi" | "sw";
   localName: string;
 }
 

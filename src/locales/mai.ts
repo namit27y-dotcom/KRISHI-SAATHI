@@ -1,0 +1,97 @@
+import { TranslationSchema } from "./schema";
+import { bho } from "./bho";
+
+export const mai: TranslationSchema = {
+  ...bho,
+  common: {
+    ...bho.common,
+    appName: "कृषि साथी",
+    tagline: "स्मार्ट आ टिकाऊ किसानी",
+    loading: "लोड भऽ रहल अछि...",
+    saving: "सहेजल जा रहल अछि...",
+    error: "कोनो त्रुटि भेल",
+    retry: "पुनः प्रयास करू",
+    cancel: "रद्द करू",
+    confirm: "पुष्टि करू",
+    submit: "जमा करू",
+    reset: "पुनर्स्थापित करू",
+    search: "खोजू...",
+    close: "बंद करू",
+    back: "पाछाँ",
+    next: "आगाँ",
+    viewAll: "सभ देखू",
+    noData: "कोनो जानकारी उपलब्ध नहि अछि"
+  },
+  header: {
+    ...bho.header,
+    guestModeActive: "अतिथि मोड सक्रिय अछि",
+    createRealProfile: "अखन अपन असली खाता बनाउ",
+    guestModeDesc: "अहाँ एकटा नमूना फार्म प्रोफ़ाइल देखि रहल छी। अपन जानकारी सुरक्षित राखबाक लेल अखन खाता बनाउ।"
+  },
+  nav: {
+    ...bho.nav,
+    dashboard: "डैशबोर्ड हब",
+    farmerBuy: "खाद आ उपकरण खरीदू 🏪",
+    farmerSell: "फसल बेचू 🌾",
+    orderHistory: "ऑर्डरक इतिहास 🧾",
+    chats: "प्रत्यक्ष व्यापारिक चैट 💬",
+    snap: "पौधा पहचानू (Snap & Know)",
+    academy: "कृषि अकादमी 🎥",
+    disease: "रोग पहचान आ निदान",
+    planners: "खाद आ पटवन प्लानर",
+    schemes: "सरकारी योजना",
+    chat: "एआई कृषि साथी",
+    charts: "उपज विश्लेषण",
+    sellerDashboard: "हमार दुकान 🏪",
+    buyerDashboard: "फसल क्रय हब 🌾",
+    adminDashboard: "प्रशासक केंद्र ⚙️",
+    regionalWeather: "क्षेत्रीय मौसम 🌦️"
+  },
+  profile: {
+    ...bho.profile,
+    farmMetrics: "अहाँक खेतक नाप-जोख",
+    totalLand: "कुल जमीन:",
+    convertUnit: "इकाई बदलू:",
+    country: "देश:",
+    soilProfile: "माटिक प्रकार:",
+    village: "गाम:",
+    districtState: "जिला/राज्य:"
+  },
+  weather: {
+    ...bho.weather,
+    liveBlockWeather: "अहाँक ब्लॉकक मौसम",
+    temperature: "तापमान",
+    humidity: "हवा मे नमी",
+    windSpeed: "हवाक गति",
+    rainfallForecast: "वर्षाक पूर्वानुमान",
+    cropRecommendationTitle: "फसलक सुझाव",
+    cropRecommendationSubtitle: "अपन इलाका आ मौसमक अनुसार एआई सँ सटीक फसल सुझाव प्राप्त करू।",
+    stateLabel: "राज्य",
+    districtLabel: "जिला",
+    soilTypeLabel: "माटिक प्रकार",
+    seasonLabel: "बोआईक मौसम",
+    analyzeSuitability: "फसलक उपयुक्तता जांचू",
+    analyzing: "मौसमक आकलन कएल जा रहल अछि...",
+    weatherAnalysis: "मौसमक हाल",
+    farmingAdvice: "कृषि वैज्ञानिकक सलाह"
+  },
+  marketplace: {
+    ...bho.marketplace,
+    buyTitle: "खाद आ उपकरण खरीदू",
+    buySubtitle: "प्रमाणित कृषि डीलर आ उपकरण निर्माता सँ सीधा गाम मे डिलीवरीक संग।",
+    searchPlaceholder: "खाद, बीज, कीटनाशक आ ट्रैक्टर खोजू...",
+    allCategories: "सभ श्रेणी",
+    inStockOnly: "केबल स्टॉक मे उपलब्ध",
+    sortBy: "क्रमबद्ध करू",
+    sortFeatured: "विशेष",
+    sortPriceLow: "मूल्य: कम सँ बेसी",
+    sortPriceHigh: "मूल्य: बेसी सँ कम",
+    sortRating: "रेटिंग",
+    verifiedDealer: "सत्यापित डीलर",
+    viewDetails: "विवरण देखू",
+    contactDealer: "डीलर सँ संपर्क करू",
+    buyNow: "अखन खरीदू",
+    inStock: "स्टॉक मे उपलब्ध",
+    outOfStock: "स्टॉक समाप्त"
+  }
+};

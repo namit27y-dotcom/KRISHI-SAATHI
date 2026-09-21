@@ -284,11 +284,12 @@ function getQueryGovernmentSchemesFallback(query: string, farmerState: string, f
   };
 }
 
-function getChatFarmingAssistantFallback(message: string) {
+function getChatFarmingAssistantFallback(message: string, preferredLanguage: string = "en") {
   const query = message.toLowerCase();
+  const isBilingual = preferredLanguage !== "en";
 
   if (query.includes("bigha") || query.includes("acre") || query.includes("convert") || query.includes("hectare") || query.includes("guntha")) {
-    return `🌾 **Land Unit Conversion Quick Guide:**
+    const enText = `🌾 **Land Unit Conversion Quick Guide:**
 
 - **1 Acre** = **1.6 Pucca Bigha** (Standard in UP, Bihar, Rajasthan, MP)
 - **1 Acre** = **3.025 Kachha Bigha** (Local North India standard)
@@ -296,34 +297,61 @@ function getChatFarmingAssistantFallback(message: string) {
 - **1 Acre** = **0.4047 Hectares** (or 4,047 sq meters / 43,560 sq ft)
 - **1 Hectare** = **2.47 Acres** = **3.95 Bighas**
 
-*Note: Bigha measurements vary slightly by state, but 1 Acre = 1.6 Pucca Bighas is the most widely recognized government standard.*`;
+*Note: 1 Acre = 1.6 Pucca Bighas is the most widely recognized standard.*`;
+
+    if (!isBilingual) return enText;
+
+    const subText = preferredLanguage === "bho" 
+      ? `🌾 **जमीन नाप के आसान हिसाब:**\n\n- **1 एकड़** = **1.6 पक्का बीघा** (बिहार, यूपी, राजस्थान खातिर)\n- **1 एकड़** = **3.025 कच्चा बीघा**\n- **1 एकड़** = **40 गुंठा**\n- **1 एकड़** = **0.4047 हेक्टेयर** (4,047 वर्ग मीटर)\n- **1 हेक्टेयर** = **2.47 एकड़**`
+      : preferredLanguage === "hi"
+      ? `🌾 **भूमि इकाई रूपांतरण त्वरित गाइड:**\n\n- **1 एकड़** = **1.6 पक्का बीघा** (यूपी, बिहार, राजस्थान, एमपी मानक)\n- **1 एकड़** = **3.025 कच्चा बीघा**\n- **1 एकड़** = **40 गुंठा**\n- **1 एकड़** = **0.4047 हेक्टेयर**\n- **1 हेक्टेयर** = **2.47 एकड़**`
+      : preferredLanguage === "mr"
+      ? `🌾 **जमीन मोजमाप जलद मार्गदर्शक:**\n\n- **1 एकर** = **40 गुंठे** (महाराष्ट्र मानक)\n- **1 एकर** = **1.6 पक्के बिघा**\n- **1 हेक्टर** = **2.47 एकर** = **100 गुंठे**`
+      : `🌾 **जमीन नाप कऽ त्वरित मार्गदर्शिका:**\n\n- **1 एकड़** = **1.6 पक्का बीघा** (मिथिला आ बिहारक मानक)\n- **1 एकड़** = **40 गुंठा**\n- **1 हेक्टेयर** = **2.47 एकड़**`;
+
+    return `${enText}\n\n---\n\n${subText}`;
   }
 
   if (query.includes("fertilizer") || query.includes("urea") || query.includes("dap") || query.includes("npk") || query.includes("compost")) {
-    return `🌱 **Soil & Fertilizer Advice for your field:**
+    const enText = `🌱 **Soil & Fertilizer Advice for your field:**
 
 1. **Balanced NPK Ratio:** Maintain a standard 4:2:1 (N:P:K) ratio for cereals, or 1:2:1 for legumes and pulses.
 2. **Organic Boosters:** Combine chemical doses with 2-3 tonnes/acre of well-rotted FYM (Farm Yard Manure) or Vermicompost.
-3. **Bio-fertilizers:** Seed treatment with *Azotobacter* (for nitrogen) and *PSB* (Phosphorus Solubilizing Bacteria) boosts nutrient intake by 20%.
-4. **Soil Testing:** Always test soil pH and organic carbon content every 2 years before heavy fertilizer application.`;
+3. **Bio-fertilizers:** Seed treatment with *Azotobacter* and *PSB* boosts nutrient intake by 20%.
+4. **Soil Testing:** Always test soil pH and organic carbon before heavy fertilizer application.`;
+
+    if (!isBilingual) return enText;
+
+    const subText = preferredLanguage === "bho"
+      ? `🌱 **माटी आ खाद खातिर सलाह:**\n\n1. **संतुलित NPK अनुपात:** अनाज वाली फसलन खातिर 4:2:1 आ दलहन खातिर 1:2:1 अनुपात राखीं।\n2. **जैविक खाद:** रासायनिक खाद के साथ 2-3 टन सड़ा गोबर या वर्मीकम्पोस्ट जरूर मिलाईं।\n3. **जैव उर्वरक:** एजोटोबैक्टर आ पीएसबी से बीज शोधन करे से 20% ले पोषण बढ़ जाला।\n4. **माटी जांच:** भारी खाद डाले से पहिले माटी के जांच जरूर करवा लीं।`
+      : preferredLanguage === "hi"
+      ? `🌱 **खेत के लिए उर्वरक और मिट्टी सलाह:**\n\n1. **संतुलित एनपीके अनुपात:** धान्य फसलों के लिए 4:2:1 और दलहनी फसलों के लिए 1:2:1 अनुपात बनाए रखें।\n2. **जैविक खाद:** प्रति एकड़ 2-3 टन अच्छी सड़ी गोबर की खाद या केंचुआ खाद का प्रयोग करें।\n3. **जैव-उर्वरक:** एजोटोबैक्टर व पीएसबी से बीज उपचार करें।\n4. **मृदा परीक्षण:** भारी रासायनिक उर्वरक प्रयोग से पहले मिट्टी की जांच अवश्य करवाएं।`
+      : preferredLanguage === "mr"
+      ? `🌱 **माती आणि खत व्यवस्थापन सल्ला:**\n\n1. **संतुलित NPK प्रमाण:** तृणधान्य पिकांसाठी 4:2:1 आणि डाळवर्गीय पिकांसाठी 1:2:1 प्रमाण ठेवा.\n2. **सेंद्रिय खते:** रासायनिक खतांसोबत एकरी 2-3 टन चांगले कुजलेले शेणखत किंवा गांडूळखत वापरा.\n3. **जैविक खते:** अझोटोबॅक्टर आणि पीएसबीने बीजप्रक्रिया करा.\n4. **माती परीक्षण:** रासायनिक खतांचा अतिवापर टाळण्यासाठी माती परीक्षण करून घ्या.`
+      : `🌱 **माटि आ खाद कऽ लेल सलाह:**\n\n1. **संतुलित NPK अनुपात:** अनाज लेल 4:2:1 आ दलहन लेल 1:2:1 अनुपात राखू।\n2. **जैविक खाद:** प्रति एकड़ 2-3 टन सड़ा गोबर या केंचुआ खाद कऽ प्रयोग करू।\n3. **जैव-उर्वरक:** एजोटोबैक्टर आ पीएसबी सँ बीज उपचार करू।\n4. **माटि जांच:** रासायनिक खाद देबा सँ पहिने माटिक जांच जरूर करवाउ।`;
+
+    return `${enText}\n\n---\n\n${subText}`;
   }
 
-  if (query.includes("pest") || query.includes("disease") || query.includes("insect") || query.includes("fungus") || query.includes("yellow")) {
-    return `🐛 **Integrated Pest & Disease Management Plan:**
-
-1. **Neem Oil Spray:** Mix 5ml Neem Oil (10,000 ppm) + 1ml liquid soap per liter of water. Spray during early morning or evening.
-2. **Yellow Sticky Traps:** Deploy 10-12 yellow/blue sticky traps per acre to catch whiteflies, thrips, and aphids naturally.
-3. **Fungal Protection:** Apply *Trichoderma viride* (5g/liter) to soil root zone for wilt and root-rot prevention.
-4. **Targeted Treatment:** For severe caterpillar or worm attacks, use eco-friendly *Bacillus thuringiensis* (Bt) or Spinosad.`;
-  }
-
-  return `Namaste! 🙏 As your Krishi Saathi assistant, here is my recommended agronomist advice for "${message}":
+  const enText = `Namaste! 🙏 As your Krishi Saathi assistant, here is my recommended advice for "${message}":
 
 1. **Prioritize Organic Soil Health:** Integrate compost, vermicompost, and bio-inoculants to build root resilience.
-2. **Water Management:** Utilize drip irrigation and organic mulching to conserve moisture and maintain micro-climates.
-3. **Crop Rotation:** Rotate heavy feeders (like Maize/Sugarcane) with legumes (Gram/Cowpea) to fix natural nitrogen into the soil.
+2. **Water Management:** Utilize drip irrigation and organic mulching to conserve moisture.
+3. **Crop Care:** Monitor pest levels early and prefer bio-pesticides like Neem oil before chemical interventions.
 
-Feel free to ask about specific crops, pest controls, land unit conversions, or regional government schemes!`;
+Feel free to ask about specific crops, pest controls, land unit conversions, or government schemes!`;
+
+  if (!isBilingual) return enText;
+
+  const subText = preferredLanguage === "bho"
+    ? `प्रणाम! 🙏 रउआ कृषि साथी के रूप में "${message}" खातिर ई सलाह बा:\n\n1. **माटी के सेहत:** गोबर खाद, वर्मीकम्पोस्ट आ जैविक खाद से खेत के मजबूत बनाईं।\n2. **पटवन प्रबंधन:** नमी बचावे खातिर ड्रिप सिंचाई आ पुआल के मल्चिंग करीं।\n3. **फसल सुरक्षा:** कीड़ा-मकोड़ा दिखे पर नीम के तेल के छिड़काव पहिले करीं।`
+    : preferredLanguage === "hi"
+    ? `नमस्ते! 🙏 कृषि साथी सहायक के रूप में "${message}" के लिए मेरी सलाह:\n\n1. **मिट्टी का स्वास्थ्य:** कम्पोस्ट, वर्मीकम्पोस्ट और जैव-उर्वरकों से मिट्टी को समृद्ध बनाएं।\n2. **जल प्रबंधन:** नमी बनाए रखने के लिए ड्रिप सिंचाई और मल्चिंग अपनाएं।\n3. **फसल सुरक्षा:** कीट प्रबंधन के लिए रासायनिक दवाओं से पहले नीम तेल जैसे जैविक उपाय करें।`
+    : preferredLanguage === "mr"
+    ? `नमस्कार! 🙏 कृषी साथी सहाय्यक म्हणून "${message}" साठी माझा सल्ला:\n\n1. **मातीचे आरोग्य:** कंपोस्ट, गांडूळखत आणि जैविक घटकांचा वापर करा.\n2. **पाणी व्यवस्थापन:** ओलावा टिकवण्यासाठी ठिबक सिंचन आणि आच्छादन (मल्चिंग) वापरा.\n3. **पीक संरक्षण:** कीड नियंत्रणासाठी रासायनिक फवारणीपूर्वी निंबोळी अर्क वापरा.`
+    : `प्रणाम! 🙏 कृषि साथी सहायकक रूप मे "${message}" लेल हमर सलाह:\n\n1. **माटिक स्वास्थ्य:** कम्पोस्ट आ केंचुआ खाद सँ माटि के उर्वर बनाऊ।\n2. **जल प्रबंधन:** ड्रिप सिंचाई आ मल्चिंग कऽ उपयोग करू।\n3. **फसल सुरक्षा:** कीट नियंत्रण लेल नीम तेलक जैविक उपचार करू।`;
+
+  return `${enText}\n\n---\n\n${subText}`;
 }
 
 function getForecastYieldFallback(cropName: string, soilType: string, landArea: number, state: string, district: string) {
@@ -868,6 +896,7 @@ export async function queryGovernmentSchemes(query: string, farmerState: string,
 
 export async function chatFarmingAssistant(message: string, history: { role: string; text: string }[], preferredLanguage: string = "en") {
   const targetLangName = LANGUAGE_NAMES[preferredLanguage] || preferredLanguage;
+  const isBilingualMode = preferredLanguage !== "en";
 
   // Append new message to contents
   const contents = history.map((h) => ({
@@ -880,31 +909,50 @@ export async function chatFarmingAssistant(message: string, history: { role: str
     parts: [{ text: message }],
   });
 
-  const apiCall = ai.models.generateContent({
-    model: MODEL_NAME,
-    contents: contents,
-    config: {
-      systemInstruction: `
-        You are Krishi Saathi's flagship AI Farming Assistant, an expert agronomist, plant biologist, and soil scientist in a farmer's pocket.
+  const systemInstruction = isBilingualMode
+    ? `
+        You are Krishi Saathi's flagship AI Farming Assistant, an expert agronomist, plant biologist, and soil scientist serving Indian farmers.
         Your goal is to provide sustainable, highly accurate, and friendly farming advice.
         Always promote:
         - Soil-safe, organic-first practices.
         - Proper water-saving irrigation practices.
         - Integrated Pest Management (IPM) rather than chemical sprays.
         - Environmentally safe, minimal chemical dosages if synthetic is mentioned.
-        - Support farmers with local vernacular contexts if they ask.
-        CRITICAL LANGUAGE REQUIREMENT:
-        The user's preferred language is ${targetLangName} (Language code: "${preferredLanguage}").
-        You MUST formulate your entire response in ${targetLangName}.
-        Do NOT reply in English unless the requested language is English.
-        Keep your language humble, very practical, and easy to understand for smallholder farmers.
-      `,
+        
+        CRITICAL MANDATORY BILINGUAL FORMAT REQUIREMENT:
+        The BASE LANGUAGE of Krishi Saathi is ENGLISH.
+        The user has selected the regional language: ${targetLangName} (code: "${preferredLanguage}").
+        
+        ENGLISH MUST ALWAYS REMAIN VISIBLE alongside the regional language.
+        Format your response bilingually for every answer:
+        
+        First: Clear, practical English response summary or main advice.
+        Immediately followed by: Accurate, fluent translation or response in ${targetLangName}.
+        
+        Example format:
+        Wheat needs crown root irrigation (CRI) 20-25 days after sowing to develop strong tillers.
+        गेहूं में बोआई के 20-25 दिन बाद मुख्य जड़ (CRI) सिंचाई जरूरी है ताकि मजबूत कल्ले निकल सकें।
+        
+        Keep answers practical, accurate, humble, and easy for farmers to understand.
+      `
+    : `
+        You are Krishi Saathi's flagship AI Farming Assistant, an expert agronomist, plant biologist, and soil scientist serving farmers.
+        Your goal is to provide sustainable, highly accurate, and friendly farming advice in clear, concise English.
+        Promote organic-first practices, IPM pest control, and efficient water management.
+        Keep answers practical, accurate, and easy for farmers to understand.
+      `;
+
+  const apiCall = ai.models.generateContent({
+    model: MODEL_NAME,
+    contents: contents,
+    config: {
+      systemInstruction: systemInstruction,
     },
   }).then(response => response.text || "I apologize, but I could not formulate a response at this moment.");
 
   return withTimeoutAndFallback(
     apiCall,
-    () => getChatFarmingAssistantFallback(message),
+    () => getChatFarmingAssistantFallback(message, preferredLanguage),
     15000
   );
 }

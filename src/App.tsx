@@ -47,6 +47,9 @@ import BuyerDashboard from "./components/BuyerDashboard.tsx";
 import AdminDashboard from "./components/AdminDashboard.tsx";
 import MarketplaceChats from "./components/MarketplaceChats.tsx";
 import OrderHistory from "./components/OrderHistory.tsx";
+import { useLanguage } from "./contexts/LanguageContext.tsx";
+import { Bi } from "./components/Bilingual.tsx";
+import { SupportedLanguage } from "./types.ts";
 
 import logoImg from "./assets/images/krishi_saathi_logo_1784057751281.jpg";
 import farmBgImg from "./assets/images/farm_background_1784198819057.jpg";
@@ -69,10 +72,18 @@ const GUEST_FARMER = {
 };
 
 export default function App() {
+  const { language, setLanguage, isBilingual, b, supportedLanguages } = useLanguage();
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [currentUnit, setCurrentUnit] = useState<"Acres" | "Bigha" | "Hectares" | "Guntha">("Acres");
+
+  // Keep LanguageContext in sync with user's preferredLanguage
+  useEffect(() => {
+    if (user?.preferredLanguage && user.preferredLanguage !== language) {
+      setLanguage(user.preferredLanguage);
+    }
+  }, [user?.preferredLanguage]);
 
   const convertLandArea = (acres: number, unit: "Acres" | "Bigha" | "Hectares" | "Guntha"): number => {
     switch (unit) {
@@ -88,11 +99,14 @@ export default function App() {
     }
   };
 
-  const currentUnitLabel = (unit: "Acres" | "Bigha" | "Hectares" | "Guntha", lang: "en" | "hi" | "mr") => {
-    const unitLabels = {
+  const currentUnitLabel = (unit: "Acres" | "Bigha" | "Hectares" | "Guntha", lang: string) => {
+    const unitLabels: Record<string, Record<string, string>> = {
       en: { Acres: "Acres", Bigha: "Bigha", Hectares: "Hectares", Guntha: "Guntha" },
       hi: { Acres: "एकड़", Bigha: "बीघा", Hectares: "हेक्टेयर", Guntha: "गुंठा" },
+      bho: { Acres: "एकड़", Bigha: "बीघा", Hectares: "हेक्टेयर", Guntha: "गुंठा" },
       mr: { Acres: "एकर", Bigha: "बिघा", Hectares: "हेक्टर", Guntha: "गुंठा" },
+      mai: { Acres: "एकड़", Bigha: "बीघा", Hectares: "हेक्टेयर", Guntha: "गुंठा" },
+      pa: { Acres: "ਏਕੜ", Bigha: "ਬੀਘਾ", Hectares: "ਹੈਕਟੇਅਰ", Guntha: "ਗੁੰਠਾ" },
     };
     return unitLabels[lang]?.[unit] || unitLabels.en[unit];
   };
@@ -100,118 +114,251 @@ export default function App() {
   const formatLandArea = (acres: number, unit: "Acres" | "Bigha" | "Hectares" | "Guntha") => {
     const converted = convertLandArea(acres, unit);
     const formatted = converted.toFixed(2);
-    const lang = user?.preferredLanguage || "en";
-    return `${formatted} ${currentUnitLabel(unit, lang)}`;
+    const unitText = currentUnitLabel(unit, language);
+    if (!isBilingual || unitText === unit) {
+      return `${formatted} ${unit}`;
+    }
+    return `${formatted} ${unit} (${unitText})`;
   };
 
-  const t = (key: string) => {
-    const translations: Record<string, Record<string, string>> = {
-      hi: {
-        "Your Farm Metrics": "आपके खेत की जानकारी",
-        "Total Land:": "कुल भूमि:",
-        "Country:": "देश:",
-        "Soil Profile:": "मिट्टी का प्रकार:",
-        "Village:": "गाँव:",
-        "District/State:": "जिला/राज्य:",
-        "Dashboard Hub": "डैशबोर्ड हब",
-        "Snap & Know ID": "फोटो लें और जानें",
-        "Disease Diagnose": "रोग निदान",
-        "Fertilizer & Water": "उर्वरक और सिंचाई",
-        "Govt Schemes": "सरकारी योजनाएं",
-        "Crop Academy 🎥": "फसल अकादमी 🎥",
-        "Featured Sowing Lessons": "विशेष बुवाई पाठ",
-        "View All Academy": "सभी अकादमी देखें",
-        "Winter Rabi": "सर्दियों की रबी",
-        "High-Yield Wheat Guide": "उच्च उपज गेहूं गाइड",
-        "Learn spacing & CRI watering stages": "दूरी और CRI सिंचाई चरणों को जानें",
-        "mins lesson": "मिनट का पाठ",
-        "Off-Season": "गैर-मौसमी (ऑफ़-सीज़न)",
-        "Cucumber Polyhouse": "खीरा पॉलीहाउस",
-        "Maximize yield during heavy monsoon": "भारी मानसून के दौरान उपज अधिकतम करें",
-        "AI Companion": "एआई साथी",
-        "Analytics Yield": "उपज विश्लेषण",
-        "Smart Sustainable Farming": "स्मार्ट टिकाऊ खेती",
-        "Guest Mode Active": "अतिथि मोड सक्रिय",
-        "Create Real Profile Now": "वास्तविक प्रोफ़ाइल अभी बनाएं",
-        "Your Active Farm Guide": "आपका सक्रिय कृषि गाइड",
-        "Active Agronomist Bot": "सक्रिय कृषि वैज्ञानिक बॉट",
-        "Schedules & Alerts": "शेड्यूल और अलर्ट",
-        "Logout": "लॉगआउट",
-        "Database Export": "डेटाबेस निर्यात",
-        "Database Export Description": "कृषि साथी स्कीमा के लिए पूरी तरह से सामान्यीकृत MySQL DDL स्क्रिप्ट और सीड का निरीक्षण/डाउनलोड करें।"
-      },
-      bho: {
-        "Your Farm Metrics": "रउआ खेत के जानकारी",
-        "Total Land:": "कुल जमीन:",
-        "Country:": "देश:",
-        "Soil Profile:": "मिट्टी के प्रकार:",
-        "Village:": "गाँव:",
-        "District/State:": "जिला/राज्य:",
-        "Dashboard Hub": "डैशबोर्ड हब",
-        "Snap & Know ID": "फोटो खींचीं अउर जानीं",
-        "Disease Diagnose": "रोग निदान",
-        "Fertilizer & Water": "खाद अउर सिंचाई",
-        "Govt Schemes": "सरकारी योजना",
-        "Crop Academy 🎥": "फसल अकादमी 🎥",
-        "Featured Sowing Lessons": "विशेष बोआई पाठ",
-        "View All Academy": "सब अकादमी देखीं",
-        "Winter Rabi": "जाड़ा के रबी",
-        "High-Yield Wheat Guide": "अधिक पैदावार गेहूं गाइड",
-        "Learn spacing & CRI watering stages": "दूरी अउर CRI सिंचाई के तरीका सीखीं",
-        "mins lesson": "मिनट के पाठ",
-        "Off-Season": "बिना-मौसम (ऑफ़-सीज़न)",
-        "Cucumber Polyhouse": "खीरा पॉलीहाउस",
-        "Maximize yield during heavy monsoon": "भारी बरसात में पैदावार बढ़ाईं",
-        "AI Companion": "एआई साथी",
-        "Analytics Yield": "पैदावार विश्लेषण",
-        "Smart Sustainable Farming": "स्मार्ट टिकाऊ खेती",
-        "Guest Mode Active": "अतिथि मोड सक्रिय",
-        "Create Real Profile Now": "असली प्रोफ़ाइल अभी बनाईं",
-        "Your Active Farm Guide": "रउआ सक्रिय कृषि गाइड",
-        "Active Agronomist Bot": "सक्रिय कृषि वैज्ञानिक बॉट",
-        "Schedules & Alerts": "शेड्यूल अउर अलर्ट",
-        "Logout": "लॉगआउट",
-        "Database Export": "डेटाबेस निर्यात",
-        "Database Export Description": "कृषि साथी स्कीमा खातिर MySQL DDL स्क्रिप्ट अउर सीड डाउनलोड करीं।"
-      },
-      mr: {
-        "Your Farm Metrics": "तुमच्या शेतीची माहिती",
-        "Total Land:": "एकूण जमीन:",
-        "Country:": "देश:",
-        "Soil Profile:": "मातीचा प्रकार:",
-        "Village:": "गाव:",
-        "District/State:": "जिल्हा/राज्य:",
-        "Dashboard Hub": "डॅशबोर्ड हब",
-        "Snap & Know ID": "फोटो काढा आणि ओळखा",
-        "Disease Diagnose": "रोग निदान",
-        "Fertilizer & Water": "खत आणि पाणी",
-        "Govt Schemes": "शासकीय योजना",
-        "Crop Academy 🎥": "पीक अकादमी 🎥",
-        "Featured Sowing Lessons": "निवडक लागवड धडे",
-        "View All Academy": "सर्व अकादमी पहा",
-        "Winter Rabi": "हिवाळी रब्बी पीक",
-        "High-Yield Wheat Guide": "अधिक उत्पन्न देणारे गहू मार्गदर्शक",
-        "Learn spacing & CRI watering stages": "योग्य अंतर व पाण्याचे टप्पे शिका",
-        "mins lesson": "मिनिटांचा धडा",
-        "Off-Season": "बिगर-हंगामी शेती",
-        "Cucumber Polyhouse": "काकडी पॉलीहाऊस तंत्र",
-        "Maximize yield during heavy monsoon": "मुसळधार पावसातही अधिक उत्पादन घ्या",
-        "AI Companion": "एआय सोबती",
-        "Analytics Yield": "उत्पादन विश्लेषण",
-        "Smart Sustainable Farming": "स्मार्ट शाश्वत शेती",
-        "Guest Mode Active": "अतिथी मोड सक्रिय",
-        "Create Real Profile Now": "वास्तविक प्रोफाइल आता तयार करा",
-        "Your Active Farm Guide": "तुमचे सक्रिय शेती मार्गदर्शक",
-        "Active Agronomist Bot": "सक्रिय कृषी तज्ज्ञ बॉट",
-        "Schedules & Alerts": "शेड्यूल आणि अलर्ट",
-        "Logout": "लॉगआउट",
-        "Database Export": "डेटाबेस निर्यात",
-        "Database Export Description": "कृषि साथी स्कीमासाठी पूर्णपणे सामान्यीकृत MySQL DDL स्क्रिप्ट आणि सीडचे निरीक्षण/डाउनलोड करा।"
-      }
-    };
+  const translations: Record<string, Record<string, string>> = {
+    hi: {
+      "Weather": "मौसम",
+      "Temperature": "तापमान",
+      "Air Humidity": "वायु आर्द्रता",
+      "Crop Recommendation": "फसल अनुशंसा",
+      "Order History": "ऑर्डर इतिहास",
+      "Order History 🧾": "ऑर्डर इतिहास 🧾",
+      "Direct Trade Chats": "सीधी व्यापार चैट",
+      "Direct Trade Chats 💬": "सीधी व्यापार चैट 💬",
+      "Analyze Crop Suitability": "फसल उपयुक्तता जांचें",
+      "Buy Fertilizers & Equipment": "उर्वरक और उपकरण खरीदें",
+      "Buy Fertilizers & Equipment 🏪": "उर्वरक और उपकरण खरीदें 🏪",
+      "Sell Crops": "फसल बेचें",
+      "Sell Crops 🌾": "फसल बेचें 🌾",
+      "Get AI-powered recommendations tailored to your local seasonal patterns.": "अपने स्थानीय मौसमी पैटर्न के अनुसार एआई-संचालित सिफारिशें प्राप्त करें।",
+      "Your Farm Metrics": "आपके खेत की जानकारी",
+      "Total Land:": "कुल भूमि:",
+      "Country:": "देश:",
+      "Soil Profile:": "मिट्टी का प्रकार:",
+      "Village:": "गाँव:",
+      "District/State:": "जिला/राज्य:",
+      "Dashboard Hub": "डैशबोर्ड हब",
+      "Snap & Know ID": "फोटो लें और जानें",
+      "Disease Diagnose": "रोग निदान",
+      "Fertilizer & Water": "उर्वरक और सिंचाई",
+      "Govt Schemes": "सरकारी योजनाएं",
+      "Govt Schemes 📄": "सरकारी योजनाएं 📄",
+      "Regional Weather 🌦️": "क्षेत्रीय मौसम 🌦️",
+      "Weather & Market 🌦️": "मौसम और मंडी 🌦️",
+      "My Dealer Store 🏪": "मेरी डीलर दुकान 🏪",
+      "Browse & Buy Crops 🌾": "फसलें देखें और खरीदें 🌾",
+      "Admin Workspace ⚙️": "प्रशासक कार्यस्थान ⚙️",
+      "Crop Academy 🎥": "फसल अकादमी 🎥",
+      "Featured Sowing Lessons": "विशेष बुवाई पाठ",
+      "View All Academy": "सभी अकादमी देखें",
+      "Winter Rabi": "सर्दियों की रबी",
+      "High-Yield Wheat Guide": "उच्च उपज गेहूं गाइड",
+      "Learn spacing & CRI watering stages": "दूरी और CRI सिंचाई चरणों को जानें",
+      "mins lesson": "मिनट का पाठ",
+      "Off-Season": "गैर-मौसमी (ऑफ़-सीज़न)",
+      "Cucumber Polyhouse": "खीरा पॉलीहाउस",
+      "Maximize yield during heavy monsoon": "भारी मानसून के दौरान उपज अधिकतम करें",
+      "AI Companion": "एआई साथी",
+      "Analytics Yield": "उपज विश्लेषण",
+      "Smart Sustainable Farming": "स्मार्ट टिकाऊ खेती",
+      "Guest Mode Active": "अतिथि मोड सक्रिय",
+      "Create Real Profile Now": "वास्तविक प्रोफ़ाइल अभी बनाएं",
+      "Your Active Farm Guide": "आपका सक्रिय कृषि गाइड",
+      "Active Agronomist Bot": "सक्रिय कृषि वैज्ञानिक बॉट",
+      "Schedules & Alerts": "शेड्यूल और अलर्ट",
+      "Logout": "लॉगआउट",
+      "Database Export": "डेटाबेस निर्यात",
+      "Database Export Description": "कृषि साथी स्कीमा के लिए पूरी तरह से सामान्यीकृत MySQL DDL स्क्रिप्ट और सीड का निरीक्षण/डाउनलोड करें।"
+    },
+    bho: {
+      "Weather": "मौसम",
+      "Temperature": "तापमान",
+      "Air Humidity": "हवा में नमी",
+      "Crop Recommendation": "फसल के सुझाव",
+      "Order History": "ऑर्डर के इतिहास",
+      "Order History 🧾": "ऑर्डर के इतिहास 🧾",
+      "Direct Trade Chats": "सीधा व्यापारिक चैट",
+      "Direct Trade Chats 💬": "सीधा व्यापारिक चैट 💬",
+      "Analyze Crop Suitability": "फसल के उपयुक्तता जाँचीं",
+      "Buy Fertilizers & Equipment": "खाद आ उपकरण खरीदीं",
+      "Buy Fertilizers & Equipment 🏪": "खाद आ उपकरण खरीदीं 🏪",
+      "Sell Crops": "फसल बेचीं",
+      "Sell Crops 🌾": "फसल बेचीं 🌾",
+      "Get AI-powered recommendations tailored to your local seasonal patterns.": "अपना इलाका आ मौसम के हिसाब से AI से सही फसल के सुझाव पाईं।",
+      "Your Farm Metrics": "रउआ खेत के जानकारी",
+      "Total Land:": "कुल जमीन:",
+      "Country:": "देश:",
+      "Soil Profile:": "मिट्टी के प्रकार:",
+      "Village:": "गाँव:",
+      "District/State:": "जिला/राज्य:",
+      "Dashboard Hub": "डैशबोर्ड हब",
+      "Snap & Know ID": "फोटो खींचीं अउर जानीं",
+      "Disease Diagnose": "रोग निदान",
+      "Fertilizer & Water": "खाद अउर सिंचाई",
+      "Govt Schemes": "सरकारी योजना",
+      "Govt Schemes 📄": "सरकारी योजना 📄",
+      "Regional Weather 🌦️": "इलाकाई मौसम 🌦️",
+      "Weather & Market 🌦️": "मौसम आ मंडी 🌦️",
+      "My Dealer Store 🏪": "हमार दुकान 🏪",
+      "Browse & Buy Crops 🌾": "फसल देखीं आ खरीदीं 🌾",
+      "Admin Workspace ⚙️": "व्यवस्थापक केंद्र ⚙️",
+      "Crop Academy 🎥": "फसल अकादमी 🎥",
+      "Featured Sowing Lessons": "विशेष बोआई पाठ",
+      "View All Academy": "सब अकादमी देखीं",
+      "Winter Rabi": "जाड़ा के रबी",
+      "High-Yield Wheat Guide": "अधिक पैदावार गेहूं गाइड",
+      "Learn spacing & CRI watering stages": "दूरी अउर CRI सिंचाई के तरीका सीखीं",
+      "mins lesson": "मिनट के पाठ",
+      "Off-Season": "बिना-मौसम (ऑफ़-सीज़न)",
+      "Cucumber Polyhouse": "खीरा पॉलीहाउस",
+      "Maximize yield during heavy monsoon": "भारी बरसात में पैदावार बढ़ाईं",
+      "AI Companion": "एआई साथी",
+      "Analytics Yield": "पैदावार विश्लेषण",
+      "Smart Sustainable Farming": "स्मार्ट टिकाऊ खेती",
+      "Guest Mode Active": "अतिथि मोड सक्रिय",
+      "Create Real Profile Now": "असली प्रोफ़ाइल अभी बनाईं",
+      "Your Active Farm Guide": "रउआ सक्रिय कृषि गाइड",
+      "Active Agronomist Bot": "सक्रिय कृषि वैज्ञानिक बॉट",
+      "Schedules & Alerts": "शेड्यूल अउर अलर्ट",
+      "Logout": "लॉगआउट",
+      "Database Export": "डेटाबेस निर्यात",
+      "Database Export Description": "कृषि साथी स्कीमा खातिर MySQL DDL स्क्रिप्ट अउर सीड डाउनलोड करीं।"
+    },
+    mr: {
+      "Weather": "हवामान",
+      "Temperature": "तापमान",
+      "Air Humidity": "हवेतील आर्द्रता",
+      "Crop Recommendation": "पीक शिफारस",
+      "Order History": "ऑर्डर इतिहास",
+      "Order History 🧾": "ऑर्डर इतिहास 🧾",
+      "Direct Trade Chats": "थेट व्यापार चॅट्स",
+      "Direct Trade Chats 💬": "थेट व्यापार चॅट्स 💬",
+      "Analyze Crop Suitability": "पीक उपयुक्तता तपासा",
+      "Buy Fertilizers & Equipment": "खते आणि उपकरणे खरेदी करा",
+      "Buy Fertilizers & Equipment 🏪": "खते आणि उपकरणे खरेदी करा 🏪",
+      "Sell Crops": "पीक विका",
+      "Sell Crops 🌾": "पीक विका 🌾",
+      "Get AI-powered recommendations tailored to your local seasonal patterns.": "तुमच्या स्थानिक हंगामी पद्धतीनुसार एआय-चालित शिफारसी मिळवा.",
+      "Your Farm Metrics": "तुमच्या शेतीची माहिती",
+      "Total Land:": "एकूण जमीन:",
+      "Country:": "देश:",
+      "Soil Profile:": "मातीचा प्रकार:",
+      "Village:": "गाव:",
+      "District/State:": "जिल्हा/राज्य:",
+      "Dashboard Hub": "डॅशबोर्ड हब",
+      "Snap & Know ID": "फोटो काढा आणि ओळखा",
+      "Disease Diagnose": "रोग निदान",
+      "Fertilizer & Water": "खत आणि पाणी",
+      "Govt Schemes": "शासकीय योजना",
+      "Govt Schemes 📄": "शासकीय योजना 📄",
+      "Regional Weather 🌦️": "प्रादेशिक हवामान 🌦️",
+      "Weather & Market 🌦️": "हवामान आणि बाजार 🌦️",
+      "My Dealer Store 🏪": "माझे डीलर स्टोअर 🏪",
+      "Browse & Buy Crops 🌾": "पिके पहा आणि खरेदी करा 🌾",
+      "Admin Workspace ⚙️": "प्रशासक केंद्र ⚙️",
+      "Crop Academy 🎥": "पीक अकादमी 🎥",
+      "Featured Sowing Lessons": "निवडक लागवड धडे",
+      "View All Academy": "सर्व अकादमी पहा",
+      "Winter Rabi": "हिवाळी रब्बी पीक",
+      "High-Yield Wheat Guide": "अधिक उत्पन्न देणारे गहू मार्गदर्शक",
+      "Learn spacing & CRI watering stages": "योग्य अंतर व पाण्याचे टप्पे शिका",
+      "mins lesson": "मिनिटांचा धडा",
+      "Off-Season": "बिगर-हंगामी शेती",
+      "Cucumber Polyhouse": "काकडी पॉलीहाऊस तंत्र",
+      "Maximize yield during heavy monsoon": "मुसळधार पावसातही अधिक उत्पादन घ्या",
+      "AI Companion": "एआय सोबती",
+      "Analytics Yield": "उत्पादन विश्लेषण",
+      "Smart Sustainable Farming": "स्मार्ट शाश्वत शेती",
+      "Guest Mode Active": "अतिथी मोड सक्रिय",
+      "Create Real Profile Now": "वास्तविक प्रोफाइल आता तयार करा",
+      "Your Active Farm Guide": "तुमचे सक्रिय शेती मार्गदर्शक",
+      "Active Agronomist Bot": "सक्रिय कृषी तज्ज्ञ बॉट",
+      "Schedules & Alerts": "शेड्यूल आणि अलर्ट",
+      "Logout": "लॉगआउट",
+      "Database Export": "डेटाबेस निर्यात",
+      "Database Export Description": "कृषि साथी स्कीमासाठी पूर्णपणे सामान्यीकृत MySQL DDL स्क्रिप्ट आणि सीडचे निरीक्षण/डाउनलोड करा।"
+    },
+    mai: {
+      "Weather": "मौसम",
+      "Temperature": "तापमान",
+      "Air Humidity": "हवा मे नमी",
+      "Crop Recommendation": "फसलक सुझाव",
+      "Order History": "ऑर्डरक इतिहास",
+      "Order History 🧾": "ऑर्डरक इतिहास 🧾",
+      "Direct Trade Chats": "प्रत्यक्ष व्यापारिक चैट",
+      "Direct Trade Chats 💬": "प्रत्यक्ष व्यापारिक चैट 💬",
+      "Analyze Crop Suitability": "फसलक उपयुक्तता जांचू",
+      "Buy Fertilizers & Equipment": "खाद आ उपकरण खरीदू",
+      "Buy Fertilizers & Equipment 🏪": "खाद आ उपकरण खरीदू 🏪",
+      "Sell Crops": "फसल बेचू",
+      "Sell Crops 🌾": "फसल बेचू 🌾",
+      "Get AI-powered recommendations tailored to your local seasonal patterns.": "अपन इलाका आ मौसमक अनुसार एआई सँ सटीक फसल सुझाव प्राप्त करू।",
+      "Your Farm Metrics": "अहाँक खेतक जानकारी",
+      "Total Land:": "कुल जमीन:",
+      "Country:": "देश:",
+      "Soil Profile:": "माटिक प्रकार:",
+      "Village:": "गाम:",
+      "District/State:": "जिला/राज्य:",
+      "Dashboard Hub": "डैशबोर्ड हब",
+      "Snap & Know ID": "फोटो खींचू आ जानू",
+      "Disease Diagnose": "रोग निदान",
+      "Fertilizer & Water": "खाद आ पटवन",
+      "Govt Schemes": "सरकारी योजना",
+      "Govt Schemes 📄": "सरकारी योजना 📄",
+      "Regional Weather 🌦️": "इलाकाई मौसम 🌦️",
+      "Weather & Market 🌦️": "मौसम आ बाजार 🌦️",
+      "My Dealer Store 🏪": "हमार दुकान 🏪",
+      "Browse & Buy Crops 🌾": "फसल देखू आ खरीदू 🌾",
+      "Admin Workspace ⚙️": "व्यवस्थापक केंद्र ⚙️",
+      "Crop Academy 🎥": "फसल अकादमी 🎥",
+      "Featured Sowing Lessons": "विशेष बोआई पाठ",
+      "View All Academy": "सभ अकादमी देखू",
+      "Winter Rabi": "जाड़क रबी",
+      "High-Yield Wheat Guide": "अधिक पैदावार गेहूं गाइड",
+      "Learn spacing & CRI watering stages": "दूरी आ CRI सिंचाईक तरीका सीखू",
+      "mins lesson": "मिनटक पाठ",
+      "Off-Season": "बे-मौसम (ऑफ़-सीज़न)",
+      "Cucumber Polyhouse": "खीरा पॉलीहाउस",
+      "Maximize yield during heavy monsoon": "भारी बरसातमे पैदावार बढ़ाउ",
+      "AI Companion": "एआई साथी",
+      "Analytics Yield": "पैदावार विश्लेषण",
+      "Smart Sustainable Farming": "स्मार्ट टिकाऊ खेती",
+      "Guest Mode Active": "अतिथि मोड सक्रिय",
+      "Create Real Profile Now": "असली प्रोफ़ाइल आब बनाउ",
+      "Your Active Farm Guide": "अहाँक सक्रिय कृषि गाइड",
+      "Active Agronomist Bot": "सक्रिय कृषि वैज्ञानिक बॉट",
+      "Schedules & Alerts": "शेड्यूल आ अलर्ट",
+      "Logout": "लॉगआउट",
+      "Database Export": "डेटाबेस निर्यात",
+      "Database Export Description": "कृषि साथी स्कीमा लेल MySQL DDL स्क्रिप्ट आ सीड डाउनलोड करू।"
+    }
+  };
 
-    const currentLang = user?.preferredLanguage || "en";
-    return translations[currentLang]?.[key] || key;
+  /**
+   * Universal bilingual text helper:
+   * English ALWAYS remains visible as primary text.
+   * When another language is selected, renders:
+   *   ENGLISH
+   *   Selected Language
+   */
+  const t = (key: string): React.ReactNode => {
+    if (!isBilingual) {
+      return key;
+    }
+    const cleanKey = key.replace(/[🏪🌾🧾💬🎥⚙️🌦️📄🛡️⚡⏱]/g, "").trim();
+    const trans = translations[language]?.[key] || 
+                  translations[language]?.[cleanKey] || 
+                  (translations.hi?.[cleanKey] ? translations.hi[cleanKey] : undefined);
+    if (!trans || trans === key) {
+      return key;
+    }
+    return <Bi en={key} sub={trans} />;
   };
 
   // Feature 9 Plant ID Specific States
@@ -416,9 +563,10 @@ export default function App() {
             {/* Display language selector choice */}
             <div className="relative">
               <select
-                value={user.preferredLanguage}
+                value={language}
                 onChange={(e) => {
-                  const newLang = e.target.value as any;
+                  const newLang = e.target.value as SupportedLanguage;
+                  setLanguage(newLang);
                   setUser((prev: any) => ({ ...prev, preferredLanguage: newLang }));
                 }}
                 className="text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl cursor-pointer outline-none transition-all shadow-xs"
@@ -428,6 +576,7 @@ export default function App() {
                 <option value="hi">हिंदी (Hindi) 🇮🇳</option>
                 <option value="bho">भोजपुरी (Bhojpuri) 🇮🇳</option>
                 <option value="mr">मराठी (Marathi) 🇮🇳</option>
+                <option value="mai">मैथिली (Maithili) 🇮🇳</option>
                 <option value="pa">Punjabi (ਪੰਜਾਬੀ) 🇮🇳</option>
                 <option value="ta">Tamil (தமிழ்) 🇮🇳</option>
                 <option value="te">Telugu (తెలుగు) 🇮🇳</option>
