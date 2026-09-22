@@ -248,8 +248,8 @@ export const LivestockCourseViewer: React.FC<Props> = ({
 
                 {/* Edit modal inline */}
                 {isEditingVideoUrl && (
-                  <div className="bg-stone-950 p-4 border-t border-stone-700 flex flex-col gap-2">
-                    <label className="text-xs text-stone-300 font-medium">
+                  <div className="bg-stone-100 p-4 border-t border-stone-200 flex flex-col gap-2">
+                    <label className="text-xs text-stone-700 font-semibold">
                       <Bi 
                         en="Enter Embeddable Video URL (e.g. YouTube embed URL or HLS video source):" 
                         sub="वीडियो एम्बेड URL दर्ज करें (उदा. यूट्यूब एम्बेड लिंक):" 
@@ -261,17 +261,17 @@ export const LivestockCourseViewer: React.FC<Props> = ({
                         value={tempVideoUrl}
                         onChange={(e) => setTempVideoUrl(e.target.value)}
                         placeholder="https://www.youtube-nocookie.com/embed/..."
-                        className="flex-1 bg-stone-900 border border-stone-700 text-white rounded-lg px-3 py-1.5 text-xs focus:border-emerald-500 outline-none"
+                        className="flex-1 bg-white border border-stone-300 text-stone-900 rounded-lg px-3 py-1.5 text-xs focus:border-emerald-600 outline-none"
                       />
                       <button
                         onClick={handleSaveVideoUrl}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-semibold"
+                        className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-3 py-1.5 rounded-lg font-semibold shadow-2xs"
                       >
                         <Bi en="Save" sub="सहेजें" />
                       </button>
                       <button
                         onClick={() => setIsEditingVideoUrl(false)}
-                        className="bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs px-3 py-1.5 rounded-lg"
+                        className="bg-white hover:bg-stone-50 border border-stone-300 text-stone-700 text-xs px-3 py-1.5 rounded-lg font-medium"
                       >
                         <Bi en="Cancel" sub="रद्द" />
                       </button>

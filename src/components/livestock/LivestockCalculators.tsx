@@ -589,76 +589,86 @@ export const LivestockCalculators: React.FC = () => {
         </div>
 
         {/* Projection Outputs */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-stone-900 to-stone-800 text-white p-5 rounded-2xl flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-stone-50 border border-stone-200 rounded-2xl p-5 md:p-6 flex flex-col justify-between shadow-2xs">
           <div>
-            <div className="text-xs text-stone-400 font-medium uppercase tracking-wider mb-1">
+            <div className="text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-1">
               <Bi en={res.cycleLabelEn} sub={res.cycleLabelHi} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-1.5">
-              <TrendingUp className="w-5 h-5 text-emerald-400" />
+            <h3 className="text-base md:text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-emerald-700" />
               <Bi en="Financial Projection" sub="वित्तीय आय-व्यय अनुमान" />
             </h3>
 
             {/* Metrics */}
             <div className="space-y-3 mb-5">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between">
-                <span className="text-xs text-stone-300">
-                  <Bi en="Estimated Cost" sub="अनुमानित कुल लागत" />
-                </span>
-                <span className="text-base font-bold text-rose-300">
+              <div className="bg-white border border-stone-200 rounded-xl p-3.5 flex items-center justify-between shadow-2xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-stone-400" />
+                  <span className="text-xs font-semibold text-stone-600">
+                    <Bi en="Estimated Cost" sub="अनुमानित कुल लागत" />
+                  </span>
+                </div>
+                <span className="text-base font-bold text-stone-800 tabular-nums">
                   ₹{res.cost.toLocaleString("en-IN")}
                 </span>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between">
-                <span className="text-xs text-stone-300">
-                  <Bi en="Estimated Revenue" sub="अनुमानित कुल आय" />
-                </span>
-                <span className="text-base font-bold text-emerald-300">
+              <div className="bg-white border border-stone-200 rounded-xl p-3.5 flex items-center justify-between shadow-2xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-semibold text-stone-600">
+                    <Bi en="Estimated Revenue" sub="अनुमानित कुल आय" />
+                  </span>
+                </div>
+                <span className="text-base font-bold text-stone-900 tabular-nums">
                   ₹{res.revenue.toLocaleString("en-IN")}
                 </span>
               </div>
 
-              <div className="bg-emerald-950/60 border border-emerald-500/30 rounded-xl p-3.5 flex items-center justify-between">
+              <div className="bg-emerald-50/90 border border-emerald-200 rounded-xl p-4 flex items-center justify-between shadow-2xs">
                 <div>
-                  <span className="text-xs text-emerald-200 font-semibold block">
+                  <span className="text-xs text-emerald-950 font-bold block">
                     <Bi en="Estimated Operating Profit" sub="अनुमानित शुद्ध लाभ" />
                   </span>
-                  <span className="text-[10px] text-emerald-400/80">
+                  <span className="text-[11px] font-semibold text-emerald-700">
                     {res.cost > 0 ? `${Math.round((res.profit / res.revenue) * 100)}% profit margin` : ""}
                   </span>
                 </div>
-                <span className={`text-xl font-extrabold ${res.profit >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                <span className={`text-xl font-extrabold tabular-nums ${res.profit >= 0 ? "text-emerald-800" : "text-rose-700"}`}>
                   ₹{res.profit.toLocaleString("en-IN")}
                 </span>
               </div>
             </div>
 
             {/* Cost breakdown */}
-            <div className="space-y-2 border-t border-white/10 pt-3 text-xs">
-              <span className="text-stone-400 font-medium block mb-1">
+            <div className="space-y-2 border-t border-stone-200 pt-4 text-xs">
+              <span className="text-stone-800 font-bold block mb-2">
                 <Bi en="Cost Component Breakdown" sub="खर्च का घटकवार विवरण" />
               </span>
-              {res.breakdown.map((b, idx) => (
-                <div key={idx} className="flex justify-between text-stone-300 text-[11px]">
-                  <span><Bi en={b.labelEn} sub={b.labelHi} /></span>
-                  <span className="font-mono text-stone-200">₹{b.val.toLocaleString("en-IN")}</span>
-                </div>
-              ))}
+              <div className="divide-y divide-stone-100">
+                {res.breakdown.map((b, idx) => (
+                  <div key={idx} className="flex justify-between items-center py-1.5 text-stone-600 text-xs">
+                    <span className="font-medium"><Bi en={b.labelEn} sub={b.labelHi} /></span>
+                    <span className="font-semibold text-stone-800 tabular-nums">₹{b.val.toLocaleString("en-IN")}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Mandatory Disclaimer */}
-          <div className="mt-5 p-3 rounded-xl bg-amber-950/40 border border-amber-600/30 text-[11px] text-amber-200/90 flex gap-2 items-start">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <div className="mt-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex gap-2.5 items-start">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <strong className="block text-amber-300">
+              <strong className="block text-amber-950 font-semibold mb-0.5">
                 <Bi en="Estimates Disclaimer" sub="महत्वपूर्ण अस्वीकरण (Disclaimer)" />
               </strong>
-              <Bi 
-                en="All calculations are estimates for educational planning only. Actual market rates, local mortality, weather variations, and feed costs may differ significantly." 
-                sub="ये सभी गणनाएं केवल शैक्षणिक योजना और अनुमान के लिए हैं। स्थानीय बाजार भाव, मौसम, बीमारी और चारा लागत में अंतर आ सकता है।" 
-              />
+              <span className="text-[11px] text-amber-800/90 leading-relaxed block">
+                <Bi 
+                  en="All calculations are estimates for educational planning only. Actual market rates, local mortality, weather variations, and feed costs may differ significantly." 
+                  sub="ये सभी गणनाएं केवल शैक्षणिक योजना और अनुमान के लिए हैं। स्थानीय बाजार भाव, मौसम, बीमारी और चारा लागत में अंतर आ सकता है।" 
+                />
+              </span>
             </div>
           </div>
         </div>
