@@ -355,22 +355,32 @@ export const LivestockDashboard: React.FC<Props> = ({ currentUser, onOpenAIChat 
                     }`}
                   >
                     {/* Image & Badge */}
-                    <div className="relative h-40 overflow-hidden bg-stone-100">
+                    <div className="relative h-40 overflow-hidden bg-gradient-to-br from-emerald-950 via-stone-900 to-teal-950 flex items-center justify-center">
                       <img
-                        src={cat.imageUrl}
-                        alt={cat.nameEn}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        src={cat.imageUrl || CATEGORY_FALLBACK_IMAGES[cat.code]}
+                        alt=""
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          const fallback = CATEGORY_FALLBACK_IMAGES[cat.code];
+                          if (fallback && target.src !== fallback) {
+                            target.src = fallback;
+                          } else {
+                            target.style.display = "none";
+                          }
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 relative z-1"
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-2 pointer-events-none" />
                       
                       {isPreferred && (
-                        <div className="absolute top-2.5 right-2.5 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+                        <div className="absolute top-2.5 right-2.5 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm z-3">
                           <Bi en="Interested" sub="रुचि" />
                         </div>
                       )}
 
-                      <div className="absolute bottom-2.5 left-3 right-3 text-white">
+                      <div className="absolute bottom-2.5 left-3 right-3 text-white z-3">
                         <h4 className="font-bold text-base leading-tight text-white drop-shadow-sm">
                           <Bi 
                             en={cat.nameEn} 
