@@ -79,7 +79,7 @@ export const LIVESTOCK_CATEGORIES: FarmingCategory[] = [
       sw: "Ufugaji wa kondoo kibiashara"
     },
     iconName: "Trees",
-    imageUrl: "https://images.unsplash.com/photo-1484557052118-f32bd25b45b5?w=800&auto=format&fit=crop&q=80",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Ecological_lawn_mower_squad.jpg/1280px-Ecological_lawn_mower_squad.jpg",
     displayOrder: 2,
     totalLessons: 16
   },
@@ -231,7 +231,7 @@ export const LIVESTOCK_CATEGORIES: FarmingCategory[] = [
       sw: "Uvunaji wa asali safi"
     },
     iconName: "Sun",
-    imageUrl: "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?w=800&auto=format&fit=crop&q=80",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Beekeeper_2017_Honeybee_Conservancy%2C_College_of_DuPage.jpg/1280px-Beekeeper_2017_Honeybee_Conservancy%2C_College_of_DuPage.jpg",
     displayOrder: 6,
     totalLessons: 13
   },
@@ -269,7 +269,7 @@ export const LIVESTOCK_CATEGORIES: FarmingCategory[] = [
       sw: "Bwawa la samaki kibiashara"
     },
     iconName: "Fish",
-    imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Fish_Farming_Ponds.jpg/1280px-Fish_Farming_Ponds.jpg",
     displayOrder: 7,
     totalLessons: 14
   },
@@ -307,7 +307,7 @@ export const LIVESTOCK_CATEGORIES: FarmingCategory[] = [
       sw: "Mfumo wa kilimo na ufugaji pamoja"
     },
     iconName: "Repeat",
-    imageUrl: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&auto=format&fit=crop&q=80",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Traditional_Duck_Herding_After_Harvest.jpg/1280px-Traditional_Duck_Herding_After_Harvest.jpg",
     displayOrder: 8,
     totalLessons: 6
   }

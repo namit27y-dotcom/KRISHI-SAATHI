@@ -38,13 +38,13 @@ interface Props {
 
 const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {
   dairy: "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800&auto=format&fit=crop&q=80",
-  sheep: "https://images.unsplash.com/photo-1484557052118-f32bd25b45b5?w=800&auto=format&fit=crop&q=80",
+  sheep: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Ecological_lawn_mower_squad.jpg/1280px-Ecological_lawn_mower_squad.jpg",
   goat: "https://images.unsplash.com/photo-1524024973431-2ad916746881?w=800&auto=format&fit=crop&q=80",
   poultry: "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=800&auto=format&fit=crop&q=80",
   pig: "https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=800&auto=format&fit=crop&q=80",
-  beekeeping: "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?w=800&auto=format&fit=crop&q=80",
-  fisheries: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80",
-  integrated: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&auto=format&fit=crop&q=80",
+  beekeeping: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Beekeeper_2017_Honeybee_Conservancy%2C_College_of_DuPage.jpg/1280px-Beekeeper_2017_Honeybee_Conservancy%2C_College_of_DuPage.jpg",
+  fisheries: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Fish_Farming_Ponds.jpg/1280px-Fish_Farming_Ponds.jpg",
+  integrated: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Traditional_Duck_Herding_After_Harvest.jpg/1280px-Traditional_Duck_Herding_After_Harvest.jpg",
 };
 
 export const LivestockDashboard: React.FC<Props> = ({ currentUser, onOpenAIChat }) => {
@@ -361,9 +361,9 @@ export const LivestockDashboard: React.FC<Props> = ({ currentUser, onOpenAIChat 
                         alt=""
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          const fallback = CATEGORY_FALLBACK_IMAGES[cat.code];
-                          if (fallback && target.src !== fallback) {
-                            target.src = fallback;
+                          const localFallback = `/images/academy/${cat.code}.jpg`;
+                          if (!target.src.endsWith(localFallback)) {
+                            target.src = localFallback;
                           } else {
                             target.style.display = "none";
                           }

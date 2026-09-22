@@ -1734,6 +1734,9 @@ CREATE INDEX idx_notif_user ON Notifications(user_id, is_read);
     res.send(createScript);
   });
 
+  // Serve static public/images
+  app.use("/images", express.static(path.join(process.cwd(), "public", "images")));
+
   // Vite and static asset middleware setup
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

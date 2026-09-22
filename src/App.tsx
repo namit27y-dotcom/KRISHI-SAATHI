@@ -24,7 +24,10 @@ import {
   Video,
   Play,
   ShoppingBag,
-  Fish
+  Fish,
+  BookOpen,
+  Wifi,
+  WifiOff
 } from "lucide-react";
 
 import AuthScreen from "./components/AuthScreen.tsx";
@@ -40,6 +43,9 @@ import NotificationPanel from "./components/NotificationPanel.tsx";
 import FloatingHelper from "./components/FloatingHelper.tsx";
 import CropAcademy from "./components/CropAcademy.tsx";
 import { LivestockDashboard } from "./components/livestock/LivestockDashboard.tsx";
+import { NetworkStatusBanner, NetworkStatusPill } from "./components/NetworkStatusIndicator.tsx";
+import OfflineFieldGuidesModal from "./components/OfflineFieldGuidesModal.tsx";
+import { cacheCustomScannedPlant } from "./utils/offlineCacheManager.ts";
 
 // Marketplace, Role-Based and Direct Chat Dashboards
 import MarketplaceBuy from "./components/MarketplaceBuy.tsx";
@@ -79,6 +85,9 @@ export default function App() {
   const [token, setToken] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [currentUnit, setCurrentUnit] = useState<"Acres" | "Bigha" | "Hectares" | "Guntha">("Acres");
+  const [showOfflineModal, setShowOfflineModal] = useState<boolean>(false);
+  const [offlineInitialCategory, setOfflineInitialCategory] = useState<string>("all");
+  const [offlineSaveToast, setOfflineSaveToast] = useState<string | null>(null);
 
   // Keep LanguageContext in sync with user's preferredLanguage
   useEffect(() => {
@@ -536,6 +545,26 @@ export default function App() {
     setPlantIdError(null);
   };
 
+  const saveToOfflineFieldGuides = () => {
+    if (!plantIdResult) return;
+    try {
+      cacheCustomScannedPlant({
+        commonName: plantIdResult.identity?.commonName || "Custom Crop",
+        scientificName: plantIdResult.identity?.scientificName || "Plantae",
+        family: plantIdResult.identity?.family || "Agricultural",
+        summary: plantIdResult.summary || "",
+        soilCompatibility: plantIdResult.soilCompatibility?.recommendations,
+        fertilizer: plantIdResult.fertilizerAdvice?.recommendedFertilizer,
+        diseases: plantIdResult.diseases?.map((d: any) => d.name).join(", "),
+        localName: plantIdResult.identity?.localName
+      });
+      setOfflineSaveToast(`Saved "${plantIdResult.identity?.commonName}" to Offline Field Guides! Accessible without network.`);
+      setTimeout(() => setOfflineSaveToast(null), 4000);
+    } catch (err) {
+      console.error("Failed to save to offline cache:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans relative overflow-x-hidden" id="applet-main-body">
       {/* Subtle Farm Background Layer */}
@@ -548,94 +577,124 @@ export default function App() {
       <div className="absolute bottom-20 left-0 w-[600px] h-[600px] bg-amber-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
       {/* Top Navigation Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 md:px-8 py-3.5 flex justify-between items-center shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500 shadow-sm shrink-0">
-            <img 
-              src={logoImg} 
-              alt="Krishi Saathi Logo" 
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover" 
-            />
-          </div>
-          <div>
-            <h1 className="text-base font-black text-slate-800 tracking-tight leading-none">
-              Krishi Saathi
-            </h1>
-            <span className="text-[9px] font-bold text-emerald-600 block uppercase tracking-wider mt-0.5">
-              Smart Sustainable Farming
-            </span>
-          </div>
-        </div>
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-xs">
+        {/* Network Status Indicator Banner: prompts when disconnected to enable offline cache */}
+        <NetworkStatusBanner onOpenOfflineGuides={(cat) => {
+          setOfflineInitialCategory(cat || "all");
+          setShowOfflineModal(true);
+        }} />
 
-        {user ? (
-          <div className="flex items-center gap-3">
-            {/* Display language selector choice */}
-            <div className="relative">
-              <select
-                value={language}
-                onChange={(e) => {
-                  const newLang = e.target.value as SupportedLanguage;
-                  setLanguage(newLang);
-                  setUser((prev: any) => ({ ...prev, preferredLanguage: newLang }));
-                }}
-                className="text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl cursor-pointer outline-none transition-all shadow-xs"
-                id="language-selector-dropdown"
-              >
-                <option value="en">English 🇺🇸</option>
-                <option value="hi">हिंदी (Hindi) 🇮🇳</option>
-                <option value="bho">भोजपुरी (Bhojpuri) 🇮🇳</option>
-                <option value="mr">मराठी (Marathi) 🇮🇳</option>
-                <option value="mai">मैथिली (Maithili) 🇮🇳</option>
-                <option value="pa">Punjabi (ਪੰਜਾਬੀ) 🇮🇳</option>
-                <option value="ta">Tamil (தமிழ்) 🇮🇳</option>
-                <option value="te">Telugu (తెలుగు) 🇮🇳</option>
-                <option value="bn">Bengali (বাংলা) 🇮🇳</option>
-                <option value="es">Spanish (Español) 🇪🇸</option>
-                <option value="vi">Vietnamese (Tiếng Việt) 🇻🇳</option>
-                <option value="sw">Swahili (Kiswahili) 🇰🇪</option>
-              </select>
+        <div className="px-4 md:px-8 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500 shadow-sm shrink-0">
+              <img 
+                src={logoImg} 
+                alt="Krishi Saathi Logo" 
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover" 
+              />
             </div>
-
-            {/* Display profile stats summary */}
-            <div className="hidden md:flex flex-col text-right">
-              <span className="text-xs font-bold text-slate-800 leading-none">{user.name}</span>
-              <span className="text-[10px] text-slate-400 mt-0.5">
-                {user.village ? `${user.village}, ` : ""}{user.district}
+            <div>
+              <h1 className="text-base font-black text-slate-800 tracking-tight leading-none">
+                Krishi Saathi
+              </h1>
+              <span className="text-[9px] font-bold text-emerald-600 block uppercase tracking-wider mt-0.5">
+                Smart Sustainable Farming
               </span>
             </div>
 
-            {/* Notifications Button */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifPanel(!showNotifPanel)}
-                className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-100 text-slate-600 transition-all relative"
-                title="Schedules & Alerts"
-                id="btn-trigger-notif"
-              >
-                <Bell className="w-4 h-4" />
-                <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5 animate-ping" />
-              </button>
-
-              {showNotifPanel && (
-                <NotificationPanel 
-                  userId={user.id} 
-                  onClose={() => setShowNotifPanel(false)} 
-                />
-              )}
-            </div>
-
-            {/* Logout button */}
+            {/* Offline Guides Quick Button in Header */}
             <button
-              onClick={handleLogout}
-              className="p-2 bg-slate-50 hover:bg-rose-50 rounded-xl border border-slate-100 hover:border-rose-100 text-slate-600 hover:text-rose-600 transition-all"
-              title="Logout"
-              id="btn-logout"
+              onClick={() => {
+                setOfflineInitialCategory("all");
+                setShowOfflineModal(true);
+              }}
+              className="hidden md:flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-xl transition-all shadow-2xs ml-3 cursor-pointer"
+              title="Browse Critical Field Guides (Offline Ready)"
+              id="btn-header-offline-guides"
             >
-              <LogOut className="w-4 h-4" />
+              <BookOpen className="w-3.5 h-3.5 text-emerald-700" />
+              <Bi en="Field Guides" sub="फ़ील्ड गाइड्स" />
             </button>
           </div>
-        ) : null}
+
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* Header Network Status Indicator Pill (Online/Offline Status + Quick Drawer) */}
+            <NetworkStatusPill onOpenOfflineGuides={(cat) => {
+              setOfflineInitialCategory(cat || "all");
+              setShowOfflineModal(true);
+            }} />
+
+            {user ? (
+              <>
+                {/* Display language selector choice */}
+                <div className="relative">
+                  <select
+                    value={language}
+                    onChange={(e) => {
+                      const newLang = e.target.value as SupportedLanguage;
+                      setLanguage(newLang);
+                      setUser((prev: any) => ({ ...prev, preferredLanguage: newLang }));
+                    }}
+                    className="text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl cursor-pointer outline-none transition-all shadow-xs"
+                    id="language-selector-dropdown"
+                  >
+                    <option value="en">English 🇺🇸</option>
+                    <option value="hi">हिंदी (Hindi) 🇮🇳</option>
+                    <option value="bho">भोजपुरी (Bhojpuri) 🇮🇳</option>
+                    <option value="mr">मराठी (Marathi) 🇮🇳</option>
+                    <option value="mai">मैथिली (Maithili) 🇮🇳</option>
+                    <option value="pa">Punjabi (ਪੰਜਾਬੀ) 🇮🇳</option>
+                    <option value="ta">Tamil (தமிழ்) 🇮🇳</option>
+                    <option value="te">Telugu (తెలుగు) 🇮🇳</option>
+                    <option value="bn">Bengali (বাংলা) 🇮🇳</option>
+                    <option value="es">Spanish (Español) 🇪🇸</option>
+                    <option value="vi">Vietnamese (Tiếng Việt) 🇻🇳</option>
+                    <option value="sw">Swahili (Kiswahili) 🇰🇪</option>
+                  </select>
+                </div>
+
+                {/* Display profile stats summary */}
+                <div className="hidden md:flex flex-col text-right">
+                  <span className="text-xs font-bold text-slate-800 leading-none">{user.name}</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5">
+                    {user.village ? `${user.village}, ` : ""}{user.district}
+                  </span>
+                </div>
+
+                {/* Notifications Button */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowNotifPanel(!showNotifPanel)}
+                    className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-100 text-slate-600 transition-all relative"
+                    title="Schedules & Alerts"
+                    id="btn-trigger-notif"
+                  >
+                    <Bell className="w-4 h-4" />
+                    <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5 animate-ping" />
+                  </button>
+
+                  {showNotifPanel && (
+                    <NotificationPanel 
+                      userId={user.id} 
+                      onClose={() => setShowNotifPanel(false)} 
+                    />
+                  )}
+                </div>
+
+                {/* Logout button */}
+                <button
+                  onClick={handleLogout}
+                  className="p-2 bg-slate-50 hover:bg-rose-50 rounded-xl border border-slate-100 hover:border-rose-100 text-slate-600 hover:text-rose-600 transition-all"
+                  title="Logout"
+                  id="btn-logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </>
+            ) : null}
+          </div>
+        </div>
       </header>
 
       {/* Main Container */}
@@ -885,6 +944,38 @@ export default function App() {
               >
                 Download SQL Script <ArrowRight className="w-3 h-3" />
               </a>
+            </div>
+          )}
+
+          {/* Critical Field Guides Offline Card */}
+          {user && (
+            <div className="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-3xl space-y-2.5 shadow-2xs" id="sidebar-offline-guides-box">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-emerald-700" />
+                  <Bi en="Offline Field Guides" sub="ऑफ़लाइन कृषि गाइड्स" />
+                </span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-full border border-emerald-300">
+                  Ready Offline
+                </span>
+              </div>
+              <p className="text-[11px] text-emerald-800 leading-relaxed font-medium">
+                <Bi 
+                  en="Critical pest alerts, organic recipes & emergency treatments available in the field without internet." 
+                  sub="खेत में बिना इंटरनेट या कमजोर नेटवर्क के तत्काल रोग उपचार व जैविक घोल की विधियां देखें।" 
+                />
+              </p>
+              <button
+                onClick={() => {
+                  setOfflineInitialCategory("all");
+                  setShowOfflineModal(true);
+                }}
+                className="w-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold py-2 px-3 rounded-xl transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
+                id="btn-sidebar-open-offline-guides"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <Bi en="Open Field Manuals" sub="गाइड्स खोलें" />
+              </button>
             </div>
           )}
         </div>
@@ -1277,13 +1368,40 @@ export default function App() {
                           </button>
                           <button
                             onClick={saveIdentifiedCrop}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-3 rounded-xl transition-all shadow-md"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-3 rounded-xl transition-all shadow-md"
                             id="btn-save-crop-record"
                           >
                             Save to Farm Record
                           </button>
+                          <button
+                            onClick={saveToOfflineFieldGuides}
+                            className="bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs px-4 py-3 rounded-xl transition-all flex items-center gap-1.5"
+                            id="btn-save-crop-offline-guide"
+                            title="Save specimen and treatment guide to offline memory"
+                          >
+                            <BookOpen className="w-3.5 h-3.5 text-emerald-700" />
+                            Save to Offline Guides
+                          </button>
                         </div>
                       </div>
+
+                      {offlineSaveToast && (
+                        <div className="bg-emerald-800 text-white p-3.5 rounded-2xl text-xs flex items-center justify-between shadow-md animate-fadeIn">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-emerald-300" />
+                            <span>{offlineSaveToast}</span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setOfflineInitialCategory("custom_scan");
+                              setShowOfflineModal(true);
+                            }}
+                            className="text-emerald-200 hover:text-white underline font-bold text-xs ml-2"
+                          >
+                            View Offline
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1470,6 +1588,13 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Offline Field Guides Modal Dialog */}
+      <OfflineFieldGuidesModal
+        isOpen={showOfflineModal}
+        onClose={() => setShowOfflineModal(false)}
+        initialFilter={offlineInitialCategory}
+      />
 
       {/* Footer copyright */}
       <footer className="bg-white border-t border-gray-100 py-6 mt-12 text-center text-[11px] text-slate-400 shrink-0">
