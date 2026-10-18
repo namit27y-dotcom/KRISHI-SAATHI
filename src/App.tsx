@@ -1096,7 +1096,7 @@ export default function App() {
 
               {/* Tab: Crop Academy & Seasonal Video Lessons */}
               {activeTab === "academy" && (
-                <CropAcademy preferredLanguage={user.preferredLanguage} />
+                <CropAcademy preferredLanguage={user.preferredLanguage} userId={user.id} />
               )}
 
               {/* Tab: Crop Disease Diagnose */}

@@ -1,17 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { 
   Play, 
   Video, 
-  Calendar, 
   Layers, 
-  ArrowRight, 
   X, 
-  Clock, 
-  Info, 
   CheckCircle,
-  Volume2,
-  Maximize2,
-  ChevronRight
+  ExternalLink,
+  BookOpen,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Award,
+  Globe,
+  Milk,
+  Feather,
+  Fish,
+  Sun,
+  Shield,
+  Circle,
+  RefreshCw,
+  Search
 } from "lucide-react";
 
 interface CropStep {
@@ -19,35 +28,79 @@ interface CropStep {
   desc: string;
 }
 
-interface CropGuide {
+interface LessonVideoItem {
   id: string;
+  lessonId: string;
+  youtubeVideoId: string;
+  youtubeUrl: string;
+  title: string;
+  description: string;
+  language: string;
+  durationSeconds: number;
+  thumbnailUrl: string;
+  isPrimary: boolean;
+}
+
+interface LessonItem {
+  id: string;
+  title: string;
+  titleEn: string;
+  videoUrl?: string;
+  videoDuration?: string;
+  content?: string;
+  youtubeVideoId?: string;
+  youtubeUrl?: string;
+  thumbnailUrl?: string;
+  steps?: CropStep[];
+  videos?: LessonVideoItem[];
+}
+
+interface CourseModuleItem {
+  id: string;
+  title: string;
+  lessons: LessonItem[];
+}
+
+interface AcademyCardData {
+  id: string;
+  courseId: string;
+  categoryId: string;
+  categoryCode: "crops" | "dairy" | "sheep" | "goat" | "poultry" | "pig" | "beekeeping" | "fisheries" | "integrated";
   name: string;
-  type: "seasonal" | "off-season";
-  season: string;
+  type: "seasonal" | "off-season" | "livestock";
+  season?: string;
   image: string;
-  videoUrl: string;
+  youtubeVideoId: string;
+  youtubeUrl: string;
   videoLength: string;
   description: string;
+  soilType?: string;
+  waterLevel?: string;
+  modules: CourseModuleItem[];
   steps: CropStep[];
-  soilType: string;
-  waterLevel: string;
   translations: Record<string, {
     name: string;
-    season: string;
+    season?: string;
     description: string;
-    steps: CropStep[];
+    steps?: CropStep[];
   }>;
 }
 
-const CROP_GUIDES_DATA: CropGuide[] = [
+// Master Academy Data with Real Verified YouTube Lessons
+const MASTER_ACADEMY_DATA: AcademyCardData[] = [
+  // 1. RICE (PADDY)
   {
     id: "rice",
+    courseId: "course-rice-1",
+    categoryId: "cat-crops",
+    categoryCode: "crops",
     name: "Rice (Paddy)",
     type: "seasonal",
     season: "Monsoon (Kharif)",
     image: "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&q=80&w=600",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-farmer-walking-in-a-rice-field-41551-large.mp4",
-    videoLength: "4:32",
+    youtubeVideoId: "-eBrAm64fpg",
+    youtubeUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
+    videoLength: "3:52",
     description: "Paddy is a water-intensive staple crop ideal for clayey and loamy water-retentive soils.",
     soilType: "Clayey / Silty Loam",
     waterLevel: "High (Flooding)",
@@ -56,6 +109,80 @@ const CROP_GUIDES_DATA: CropGuide[] = [
       { title: "Field Puddling", desc: "Plough and puddle the main field with 5-10cm of standing water." },
       { title: "Transplanting", desc: "Transplant 2-3 saplings per hill at a depth of 2-3 cm with spacing." },
       { title: "Water Management", desc: "Maintain continuous shallow flooding (5cm) until 15 days before harvest." }
+    ],
+    modules: [
+      {
+        id: "mod-rice-1",
+        title: "Nursery & Field Preparation",
+        lessons: [
+          {
+            id: "les-rice-1",
+            title: "Paddy Nursery Preparation & Seed Treatment",
+            titleEn: "Paddy Nursery Preparation & Seed Treatment",
+            videoUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
+            youtubeVideoId: "-eBrAm64fpg",
+            youtubeUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
+            thumbnailUrl: "https://img.youtube.com/vi/-eBrAm64fpg/hqdefault.jpg",
+            videoDuration: "3:52",
+            content: "Raise healthy paddy seedlings in raised beds with carbendazim seed treatment to prevent blast.",
+            steps: [
+              { title: "Raised Bed Nursery", desc: "Prepare 1m wide raised beds with adequate drainage channels." },
+              { title: "Fungicide Seed Treatment", desc: "Treat seed with Carbendazim 2g/kg seed before sprouting." }
+            ]
+          },
+          {
+            id: "les-rice-2",
+            title: "Field Puddling & System of Rice Intensification (SRI)",
+            titleEn: "Field Puddling & System of Rice Intensification (SRI)",
+            videoUrl: "https://www.youtube.com/watch?v=id5LgdTMCtE",
+            youtubeVideoId: "id5LgdTMCtE",
+            youtubeUrl: "https://www.youtube.com/watch?v=id5LgdTMCtE",
+            thumbnailUrl: "https://img.youtube.com/vi/id5LgdTMCtE/hqdefault.jpg",
+            videoDuration: "8:42",
+            content: "Learn scientific puddle preparation and single-seedling SRI planting.",
+            steps: [
+              { title: "Puddling Main Field", desc: "Plough twice with standing water to create an impermeable soil layer." },
+              { title: "SRI Square Planting", desc: "Transplant 8-12 day young seedlings with 25cm x 25cm square spacing." }
+            ]
+          }
+        ]
+      },
+      {
+        id: "mod-rice-2",
+        title: "Water, Nutrients & Harvesting",
+        lessons: [
+          {
+            id: "les-rice-3",
+            title: "Water, Fertilizer & Pest Management in Paddy",
+            titleEn: "Water, Fertilizer & Pest Management in Paddy",
+            videoUrl: "https://www.youtube.com/watch?v=4-PW4NrLNRk",
+            youtubeVideoId: "4-PW4NrLNRk",
+            youtubeUrl: "https://www.youtube.com/watch?v=4-PW4NrLNRk",
+            thumbnailUrl: "https://img.youtube.com/vi/4-PW4NrLNRk/hqdefault.jpg",
+            videoDuration: "15:10",
+            content: "Maintain continuous shallow flooding and apply balanced N-P-K at panicle initiation.",
+            steps: [
+              { title: "Shallow Flooding", desc: "Keep 2-5cm water layer during tillering and flowering stages." },
+              { title: "Split Urea Application", desc: "Apply Nitrogen in 3 splits: basal, tillering, and panicle initiation." }
+            ]
+          },
+          {
+            id: "les-rice-4",
+            title: "Paddy Harvesting & Moisture Testing",
+            titleEn: "Paddy Harvesting & Moisture Testing",
+            videoUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
+            youtubeVideoId: "-eBrAm64fpg",
+            youtubeUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
+            thumbnailUrl: "https://img.youtube.com/vi/-eBrAm64fpg/hqdefault.jpg",
+            videoDuration: "3:52",
+            content: "Harvest at 18-20% grain moisture to prevent shattering losses.",
+            steps: [
+              { title: "Optimal Cutting Time", desc: "Harvest when 80-85% of grains in the panicle turn golden straw color." },
+              { title: "Sun Drying", desc: "Dry threshed grains on clean tarpaulins to 12-14% moisture for safe storage." }
+            ]
+          }
+        ]
+      }
     ],
     translations: {
       hi: {
@@ -80,27 +207,33 @@ const CROP_GUIDES_DATA: CropGuide[] = [
           { title: "पाणी व्यवस्थापन", desc: "काढणीच्या १५ दिवस आधीपर्यंत शेतात ५ सेमी पाणी साठवून ठेवावे." }
         ]
       },
-      pa: {
-        name: "ਝੋਨਾ (ਚੌਲ)",
-        season: "ਮਾਨਸੂਨ (ਖਰੀਫ)",
-        description: "ਝੋਨਾ ਪਾਣੀ ਦੀ ਵੱਧ ਖਪਤ ਵਾਲੀ ਮੁੱਖ ਫਸਲ ਹੈ ਜੋ ਚੀਕਣੀ ਮਿੱਟੀ ਲਈ ਸਭ ਤੋਂ ਵਧਦੀ ਹੈ।",
+      bho: {
+        name: "धान (चाउर)",
+        season: "मानसून (खरीफ)",
+        description: "धान पानी वाला मुख्य फसल ह, जे दोमट आ चिकनी माटी खातिर सबसे बढ़िया होला।",
         steps: [
-          { title: "ਪਨੀਰੀ ਦੀ ਬਿਜਾਈ", desc: "ਖੇਤ ਵਿੱਚ ਲਾਉਣ ਤੋਂ 25-30 ਦਿਨ ਪਹਿਲਾਂ ਪਨੀਰੀ ਤਿਆਰ ਕਰੋ।" },
-          { title: "ਕੱਦੂ ਕਰਨਾ", desc: "ਖੇਤ ਨੂੰ ਵਾਹ ਕੇ 5-10 ਸੈਂਟੀਮੀਟਰ ਖੜ੍ਹੇ ਪਾਣੀ ਨਾਲ ਕੱਦੂ ਕਰੋ।" },
-          { title: "ਲਵਾਈ (ਟ੍ਰਾਂਸਪਲਾਂਟਿੰਗ)", desc: "ਇੱਕ ਜਗ੍ਹਾ 'ਤੇ 2-3 ਬੂਟੇ ਲਗਾਓ, 2-3 ਸੈਂਟੀਮੀਟਰ ਡੂੰਗੇ ਅਤੇ ਫਾਸਲੇ 'ਤੇ।" },
-          { title: "ਪਾਣੀ ਪ੍ਰਬੰਧਨ", desc: "ਕਟਾਈ ਤੋਂ 15 ਦਿਨ ਪਹਿਲਾਂ ਤੱਕ ਹਲਕਾ ਖੜ੍ਹਾ ਪਾਣੀ (5 ਸੈਂਟੀਮੀਟਰ) ਬਣਾਈ ਰੱਖੋ।" }
+          { title: "नर्सरी बुवाई", desc: "रोपाई से 25 दिन पहिले बीया के क्यारी में बोईं।" },
+          { title: "खेत के कादो", desc: "खेत में पानी भर के बढ़िया से कादो तैयार करीं।" },
+          { title: "रोपाई", desc: "2-3 पौधा एक जगह 2-3 सेमी गहराई पर रोपीं।" },
+          { title: "पानी के ध्यान", desc: "कटाई से 15 दिन पहिले तक खेत में पानी बनवले रहीं।" }
         ]
       }
     }
   },
+
+  // 2. WHEAT
   {
     id: "wheat",
+    courseId: "course-wheat-1",
+    categoryId: "cat-crops",
+    categoryCode: "crops",
     name: "Wheat",
     type: "seasonal",
     season: "Winter (Rabi)",
     image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=600",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-wheat-field-under-a-blue-sky-41552-large.mp4",
-    videoLength: "5:10",
+    youtubeVideoId: "JN0ICendQns",
+    youtubeUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
+    videoLength: "6:37",
     description: "Wheat is a cool-season grain crop requiring dry, bright days during maturity.",
     soilType: "Clayey Loam / Sandy Loam",
     waterLevel: "Medium (4-6 irrigations)",
@@ -109,6 +242,65 @@ const CROP_GUIDES_DATA: CropGuide[] = [
       { title: "Sowing in Rows", desc: "Sow using a seed drill at 4-5 cm depth with 20-22 cm row spacing." },
       { title: "Crown Root Irrigation", desc: "First irrigation at 21 days after sowing is the most critical (CRI stage)." },
       { title: "Harvesting", desc: "Harvest when grains are hard and dry (moisture content below 15%)." }
+    ],
+    modules: [
+      {
+        id: "mod-wheat-1",
+        title: "Seedbed & Sowing",
+        lessons: [
+          {
+            id: "les-wheat-1",
+            title: "Wheat Seedbed Preparation & Line Sowing",
+            titleEn: "Wheat Seedbed Preparation & Line Sowing",
+            videoUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
+            youtubeVideoId: "JN0ICendQns",
+            youtubeUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
+            thumbnailUrl: "https://img.youtube.com/vi/JN0ICendQns/hqdefault.jpg",
+            videoDuration: "6:37",
+            content: "Fine seedbed preparation and 20-22 cm row spacing using seed drill.",
+            steps: [
+              { title: "Seedbed Tillage", desc: "Plough field 2-3 times followed by planking for fine tilt." },
+              { title: "Line Sowing", desc: "Use seed-cum-fertilizer drill at 4-5 cm depth." }
+            ]
+          }
+        ]
+      },
+      {
+        id: "mod-wheat-2",
+        title: "CRI Stage & Harvest",
+        lessons: [
+          {
+            id: "les-wheat-2",
+            title: "CRI Crown Root Irrigation & Nutrient Management",
+            titleEn: "CRI Crown Root Irrigation & Nutrient Management",
+            videoUrl: "https://www.youtube.com/watch?v=G1nL_mFLn-A",
+            youtubeVideoId: "G1nL_mFLn-A",
+            youtubeUrl: "https://www.youtube.com/watch?v=G1nL_mFLn-A",
+            thumbnailUrl: "https://img.youtube.com/vi/G1nL_mFLn-A/hqdefault.jpg",
+            videoDuration: "7:16",
+            content: "Critical first irrigation at 21 days after sowing with top dressing of urea.",
+            steps: [
+              { title: "Crown Root Irrigation", desc: "Irrigate at 20-25 days (CRI stage) when crown roots develop." },
+              { title: "First Top Dressing", desc: "Apply remaining 50% Nitrogen after CRI irrigation." }
+            ]
+          },
+          {
+            id: "les-wheat-3",
+            title: "Wheat Yield Optimization & Harvesting",
+            titleEn: "Wheat Yield Optimization & Harvesting",
+            videoUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
+            youtubeVideoId: "JN0ICendQns",
+            youtubeUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
+            thumbnailUrl: "https://img.youtube.com/vi/JN0ICendQns/hqdefault.jpg",
+            videoDuration: "6:37",
+            content: "Harvest when grains are hard and dry with moisture below 14%.",
+            steps: [
+              { title: "Grain Hardness Check", desc: "Cut when straw turns yellow and grain cracks between teeth." },
+              { title: "Storage Aeration", desc: "Ensure moisture is below 12% before bagging to prevent weevils." }
+            ]
+          }
+        ]
+      }
     ],
     translations: {
       hi: {
@@ -132,28 +324,23 @@ const CROP_GUIDES_DATA: CropGuide[] = [
           { title: "मुकुट मूळ अवस्था", desc: "पेरणीनंतर २१ दिवसांनी पहिली महत्त्वाची सिंचनाची पाळी द्या." },
           { title: "काढणी", desc: "दाणे कडक व सुकल्यावर (ओलावा १५% पेक्षा कमी असताना) कापणी करा." }
         ]
-      },
-      pa: {
-        name: "ਕਣਕ",
-        season: "ਸਰਦੀ (ਹਾੜ੍ਹੀ)",
-        description: "ਕਣਕ ਸਰਦੀ ਰੁੱਤ ਦੀ ਅਨਾਜ ਫਸਲ ਹੈ ਜਿਸ ਨੂੰ ਪੱਕਣ ਸਮੇਂ ਖੁਸ਼ਕ ਅਤੇ ਤੇਜ਼ ਧੁੱਪ ਵਾਲੇ ਦਿਨਾਂ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।",
-        steps: [
-          { title: "ਖੇਤ ਤਿਆਰ ਕਰਨਾ", desc: "ਬੀਜ ਦੀ ਚੰਗੀ ਉਗਣ ਸ਼ਕਤੀ ਲਈ ਖੇਤ ਨੂੰ ਚੰਗੀ ਤਰ੍ਹਾਂ ਵਾਹ ਕੇ ਤਿਆਰ ਕਰੋ।" },
-          { title: "ਲਾਈਨਾਂ ਵਿੱਚ ਬਿਜਾਈ", desc: "ਸੀਡ ਡਰਿੱਲ ਰਾਹੀਂ 4-5 ਸੈਂਟੀਮੀਟਰ ਡੂੰਘਾ ਅਤੇ 20-22 ਸੈਂਟੀਮੀਟਰ ਦੀ ਦੂਰੀ 'ਤੇ ਬੀਜੋ।" },
-          { title: "ਪਹਿਲਾ ਪਾਣੀ (ਕੋਰ ਪਾਣੀ)", desc: "ਬਿਜਾਈ ਤੋਂ 21 ਦਿਨਾਂ ਬਾਅਦ ਪਹਿਲਾ ਪਾਣੀ ਦੇਣਾ ਸਭ ਤੋਂ ਮਹੱਤਵਪੂਰਨ ਹੁੰਦਾ ਹੈ।" },
-          { title: "ਕਟਾਈ", desc: "ਜਦੋਂ ਦਾਣਾ ਸਖਤ ਅਤੇ ਸੁੱਕ ਜਾਵੇ (ਨਮੀ 15% ਤੋਂ ਘੱਟ ਹੋਵੇ) ਤਾਂ ਕਟਾਈ ਕਰੋ।" }
-        ]
       }
     }
   },
+
+  // 3. OFF-SEASON CUCUMBER (POLYHOUSE)
   {
     id: "cucumber_greenhouse",
+    courseId: "course-cucumber-1",
+    categoryId: "cat-crops",
+    categoryCode: "crops",
     name: "Off-Season Cucumber",
     type: "off-season",
     season: "Monsoon Polyhouse (Off-Season)",
     image: "https://images.unsplash.com/photo-1590378222684-d0517793b51a?auto=format&fit=crop&q=80&w=600",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-vegetable-plantation-in-greenhouse-38891-large.mp4",
-    videoLength: "3:45",
+    youtubeVideoId: "wQ5Qr_PL8eU",
+    youtubeUrl: "https://www.youtube.com/watch?v=wQ5Qr_PL8eU",
+    videoLength: "2:43",
     description: "Growing high-value hybrid cucumbers in polyhouses during heavy rains protects yields and earns premium rates.",
     soilType: "Sandy Loam + Coco peat",
     waterLevel: "Low (Drip system)",
@@ -162,6 +349,44 @@ const CROP_GUIDES_DATA: CropGuide[] = [
       { title: "Drip & Fertigation", desc: "Set up drip emitters and supply soluble N-P-K once every 3 days." },
       { title: "Trellis Training", desc: "Train cucumber vines vertically using nylon strings attached to the frame." },
       { title: "Pruning & Pollination", desc: "Remove lateral shoots up to 5th node. Use self-pollinating seed varieties." }
+    ],
+    modules: [
+      {
+        id: "mod-cuc-1",
+        title: "Polyhouse & Trellis Setup",
+        lessons: [
+          {
+            id: "les-cuc-1",
+            title: "Polyhouse Cucumber Setup & Trellis Training",
+            titleEn: "Polyhouse Cucumber Setup & Trellis Training",
+            videoUrl: "https://www.youtube.com/watch?v=wQ5Qr_PL8eU",
+            youtubeVideoId: "wQ5Qr_PL8eU",
+            youtubeUrl: "https://www.youtube.com/watch?v=wQ5Qr_PL8eU",
+            thumbnailUrl: "https://img.youtube.com/vi/wQ5Qr_PL8eU/hqdefault.jpg",
+            videoDuration: "2:43",
+            content: "Vertical nylon wire support and lateral pruning up to 5th node.",
+            steps: [
+              { title: "Trellis Wire System", desc: "Support vines vertically with UV-stabilized nylon strings." },
+              { title: "Bottom Pruning", desc: "Prune lower leaves and shoots up to 45cm height for airflow." }
+            ]
+          },
+          {
+            id: "les-cuc-2",
+            title: "Drip Fertigation & Soilless Cocopeat Growing",
+            titleEn: "Drip Fertigation & Soilless Cocopeat Growing",
+            videoUrl: "https://www.youtube.com/watch?v=etI-95vwdgo",
+            youtubeVideoId: "etI-95vwdgo",
+            youtubeUrl: "https://www.youtube.com/watch?v=etI-95vwdgo",
+            thumbnailUrl: "https://img.youtube.com/vi/etI-95vwdgo/hqdefault.jpg",
+            videoDuration: "6:02",
+            content: "Soluble NPK fertigation schedule and temperature humidity maintenance.",
+            steps: [
+              { title: "Water-Soluble NPK", desc: "Supply 19:19:19 during vegetative and 13:0:45 during fruiting." },
+              { title: "Regular Harvesting", desc: "Pick tender cucumbers every 2 days before seeds harden." }
+            ]
+          }
+        ]
+      }
     ],
     translations: {
       hi: {
@@ -172,7 +397,7 @@ const CROP_GUIDES_DATA: CropGuide[] = [
           { title: "पॉलीहाउस सेटअप", desc: "शेड नेट का उपयोग करके 25-30 डिग्री सेल्सियस तापमान बनाए रखें।" },
           { title: "ड्रिप और फर्टिगेशन", desc: "ड्रिप उत्सर्जक स्थापित करें और हर 3 दिन में घुलनशील खाद पानी दें।" },
           { title: "ट्रेली ट्रेंनिंग", desc: "नायलॉन के धागों का उपयोग करके खीरे की बेलों को लंबवत रूप से प्रशिक्षित करें।" },
-          { title: "छंतनी", desc: "5वें नोड तक की पार्श्व शाखाओं को हटा दें। स्व-परागण वाली किस्मों का उपयोग करें।" }
+          { title: "छंटनी", desc: "5वें नोड तक की पार्श्व शाखाओं को हटा दें। स्व-परागण वाली किस्मों का उपयोग करें।" }
         ]
       },
       mr: {
@@ -185,28 +410,23 @@ const CROP_GUIDES_DATA: CropGuide[] = [
           { title: "वेल वर चढवणे", desc: "नायलॉन दोऱ्यांच्या सहाय्याने काकडीचा वेल सरळ उभ्या पद्धतीने वर चढवा." },
           { title: "छाटणी", desc: "५ व्या पानापर्यंतच्या फुटव्यांची छाटणी करा. स्व-परागकण वाणांचा वापर करा." }
         ]
-      },
-      pa: {
-        name: "ਬੇਮੌਸਮੀ ਖੀਰਾ (ਪੌਲੀਹਾਊਸ)",
-        season: "ਮਾਨਸੂਨ ਪੌਲੀਹਾਊਸ (ਬੇਮੌਸਮੀ)",
-        description: "ਭਾਰੀ ਮੀਂਹ ਦੌਰਾਨ ਪੌਲੀਹਾਊਸ ਵਿੱਚ ਹਾਈਬ੍ਰਿਡ ਖੀਰਾ ਉਗਾਉਣ ਨਾਲ ਫਸਲ ਸੁਰੱਖਇਤ ਰਹਿੰਦੀ ਹੈ ਅਤੇ ਚੰਗੇ ਭਾਅ ਮਿਲਦੇ ਹਨ।",
-        steps: [
-          { title: "ਪੌਲੀਹਾਊਸ ਸੈੱਟਅੱਪ", desc: "ਸ਼ੇਡ ਨੈੱਟ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਤਾਪਮਾਨ 25-30 ਡਿਗਰੀ ਅਤੇ ਨਮੀ 60-70% ਰੱਖੋ।" },
-          { title: "ਡ੍ਰਿਪ ਤੇ ਫਰਟੀਗੇਸ਼ਨ", desc: "ਡ੍ਰਿਪ ਸਿਸਟਮ ਲਗਾਓ ਅਤੇ ਹਰ 3 ਦਿਨਾਂ ਬਾਅਦ ਘੁਲਣਸ਼ੀਲ ਖਾਦ ਪਾਣੀ ਦਿਓ।" },
-          { title: "ਵੇਲਾਂ ਚੜ੍ਹਾਉਣਾ", desc: "ਖੀਰੇ ਦੀਆਂ ਵੇਲਾਂ ਨੂੰ ਨਾਈਲੋਨ ਦੀਆਂ ਰੱਸੀਆਂ ਨਾਲ ਉੱਪਰ ਵੱਲ ਚੜ੍ਹਾਓ।" },
-          { title: "ਛਾਂਟੀ", desc: "5ਵੇਂ ਪੱਤੇ ਤੱਕ ਦੇ ਵਾਧੂ ਫੁਟਾਰੇ ਕੱਟ ਦਿਓ। ਸਵੈ-ਪਰਾਗਣ ਵਾਲੀ ਕਿਸਮ ਦੀ ਵਰਤੋਂ ਕਰੋ।" }
-        ]
       }
     }
   },
+
+  // 4. HYDROPONIC CHERRY TOMATO
   {
     id: "offseason_tomato",
+    courseId: "course-tomato-1",
+    categoryId: "cat-crops",
+    categoryCode: "crops",
     name: "Hydroponic Cherry Tomato",
     type: "off-season",
     season: "Summer Controlled Sowing (Off-Season)",
     image: "https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?auto=format&fit=crop&q=80&w=600",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-ripe-tomatoes-growing-in-a-greenhouse-38890-large.mp4",
-    videoLength: "6:15",
+    youtubeVideoId: "wxMIq2E6X_Q",
+    youtubeUrl: "https://www.youtube.com/watch?v=wxMIq2E6X_Q",
+    videoLength: "5:54",
     description: "Soothes hot summers by raising premium cherry tomatoes inside automated misting greenhouses.",
     soilType: "Rockwool / Coco peat slabs",
     waterLevel: "Very Low (Recirculated Nutrient Film)",
@@ -215,6 +435,44 @@ const CROP_GUIDES_DATA: CropGuide[] = [
       { title: "Dutch Bucket Support", desc: "Place seedlings in Dutch buckets with perlite for structural root aeration." },
       { title: "Misting Cooling", desc: "Operate overhead foggers for 30 seconds every 15 minutes during noon peaks." },
       { title: "Staggered Pickings", desc: "Harvest ripe clusters twice a week. Leaves a long shelf life." }
+    ],
+    modules: [
+      {
+        id: "mod-tom-1",
+        title: "Dutch Bucket & Nutrient Automation",
+        lessons: [
+          {
+            id: "les-tom-1",
+            title: "Dutch Bucket Hydroponic Setup & EC/pH Control",
+            titleEn: "Dutch Bucket Hydroponic Setup & EC/pH Control",
+            videoUrl: "https://www.youtube.com/watch?v=wxMIq2E6X_Q",
+            youtubeVideoId: "wxMIq2E6X_Q",
+            youtubeUrl: "https://www.youtube.com/watch?v=wxMIq2E6X_Q",
+            thumbnailUrl: "https://img.youtube.com/vi/wxMIq2E6X_Q/hqdefault.jpg",
+            videoDuration: "5:54",
+            content: "Perlite root support and closed-loop recirculated nutrient solution.",
+            steps: [
+              { title: "Perlite Substrate", desc: "Fill buckets with washed horticultural perlite for air-porosity." },
+              { title: "pH/EC Check", desc: "Calibrate EC sensor daily and keep pH buffer at 5.8-6.2." }
+            ]
+          },
+          {
+            id: "les-tom-2",
+            title: "Cherry Tomato Pruning, Pollination & Staggered Harvest",
+            titleEn: "Cherry Tomato Pruning, Pollination & Staggered Harvest",
+            videoUrl: "https://www.youtube.com/watch?v=j4EFjxCUmN8",
+            youtubeVideoId: "j4EFjxCUmN8",
+            youtubeUrl: "https://www.youtube.com/watch?v=j4EFjxCUmN8",
+            thumbnailUrl: "https://img.youtube.com/vi/j4EFjxCUmN8/hqdefault.jpg",
+            videoDuration: "17:50",
+            content: "Manual cluster agitation for pollination and bi-weekly harvest.",
+            steps: [
+              { title: "Cluster Vibration", desc: "Gently tap flower trusses around noon to ensure complete pollination." },
+              { title: "Ripe Cluster Harvest", desc: "Clip entire cherry tomato trusses when deep crimson red." }
+            ]
+          }
+        ]
+      }
     ],
     translations: {
       hi: {
@@ -238,16 +496,732 @@ const CROP_GUIDES_DATA: CropGuide[] = [
           { title: "मिस्टिंग फॉगर्स", desc: "दुपारी कडक उन्हात दर १५ मिनिटांनी ३० सेकंदांसाठी फॉगर्स सुरू ठेवा." },
           { title: "टप्प्याटप्प्याने काढणी", desc: "आठवड्यातून दोनदा पिकलेले घोस काढून बाजारात पाठवा." }
         ]
-      },
-      pa: {
-        name: "ਹਾਈਡ੍ਰੋਪੋਨਿਕ ਚੈਰੀ ਟਮਾਟਰ",
-        season: "ਗਰਮੀਆਂ ਨਿਯੰਤਰਿਤ ਬਿਜਾਈ (ਬੇਮੌਸਮੀ)",
-        description: "ਖਾਸ ਤੌਰ 'ਤੇ ਤਿਆਰ ਕੀਤੇ ਗਏ ਗ੍ਰੀਨਹਾਊਸ ਵਿੱਚ ਹਾਈਡ੍ਰੋਪੋਨਿਕਸ ਰਾਹੀਂ ਚੈਰੀ ਟਮਾਟਰ ਉਗਾ ਕੇ ਗਰਮੀਆਂ ਵਿੱਚ ਵੀ ਭਰਪੂਰ ਲਾਭ ਕਮਾਓ।",
+      }
+    }
+  },
+
+  // 5. DAIRY FARMING
+  {
+    id: "dairy_farming",
+    courseId: "course-dairy-1",
+    categoryId: "cat-dairy",
+    categoryCode: "dairy",
+    name: "Dairy Farming",
+    type: "livestock",
+    season: "Year-Round Livestock",
+    image: "https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?auto=format&fit=crop&q=80&w=600",
+    youtubeVideoId: "vA0A1WzinbI",
+    youtubeUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
+    videoLength: "2:54",
+    description: "Cattle & buffalo management, high-fat silage nutrition, loose housing design, clean milking, and mastitis prevention.",
+    soilType: "Loose Housing Bedding",
+    waterLevel: "Continuous Clean Water",
+    steps: [
+      { title: "Farm Shed Setup", desc: "Design comfortable loose housing sheds with 80-100 sq ft open paddock per cow." },
+      { title: "High-Yield Silage", desc: "Prepare green maize silage in anaerobic pits to ensure consistent year-round nutrition." },
+      { title: "Clean Milking Routine", desc: "Follow pre-milking sanitation and post-milking teat dips to eliminate mastitis." },
+      { title: "Calf Nursing & Colostrum", desc: "Feed 4 litres of maternal colostrum within 2 hours of calving for strong immunity." }
+    ],
+    modules: [
+      {
+        id: "mod-dairy-1",
+        title: "Shed Design & Cattle Feeding",
+        lessons: [
+          {
+            id: "les-dairy-1",
+            title: "Modern Dairy Shed Design & Cattle Housing",
+            titleEn: "Modern Dairy Shed Design & Cattle Housing",
+            videoUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
+            youtubeVideoId: "vA0A1WzinbI",
+            youtubeUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
+            thumbnailUrl: "https://img.youtube.com/vi/vA0A1WzinbI/hqdefault.jpg",
+            videoDuration: "2:54",
+            content: "Loose housing system with good cross ventilation and comfortable sand bedding.",
+            steps: [
+              { title: "Open Housing Plan", desc: "Provide 3.5m roof clearance with longitudinal ridge ventilation." },
+              { title: "Non-Slippery Flooring", desc: "Grooved concrete floor with 1:40 slope towards dung drain." }
+            ]
+          },
+          {
+            id: "les-dairy-2",
+            title: "High-Yield Silage Making & Fodder Nutrition",
+            titleEn: "High-Yield Silage Making & Fodder Nutrition",
+            videoUrl: "https://www.youtube.com/watch?v=wDT0JmOGRw4",
+            youtubeVideoId: "wDT0JmOGRw4",
+            youtubeUrl: "https://www.youtube.com/watch?v=wDT0JmOGRw4",
+            thumbnailUrl: "https://img.youtube.com/vi/wDT0JmOGRw4/hqdefault.jpg",
+            videoDuration: "1:57",
+            content: "Green fodder preservation in anaerobic silage pits with molasses and mineral mixtures.",
+            steps: [
+              { title: "Chaffing Maize", desc: "Chop green maize at milk-line stage to 1.5-2 cm length." },
+              { title: "Tractor Compaction", desc: "Pack silage airtight to trigger lactic acid fermentation (pH < 4.2)." }
+            ]
+          },
+          {
+            id: "les-dairy-3",
+            title: "Calf Rearing & Mastitis Prevention Protocol",
+            titleEn: "Calf Rearing & Mastitis Prevention Protocol",
+            videoUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
+            youtubeVideoId: "vA0A1WzinbI",
+            youtubeUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
+            thumbnailUrl: "https://img.youtube.com/vi/vA0A1WzinbI/hqdefault.jpg",
+            videoDuration: "2:54",
+            content: "Colostrum feeding within 2 hours of birth and post-milking iodine teat dip.",
+            steps: [
+              { title: "Colostrum Administration", desc: "Feed 10% of calf body weight in first 24 hours." },
+              { title: "Post-Dip Sanitation", desc: "Dip teats in 0.5% iodine solution to seal teat canals after milking." }
+            ]
+          }
+        ]
+      }
+    ],
+    translations: {
+      hi: {
+        name: "डेयरी फार्मिंग",
+        season: "वर्ष भर चलने वाला व्यवसाय",
+        description: "गाय-भैंस पालन, उच्च पोषण चारा, स्वच्छ दुग्ध उत्पादन और थनैला रोग से बचाव।",
         steps: [
-          { title: "EC ਤੇ pH ਸੰਤੁਲਨ", desc: "ਪਾਣੀ ਦਾ pH 5.8-6.2 ਅਤੇ EC 2.0-2.5 ਦੇ ਵਿਚਕਾਰ ਸਖਤੀ ਨਾਲ ਬਣਾਈ ਰੱਖੋ।" },
-          { title: "ਡੱਚ ਬਾਲਟੀ ਸੈੱਟਅੱਪ", desc: "ਜੜ੍ਹਾਂ ਦੇ ਵਧੀਆ ਵਾਧੇ ਲਈ ਪੌਦਿਆਂ ਨੂੰ ਪਰਲਾਈਟ ਨਾਲ ਭਰੀਆਂ ਡੱਚ ਬਾਲਟੀਆਂ ਵਿੱਚ ਰੱਖੋ।" },
-          { title: "ਫੌਗਿੰਗ ਕੂਲਿੰਗ", desc: "ਦੁਪਹਿਰ ਦੀ ਗਰਮੀ ਵਿੱਚ ਹਰ 15 ਮਿੰਟ ਵਿੱਚ 30 ਸੈਕਿੰਡ ਲਈ ਫੌਗਰ ਚਲਾਓ।" },
-          { title: "ਨਿਯਮਤ ਤੁੜਾਈ", desc: "ਹਫ਼ਤੇ ਵਿੱਚ ਦੋ ਵਾਰ ਪੱਕੇ ਹੋਏ ਚੈਰੀ ਟਮਾਟਰਾਂ ਦੇ ਗੁੱਛੇ ਤੋੜੋ।" }
+          { title: "शेड निर्माण", desc: "हवादार खुला शेड बनाएं जिसमें प्रति गाय पर्याप्त घूमने की जगह हो।" },
+          { title: "साइलेज हरा चारा", desc: "मक्के से साइलेज बनाकर साल भर संतुलित चारा सुनिश्चित करें।" },
+          { title: "स्वच्छ दुग्ध दोहन", desc: "दुहने के बाद टीट डिप से थनैला रोग का खतरा समाप्त करें।" },
+          { title: "बछड़े की देखभाल", desc: "जन्म के 2 घंटे में बछड़े को खीस (कोलोस्ट्रम) जरूर पिलाएं।" }
+        ]
+      },
+      mr: {
+        name: "दुग्ध व्यवसाय",
+        season: "बारमाही व्यवसाय",
+        description: "गाय व म्हैस पालन, संतुलित आहार, स्वच्छ दूध निर्मिती व आजार नियंत्रण.",
+        steps: [
+          { title: "गोठा बांधणी", desc: "मुक्त संचार पद्धतीचा हवेशीर गोठा तयार करा." },
+          { title: "मुरघास निर्मिती", desc: "मक्यापासून चांगला मुरघास तयार करून बारमाही पौष्टिक चारा द्या." },
+          { title: "स्वच्छ दूध दोहन", desc: "कासेची स्वच्छता ठेवून मस्टायटीस आजारापासून बचाव करा." },
+          { title: "वासरांचे संगोपन", desc: "जन्मानंतर २ तासांत वासराला चीक पाजणे अत्यंत गरजेचे आहे." }
+        ]
+      }
+    }
+  },
+
+  // 6. SHEEP FARMING
+  {
+    id: "sheep_farming",
+    courseId: "course-sheep-1",
+    categoryId: "cat-sheep",
+    categoryCode: "sheep",
+    name: "Sheep Farming",
+    type: "livestock",
+    season: "Dry & Semiarid Pastures",
+    image: "https://images.unsplash.com/photo-1484557052118-f32bd25b45b5?auto=format&fit=crop&q=80&w=600",
+    youtubeVideoId: "DMQDRAffiUw",
+    youtubeUrl: "https://www.youtube.com/watch?v=DMQDRAffiUw",
+    videoLength: "3:54",
+    description: "Wool and mutton production, pasture rotational grazing, breeding cycles, deworming calendars, and lamb care.",
+    soilType: "Well-Drained Grazing Land",
+    waterLevel: "Moderate Clean Water",
+    steps: [
+      { title: "Sheep Farm Setup", desc: "Construct dry, elevated pens with cross-ventilation protecting from cold winds." },
+      { title: "Feeding & Nutrition", desc: "Combine 6-8 hours grazing with leguminous fodder supplements and salt licks." },
+      { title: "Lamb Care & Weaning", desc: "Keep lambs in warm creep areas and wean onto solid concentrates at 90 days." },
+      { title: "Sheep Vaccination", desc: "Administer Enterotoxemia, Anthrax, and PPR vaccines as per ICAR calendar." },
+      { title: "Breeding Management", desc: "Maintain 1 healthy active ram for every 25-30 ewes during breeding flush." }
+    ],
+    modules: [
+      {
+        id: "mod-sheep-1",
+        title: "Sheep Housing & Care",
+        lessons: [
+          {
+            id: "les-sheep-1",
+            title: "Sheep Farm Setup & Pasture Rotational Grazing",
+            titleEn: "Sheep Farm Setup & Pasture Rotational Grazing",
+            videoUrl: "https://www.youtube.com/watch?v=DMQDRAffiUw",
+            youtubeVideoId: "DMQDRAffiUw",
+            youtubeUrl: "https://www.youtube.com/watch?v=DMQDRAffiUw",
+            thumbnailUrl: "https://img.youtube.com/vi/DMQDRAffiUw/hqdefault.jpg",
+            videoDuration: "3:54",
+            content: "Elevated shed construction and rotational grazing for parasite prevention.",
+            steps: [
+              { title: "Shed Orientation", desc: "Build East-West oriented shed with dry soil/slatted bedding." },
+              { title: "Paddock Rotation", desc: "Rotate grazing plots every 2 weeks to break parasite cycles." }
+            ]
+          },
+          {
+            id: "les-sheep-2",
+            title: "Lamb Care, Vaccination & Wool Shearing",
+            titleEn: "Lamb Care, Vaccination & Wool Shearing",
+            videoUrl: "https://www.youtube.com/watch?v=4VDlIFV3qIM",
+            youtubeVideoId: "4VDlIFV3qIM",
+            youtubeUrl: "https://www.youtube.com/watch?v=4VDlIFV3qIM",
+            thumbnailUrl: "https://img.youtube.com/vi/4VDlIFV3qIM/hqdefault.jpg",
+            videoDuration: "4:59",
+            content: "Deworming calendar, PPR vaccination, and clean shearing protocols.",
+            steps: [
+              { title: "Periodic Deworming", desc: "Deworm the flock before monsoon and post-monsoon seasons." },
+              { title: "Hygienic Shearing", desc: "Shear wool twice a year on clean canvas sheets to prevent dirt contamination." }
+            ]
+          }
+        ]
+      }
+    ],
+    translations: {
+      hi: {
+        name: "भेड़ पालन",
+        season: "शुष्क एवं अर्ध-शुष्क क्षेत्र",
+        description: "ऊन और मांस उत्पादन, चराई प्रबंधन, प्रजनन और नियमित टीकाकरण।",
+        steps: [
+          { title: "भेड़ शेड सेटअप", desc: "ऊंचा और सूखा बाड़ा बनाएं जिससे सीलन और ठंड से बचाव हो।" },
+          { title: "आहार एवं चराई", desc: "6-8 घंटे चराई के साथ खनिज लवण व दाना मिश्रण दें।" },
+          { title: "मेमने की देखभाल", desc: "मेमने को गर्म स्थान पर रखें और 3 माह में अलग चारा दें।" },
+          { title: "टीकाकरण", desc: "ईटी और पीपीआर का टीका समय पर अवश्य लगवाएं।" },
+          { title: "प्रजनन प्रबंधन", desc: "प्रति 25-30 भेड़ों पर 1 उत्तम नस्ल का मेंढा रखें।" }
+        ]
+      },
+      mr: {
+        name: "मेंढी पालन",
+        season: "कोरडवाहू व निम-कोरडवाहू",
+        description: "लोकर व मांस उत्पादन, चराई व्यवस्थापन, पैदास आणि लसीकरण.",
+        steps: [
+          { title: "मेंढी गोठा", desc: "उंच व कोरड्या जागेवर हवेशीर गोठा तयार करा." },
+          { title: "चराई व्यवस्थापन", desc: "दर १५ दिवसांनी चरण्याची जागा बदलून परजीवी नियंत्रण करा." },
+          { title: "पिल्लांचे संगोपन", desc: "लहान पिल्लांना थंडीपासून वाचवा व योग्य पोषक खाद्य द्या." },
+          { title: "लसीकरण", desc: "ईटी व पीपीआरचे वेळेवर लसीकरण करून आजार टाळा." },
+          { title: "पैदास नियोजन", desc: "उत्तम दर्जाचा नर निवडून पैदास सुधारणा करा." }
+        ]
+      }
+    }
+  },
+
+  // 7. GOAT FARMING
+  {
+    id: "goat_farming",
+    courseId: "course-goat-1",
+    categoryId: "cat-goat",
+    categoryCode: "goat",
+    name: "Goat Farming",
+    type: "livestock",
+    season: "Stall-Fed & Semi-Intensive",
+    image: "https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&q=80&w=600",
+    youtubeVideoId: "DdEjvOBEnwI",
+    youtubeUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
+    videoLength: "3:40",
+    description: "Stall-fed and free-range goat farming, Sirohi/Jamnapari/Barbari breeds, kidding care, and disease prevention.",
+    soilType: "Raised Slatted Floor",
+    waterLevel: "Abundant Fresh Water",
+    steps: [
+      { title: "Farm Setup", desc: "Elevate wooden slotted floor sheds 3 feet above ground for perfect manure clearance." },
+      { title: "High-Yield Breeds", desc: "Select Sirohi for meat or Barbari/Jamnapari for dual meat & milk suitability." },
+      { title: "Stall-Fed Feeding", desc: "Feed cultivated green fodder (Super Napier, Subabul) with dry concentrate mash." },
+      { title: "Kid Care & Nursing", desc: "Ensure colostrum feeding and provide specialized creep ration after 15 days." },
+      { title: "Vaccination & Health", desc: "Strictly adhere to Enterotoxemia (ET) and Goat Pox preventive vaccine cycles." }
+    ],
+    modules: [
+      {
+        id: "mod-goat-1",
+        title: "Stall-Fed Goat Farming",
+        lessons: [
+          {
+            id: "les-goat-1",
+            title: "Scientific Goat Farm Setup & Breed Selection",
+            titleEn: "Scientific Goat Farm Setup & Breed Selection",
+            videoUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
+            youtubeVideoId: "DdEjvOBEnwI",
+            youtubeUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
+            thumbnailUrl: "https://img.youtube.com/vi/DdEjvOBEnwI/hqdefault.jpg",
+            videoDuration: "3:40",
+            content: "Selecting high-yield Sirohi, Jamnapari, and Barbari breeds for stall feeding.",
+            steps: [
+              { title: "Breed Selection", desc: "Pick Sirohi/Barbari for rapid weight gain and twin kidding." },
+              { title: "Health Screening", desc: "Check teeth, udder symmetry, and shiny coat before purchase." }
+            ]
+          },
+          {
+            id: "les-goat-2",
+            title: "Stall-Fed Goat Shed Construction & Ration",
+            titleEn: "Stall-Fed Goat Shed Construction & Ration",
+            videoUrl: "https://www.youtube.com/watch?v=3SxADJwDW9Y",
+            youtubeVideoId: "3SxADJwDW9Y",
+            youtubeUrl: "https://www.youtube.com/watch?v=3SxADJwDW9Y",
+            thumbnailUrl: "https://img.youtube.com/vi/3SxADJwDW9Y/hqdefault.jpg",
+            videoDuration: "3:37",
+            content: "Elevated wooden slotted flooring design and dry/green fodder formulation.",
+            steps: [
+              { title: "Slatted Elevated Floor", desc: "Leave 1.5cm gap between wooden planks for dung drop." },
+              { title: "Concentrate Feed", desc: "Give 250-300g crushed maize/gram husk mixture per adult goat." }
+            ]
+          },
+          {
+            id: "les-goat-3",
+            title: "Goat Disease Prevention & Kid Nursing Care",
+            titleEn: "Goat Disease Prevention & Kid Nursing Care",
+            videoUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
+            youtubeVideoId: "DdEjvOBEnwI",
+            youtubeUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
+            thumbnailUrl: "https://img.youtube.com/vi/DdEjvOBEnwI/hqdefault.jpg",
+            videoDuration: "3:40",
+            content: "Enterotoxemia and PPR vaccination schedules with creep feeding for kids.",
+            steps: [
+              { title: "Vaccination Protocol", desc: "Vaccinate against ET and PPR annually." },
+              { title: "Kid Nursing", desc: "Maintain warm bedding and separate feeding creep for kids." }
+            ]
+          }
+        ]
+      }
+    ],
+    translations: {
+      hi: {
+        name: "बकरी पालन",
+        season: "सघन व खुले में",
+        description: "सिरोही, जमनापारी, बरबरी नस्लों का चयन, मचान शेड और रोग प्रबंधन।",
+        steps: [
+          { title: "फार्म सेटअप", desc: "जमीन से 3 फीट ऊंचा मचान शेड बनाएं जिससे सफाई बनी रहे।" },
+          { title: "उन्नत नस्लें", desc: "सिरोही या बरबरी जैसी अधिक बच्चे देने वाली नस्लें चुनें।" },
+          { title: "संतुलित आहार", desc: "सुपर नेपियर हरा चारा और दाना मिश्रण नियमित दें।" },
+          { title: "मेमने की देखरेख", desc: "जन्म के बाद खीस पिलाएं और 15 दिन बाद क्रीप दाना दें।" },
+          { title: "टीकाकरण", desc: "ईटी और गोट पॉक्स का टीका अवश्य लगवाएं।" }
+        ]
+      },
+      mr: {
+        name: "शेळी पालन",
+        season: "बंदिस्त व अर्ध-बंदिस्त",
+        description: "उस्मानाबादी, बोअर व सिरोही जातींचे संगोपन, मचान गोठा व लसीकरण.",
+        steps: [
+          { title: "मचान गोठा", desc: "जमिनीपासून ३ फूट उंच मचान पद्धतीचा शेड बांधा." },
+          { title: "जातींची निवड", desc: "उस्मानाबादी किंवा बोअर सारख्या जास्त वजन वाढणाऱ्या जाती निवडा." },
+          { title: "संतुलित चारा", desc: "हिरवा चारा आणि खुराक देऊन वजन वाढवा." },
+          { title: "करडांची काळजी", desc: "लहान करडांना सुरुवातीला भरपूर दूध व स्वतंत्र पोषण द्या." },
+          { title: "आरोग्य व्यवस्थापन", desc: "ईटी आणि पीपीआर लसीकरण नियमित करा." }
+        ]
+      }
+    }
+  },
+
+  // 8. POULTRY FARMING
+  {
+    id: "poultry_farming",
+    courseId: "course-poultry-1",
+    categoryId: "cat-poultry",
+    categoryCode: "poultry",
+    name: "Poultry Farming",
+    type: "livestock",
+    season: "Broiler & Layer Farm",
+    image: "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&q=80&w=600",
+    youtubeVideoId: "CHJMfkOvOGk",
+    youtubeUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
+    videoLength: "9:20",
+    description: "Broiler and layer management, Desi/Kadaknath farming, temperature control, biosecurity sanitation, and vaccination.",
+    soilType: "Rice Husk Litter Bedding",
+    waterLevel: "Continuous Nipple Drinkers",
+    steps: [
+      { title: "Shed Setup", desc: "Prepare clean environment-controlled shed with 3-inch dry rice husk bedding." },
+      { title: "Chick Brooding", desc: "Maintain 95°F temperature in brooding circle with infrared bulbs for day-old chicks." },
+      { title: "Feeding & FCR", desc: "Provide high protein pre-starter crumble transitioning to finisher pellets (target FCR < 1.6)." },
+      { title: "Biosecurity", desc: "Install vehicle disinfection tire dip and mandatory footwear change at entry." },
+      { title: "Vaccination", desc: "Administer Lasota (F1) eye drop at day 5 and Gumboro (IBD) at day 14." }
+    ],
+    modules: [
+      {
+        id: "mod-poultry-1",
+        title: "Broiler & Layer Production",
+        lessons: [
+          {
+            id: "les-poultry-1",
+            title: "Broiler Poultry Shed Setup & Chick Brooding",
+            titleEn: "Broiler Poultry Shed Setup & Chick Brooding",
+            videoUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
+            youtubeVideoId: "CHJMfkOvOGk",
+            youtubeUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
+            thumbnailUrl: "https://img.youtube.com/vi/CHJMfkOvOGk/hqdefault.jpg",
+            videoDuration: "9:20",
+            content: "Day-old chick temperature management (95°F) and rice husk litter preparation.",
+            steps: [
+              { title: "Brooder Guard Circle", desc: "Set up circular chick guard with heat lamps at 95°F." },
+              { title: "Electrolyte Water", desc: "Offer warm water with glucose and vitamins for first 24 hours." }
+            ]
+          },
+          {
+            id: "les-poultry-2",
+            title: "Commercial Poultry Feed Formulation & Biosecurity",
+            titleEn: "Commercial Poultry Feed Formulation & Biosecurity",
+            videoUrl: "https://www.youtube.com/watch?v=_z8mg6NIJM4",
+            youtubeVideoId: "_z8mg6NIJM4",
+            youtubeUrl: "https://www.youtube.com/watch?v=_z8mg6NIJM4",
+            thumbnailUrl: "https://img.youtube.com/vi/_z8mg6NIJM4/hqdefault.jpg",
+            videoDuration: "3:31",
+            content: "Feed conversion ratio optimization and strict farm sanitation.",
+            steps: [
+              { title: "Balanced Ration", desc: "Maintain 22% crude protein in pre-starter and 19% in finisher." },
+              { title: "Litter Management", desc: "Rake litter daily to prevent moisture accumulation and ammonia fumes." }
+            ]
+          },
+          {
+            id: "les-poultry-3",
+            title: "Layer Farming & Disease Vaccination Schedule",
+            titleEn: "Layer Farming & Disease Vaccination Schedule",
+            videoUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
+            youtubeVideoId: "CHJMfkOvOGk",
+            youtubeUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
+            thumbnailUrl: "https://img.youtube.com/vi/CHJMfkOvOGk/hqdefault.jpg",
+            videoDuration: "9:20",
+            content: "Egg production enhancement and disease control.",
+            steps: [
+              { title: "Lasota Vaccination", desc: "Administer Ranikhet Lasota eye drop on Day 5 and Day 21." },
+              { title: "Lighting Schedule", desc: "Provide 16 hours of daily light stimulation for peak egg laying." }
+            ]
+          }
+        ]
+      }
+    ],
+    translations: {
+      hi: {
+        name: "मुर्गी पालन",
+        season: "ब्रायलर एवं लेयर",
+        description: "ब्रायलर, लेयर व कड़कनाथ मुर्गी पालन, शेड का तापमान नियंत्रण और जैव-सुरक्षा।",
+        steps: [
+          { title: "शेड सेटअप", desc: "सूखा और हवादार शेड तैयार करें जिसमें धान की भूसी का बिछावन हो।" },
+          { title: "चूजा ब्रूडिंग", desc: "शुरुआती दिनों में 95 डिग्री फॉरेनहाइट तापमान बनाए रखें।" },
+          { title: "संतुलित दाना", desc: "प्री-स्टार्टर और फिनिशर दाना समय पर दें।" },
+          { title: "जैव-सुरक्षा", desc: "शेड में बाहरी व्यक्तियों का प्रवेश रोकें और कीटाणुनाशक का छिड़काव करें।" },
+          { title: "टीकाकरण", desc: "रानीखेत और गम्बोरो का टीका समय पर लगाएं।" }
+        ]
+      },
+      mr: {
+        name: "कुक्कुट पालन",
+        season: "ब्रॉयलर व लेयर",
+        description: "गावरान, कडकनाथ व ब्रॉयलर कुक्कुटपालन, लसीकरण व शेड व्यवस्थापन.",
+        steps: [
+          { title: "शेड उभारणी", desc: "हवेशीर शेडमध्ये भाताचा भुसा योग्य जाडीत पसरा." },
+          { title: "पिल्लांची ब्रुडिंग", desc: "पिल्लांना सुरुवातीला योग्य उष्णता देऊन मरतुक टाळा." },
+          { title: "खाद्य व्यवस्थापन", desc: "उत्तम दर्जाचे स्टार्टर व फिनिशर खाद्य द्या." },
+          { title: "जैव-सुरक्षा", desc: "गोठ्यात जंतुनाशक फवारणी करून रोगराई टाळा." },
+          { title: "लसीकरण", desc: "राणीखेत व इतर लसींचे वेळेवर डोस द्या." }
+        ]
+      }
+    }
+  },
+
+  // 9. PIG FARMING
+  {
+    id: "pig_farming",
+    courseId: "course-pig-1",
+    categoryId: "cat-pig",
+    categoryCode: "pig",
+    name: "Pig Farming",
+    type: "livestock",
+    season: "Commercial Housing",
+    image: "https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&q=80&w=600",
+    youtubeVideoId: "67x4_mLm0mo",
+    youtubeUrl: "https://www.youtube.com/watch?v=67x4_mLm0mo",
+    videoLength: "3:07",
+    description: "Commercial piggery, housing sanitation, balanced ration feeding, and African Swine Fever prevention.",
+    soilType: "Concrete Furrowed Pen",
+    waterLevel: "Automatic Wallows",
+    steps: [
+      { title: "Shed Setup", desc: "Construct concrete pens with good drainage and water wallows for heat relief." },
+      { title: "Breeds & Piglets", desc: "Select Large White Yorkshire or Landrace for high litter size and growth rate." },
+      { title: "Balanced Ration", desc: "Supply dry mash with maize, soya meal, rice polish, and mineral mixture." },
+      { title: "Biosecurity & Disease", desc: "Strictly disinfect pens to prevent Swine Fever and Foot and Mouth Disease." }
+    ],
+    modules: [
+      {
+        id: "mod-pig-1",
+        title: "Piggery Management",
+        lessons: [
+          {
+            id: "les-pig-1",
+            title: "Commercial Piggery Housing & Sanitation",
+            titleEn: "Commercial Piggery Housing & Sanitation",
+            videoUrl: "https://www.youtube.com/watch?v=67x4_mLm0mo",
+            youtubeVideoId: "67x4_mLm0mo",
+            youtubeUrl: "https://www.youtube.com/watch?v=67x4_mLm0mo",
+            thumbnailUrl: "https://img.youtube.com/vi/67x4_mLm0mo/hqdefault.jpg",
+            videoDuration: "3:07",
+            content: "Piggery housing, dry rations, and disease prevention.",
+            steps: [
+              { title: "Concrete Flooring", desc: "Construct hard concrete floor with drainage for daily washing." },
+              { title: "Iron Injection for Piglets", desc: "Administer iron dextran injection on 3rd day to prevent anemia." }
+            ]
+          }
+        ]
+      }
+    ],
+    translations: {
+      hi: {
+        name: "सूअर पालन",
+        season: "व्यावसायिक शेड",
+        description: "व्यावसायिक सूअर पालन, शेड की सफाई, संतुलित आहार और संक्रमण रोकथाम।",
+        steps: [
+          { title: "शेड निर्माण", desc: "पक्के फर्श वाला शेड बनाएं जिसमें पानी की उचित निकासी हो।" },
+          { title: "नस्ल चयन", desc: "लार्ज व्हाइट यॉर्कशायर जैसी तेजी से बढ़ने वाली नस्लें चुनें।" },
+          { title: "संतुलित दाना", desc: "मक्का, सोया खली और खनिज मिश्रण वाला पौष्टिक आहार दें।" },
+          { title: "रोग नियंत्रण", desc: "स्वाइन फीवर से बचाव के लिए नियमित सफाई और टीका लगवाएं।" }
+        ]
+      },
+      mr: {
+        name: "वराह पालन",
+        season: "व्यावसायिक पद्धत",
+        description: "व्यावसायिक वराह पालन, स्वच्छता, संतुलित आहार आणि रोग प्रतिबंध.",
+        steps: [
+          { title: "गोठा रचना", desc: "धुता येईल असा सिमेंटचा पक्का गोठा तयार करा." },
+          { title: "जातींची निवड", desc: "लार्ज व्हाईट यॉर्कशायर जात निवडून जलद वाढ मिळवा." },
+          { title: "संतुलित आहार", desc: "भरड धान्य व प्रथिनयुक्त खुराक नियमित द्या." },
+          { title: "रोग प्रतिबंध", desc: "स्वाइन फिव्हर प्रतिबंधक लस देऊन शेड स्वच्छ ठेवा." }
+        ]
+      }
+    }
+  },
+
+  // 10. BEEKEEPING
+  {
+    id: "beekeeping",
+    courseId: "course-beekeeping-1",
+    categoryId: "cat-beekeeping",
+    categoryCode: "beekeeping",
+    name: "Beekeeping & Honey",
+    type: "livestock",
+    season: "Floral Blooms & Migration",
+    image: "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?auto=format&fit=crop&q=80&w=600",
+    youtubeVideoId: "dzf2a0mcCvE",
+    youtubeUrl: "https://www.youtube.com/watch?v=dzf2a0mcCvE",
+    videoLength: "3:46",
+    description: "Apis cerana and Apis mellifera box management, seasonal flora migration, honey extraction, and pollination boost.",
+    soilType: "Shaded Tree Canopy",
+    waterLevel: "Clean Water Basin Nearby",
+    steps: [
+      { title: "Hive Setup", desc: "Position Langstroth wooden boxes under shade facing East with ant protection wells." },
+      { title: "Colony & Queen Care", desc: "Inspect brood chamber weekly, check egg laying pattern, and replace aging queens." },
+      { title: "Seasonal Migration", desc: "Migrate boxes to mustard, litchi, and sunflower blooming fields during honey flow." },
+      { title: "Honey Extraction", desc: "Use manual or electric centrifugal extractors without damaging comb structure." }
+    ],
+    modules: [
+      {
+        id: "mod-bee-1",
+        title: "Hive Management & Extraction",
+        lessons: [
+          {
+            id: "les-bee-1",
+            title: "Apis Mellifera Wooden Box Setup & Queen Management",
+            titleEn: "Apis Mellifera Wooden Box Setup & Queen Management",
+            videoUrl: "https://www.youtube.com/watch?v=dzf2a0mcCvE",
+            youtubeVideoId: "dzf2a0mcCvE",
+            youtubeUrl: "https://www.youtube.com/watch?v=dzf2a0mcCvE",
+            thumbnailUrl: "https://img.youtube.com/vi/dzf2a0mcCvE/hqdefault.jpg",
+            videoDuration: "3:46",
+            content: "Langstroth hive box frames, queen excluders, and worker bee colony balancing.",
+            steps: [
+              { title: "Box Placement", desc: "Place boxes 1 foot above ground with ant-traps filled with oil." },
+              { title: "Queen Check", desc: "Verify uniform concentric brood pattern and absence of swarm cells." }
+            ]
+          },
+          {
+            id: "les-bee-2",
+            title: "Centrifugal Honey Extraction & Mite Disease Control",
+            titleEn: "Centrifugal Honey Extraction & Mite Disease Control",
+            videoUrl: "https://www.youtube.com/watch?v=tZ3DZ1Z3i0c",
+            youtubeVideoId: "tZ3DZ1Z3i0c",
+            youtubeUrl: "https://www.youtube.com/watch?v=tZ3DZ1Z3i0c",
+            thumbnailUrl: "https://img.youtube.com/vi/tZ3DZ1Z3i0c/hqdefault.jpg",
+            videoDuration: "3:12",
+            content: "Centrifugal extractor operations and pure honey processing.",
+            steps: [
+              { title: "Uncapping Knife", desc: "Gently slice wax caps of sealed honey cells with warm knife." },
+              { title: "Centrifuge Extraction", desc: "Spin frames at low speed to extract pure raw honey." }
+            ]
+          }
+        ]
+      }
+    ],
+    translations: {
+      hi: {
+        name: "मधुमक्खी पालन",
+        season: "फूलों का मौसम व प्रवास",
+        description: "मधुमक्खी बक्सों का प्रबंधन, मौसमी फूलों की ओर स्थानांतरण और शुद्ध शहद निष्कर्षण।",
+        steps: [
+          { title: "बक्सा सेटअप", desc: "छायादार स्थान पर चींटियों से सुरक्षित लकड़ी के बक्से स्थापित करें।" },
+          { title: "रानी मक्खी देखरेख", desc: "सप्ताह में एक बार बक्सा खोलकर अंडे देने की गति जांचें।" },
+          { title: "प्रवास (माइग्रेशन)", desc: "सरसों और लीची के मौसम में बक्सों को खेतों के पास ले जाएं।" },
+          { title: "शहद निकालना", desc: "सेंट्रीफ्यूगल मशीन से बिना छत्ते को नुकसान पहुंचाए शहद निकालें।" }
+        ]
+      },
+      mr: {
+        name: "मधुमक्षिका पालन",
+        season: "फुलोरा व स्थलांतर",
+        description: "मधमाश्यांचे पेट्यांचे व्यवस्थापन, परागीभवन आणि दर्जेदार मध उत्पादन.",
+        steps: [
+          { title: "पेटी व्यवस्थापन", desc: "झाडांच्या सावलीत मुंग्यांपासून सुरक्षित पेट्या ठेवा." },
+          { title: "राणी माशी नियोजन", desc: "पेटीतील अंडी घालण्याची क्षमता नियमित तपासा." },
+          { title: "स्थलांतर", desc: "मोहरी किंवा सूर्यफुलाच्या फुलोऱ्याच्या काळात पेट्या स्थलांतरित करा." },
+          { title: "मध काढणे", desc: "सेंट्रीफ्युगल यंत्राद्वारे पोळ्यांना इजा न करता मध काढा." }
+        ]
+      }
+    }
+  },
+
+  // 11. FISHERIES & AQUACULTURE
+  {
+    id: "fisheries",
+    courseId: "course-fisheries-1",
+    categoryId: "cat-fisheries",
+    categoryCode: "fisheries",
+    name: "Fisheries & Aquaculture",
+    type: "livestock",
+    season: "Pond Polyculture & Biofloc",
+    image: "https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&q=80&w=600",
+    youtubeVideoId: "RNQxV7zdoyc",
+    youtubeUrl: "https://www.youtube.com/watch?v=RNQxV7zdoyc",
+    videoLength: "3:14",
+    description: "Pond construction, Rohu/Catla/Mrigal polyculture, Biofloc systems, water aeration, and feed conversion ratio.",
+    soilType: "Clay-Retentive Pond Bed",
+    waterLevel: "5-6 Feet Depth",
+    steps: [
+      { title: "Pond Preparation", desc: "Dry pond bed, apply agricultural lime (250 kg/ha), and add cow dung for plankton blooms." },
+      { title: "Fingerling Stocking", desc: "Stock healthy fingerlings (3-4 inch) in polyculture: Catla (surface), Rohu (column), Mrigal (bottom)." },
+      { title: "Feeding Management", desc: "Feed floating pellet feed (28-32% protein) at 2-3% of total body weight daily." },
+      { title: "Water Aeration & Testing", desc: "Maintain dissolved oxygen > 5 mg/L using paddle-wheel aerators during dawn hours." }
+    ],
+    modules: [
+      {
+        id: "mod-fish-1",
+        title: "Pond Preparation & Polyculture",
+        lessons: [
+          {
+            id: "les-fish-1",
+            title: "Fish Pond Preparation, Liming & Fingerling Stocking",
+            titleEn: "Fish Pond Preparation, Liming & Fingerling Stocking",
+            videoUrl: "https://www.youtube.com/watch?v=RNQxV7zdoyc",
+            youtubeVideoId: "RNQxV7zdoyc",
+            youtubeUrl: "https://www.youtube.com/watch?v=RNQxV7zdoyc",
+            thumbnailUrl: "https://img.youtube.com/vi/RNQxV7zdoyc/hqdefault.jpg",
+            videoDuration: "3:14",
+            content: "Pond drying, agricultural lime application (250 kg/ha), and fingerling acclimatization.",
+            steps: [
+              { title: "Liming & Manuring", desc: "Apply agricultural lime and cow dung to produce rich natural plankton." },
+              { title: "Acclimatization", desc: "Float seed bags in pond water for 30 minutes before release." }
+            ]
+          },
+          {
+            id: "les-fish-2",
+            title: "Polyculture Carp Feeding & Water Quality Management",
+            titleEn: "Polyculture Carp Feeding & Water Quality Management",
+            videoUrl: "https://www.youtube.com/watch?v=xOLdDsCekQY",
+            youtubeVideoId: "xOLdDsCekQY",
+            youtubeUrl: "https://www.youtube.com/watch?v=xOLdDsCekQY",
+            thumbnailUrl: "https://img.youtube.com/vi/xOLdDsCekQY/hqdefault.jpg",
+            videoDuration: "6:13",
+            content: "Rohu, Catla, and Mrigal feeding and aerator systems.",
+            steps: [
+              { title: "Three-Tier Polyculture", desc: "Combine Catla (surface), Rohu (middle), and Mrigal (bottom)." },
+              { title: "Dissolved Oxygen Control", desc: "Run aerators during early morning hours to prevent oxygen drops." }
+            ]
+          }
+        ]
+      }
+    ],
+    translations: {
+      hi: {
+        name: "मत्स्य पालन एवं जलकृषि",
+        season: "मिश्रित तालाब एवं बायोफ्लॉक",
+        description: "तालाब निर्माण, रोहू/कतला/मृगल मिश्रित पालन, बायोफ्लॉक तकनीक और पानी की गुणवत्ता नियंत्रण।",
+        steps: [
+          { title: "तालाब की तैयारी", desc: "तालाब सुखाकर चूना और गोबर खाद डालें जिससे प्राकृतिक भोजन बने।" },
+          { title: "मछली बीज संचयन", desc: "कतला, रोहू और नैन (मृगल) का मिश्रित बीज सही अनुपात में डालें।" },
+          { title: "पूरक आहार", desc: "प्रोटीनयुक्त फ्लोटिंग फीड शरीर के वजन के 2-3% के हिसाब से दें।" },
+          { title: "ऑक्सीजन प्रबंधन", desc: "सुबह के समय तालाब में एरिएटर चलाकर ऑक्सीजन का स्तर बनाए रखें।" }
+        ]
+      },
+      mr: {
+        name: "मत्स्य पालन",
+        season: "तळे संवर्धन व बायोफ्लॉक",
+        description: "तळे बांधकाम, रोहू, कटला, मृगळ संवर्धन, बायोफ्लॉक तंत्रज्ञान व ऑक्सिजन नियंत्रण.",
+        steps: [
+          { title: "तळे तयारी", desc: "तळे सुकवून चुना व शेणखताचा वापर करून नैसर्गिक प्लवक तयार करा." },
+          { title: "मत्स्यबीज साठा", desc: "कटला, रोहू व मृगळ या तिन्ही थरांतील माशांचे योग्य प्रमाणात संवर्धन करा." },
+          { title: "पूरक खाद्य", desc: "प्रथिनयुक्त तरंगणारे खाद्य नियमित द्या." },
+          { title: "ऑक्सिजन नियंत्रण", desc: "सकाळच्या वेळी पाण्यात ऑक्सिजनची पातळी टिकवण्यासाठी एरेटर चालवा." }
+        ]
+      }
+    }
+  },
+
+  // 12. INTEGRATED LIVESTOCK FARMING
+  {
+    id: "integrated_farming",
+    courseId: "course-integrated-1",
+    categoryId: "cat-integrated",
+    categoryCode: "integrated",
+    name: "Integrated Livestock Farming",
+    type: "livestock",
+    season: "Zero-Waste Circular System",
+    image: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600",
+    youtubeVideoId: "FCTNm27o5Ug",
+    youtubeUrl: "https://www.youtube.com/watch?v=FCTNm27o5Ug",
+    videoLength: "3:22",
+    description: "Zero-waste circular agriculture combining crop residues, fish ponds, vermicompost, biogas, and poultry waste.",
+    soilType: "Integrated Multi-Unit Farm",
+    waterLevel: "Recirculated Farm Water",
+    steps: [
+      { title: "Crop-Livestock Synergy", desc: "Use crop straw as livestock feed and cattle dung to generate cooking biogas." },
+      { title: "Poultry-Fish Link", desc: "Place poultry coops above fish ponds so bird droppings fertilize plankton naturally." },
+      { title: "Biogas & Slurry Use", desc: "Direct digested biogas slurry to crop fields as liquid bio-fertilizer." },
+      { title: "Vermicompost Production", desc: "Convert leftover organic farm waste into vermicompost for cash crop soil." }
+    ],
+    modules: [
+      {
+        id: "mod-int-1",
+        title: "Circular Bio-Economy Model",
+        lessons: [
+          {
+            id: "les-int-1",
+            title: "Zero-Waste Circular Farm: Crop, Poultry & Fish Integration",
+            titleEn: "Zero-Waste Circular Farm: Crop, Poultry & Fish Integration",
+            videoUrl: "https://www.youtube.com/watch?v=FCTNm27o5Ug",
+            youtubeVideoId: "FCTNm27o5Ug",
+            youtubeUrl: "https://www.youtube.com/watch?v=FCTNm27o5Ug",
+            thumbnailUrl: "https://img.youtube.com/vi/FCTNm27o5Ug/hqdefault.jpg",
+            videoDuration: "3:22",
+            content: "Directing poultry droppings as pond manure and utilizing pond silt as rich crop compost.",
+            steps: [
+              { title: "Coop-Over-Pond", desc: "Position bird coops over ponds for natural primary fertilization." },
+              { title: "Pond Silt Desilting", desc: "Apply nutrient-rich pond bottom silt to fruit orchard trees." }
+            ]
+          },
+          {
+            id: "les-int-2",
+            title: "Biogas Slurry, Vermicompost & Farm Resilience",
+            titleEn: "Biogas Slurry, Vermicompost & Farm Resilience",
+            videoUrl: "https://www.youtube.com/watch?v=58Xj4PYSCSo",
+            youtubeVideoId: "58Xj4PYSCSo",
+            youtubeUrl: "https://www.youtube.com/watch?v=58Xj4PYSCSo",
+            thumbnailUrl: "https://img.youtube.com/vi/58Xj4PYSCSo/hqdefault.jpg",
+            videoDuration: "3:31",
+            content: "Converting cattle dung into cooking methane gas and liquid bio-fertilizer.",
+            steps: [
+              { title: "Biogas Digestion", desc: "Feed cattle dung into anaerobic digester to produce methane." },
+              { title: "Vermicompost Beds", desc: "Use spent slurry in earthworm beds for black gold compost." }
+            ]
+          }
+        ]
+      }
+    ],
+    translations: {
+      hi: {
+        name: "समेकित पशुपालन एवं कृषि",
+        season: "शून्य-अपशिष्ट चक्रीय मॉडल",
+        description: "शून्य-अपशिष्ट चक्रीय कृषि: फसल अवशेष, मछली तालाब, केंचुआ खाद और बायोगैस का एकीकृत उपयोग।",
+        steps: [
+          { title: "फसल-पशु एकीकरण", desc: "फसल के डंठल पशु को खिलाएं और गोबर से बायोगैस बनाएं।" },
+          { title: "मुर्गी-मछली तालाब", desc: "तालाब के ऊपर मुर्गी शेड बनाएं जिससे मछली को प्राकृतिक आहार मिले।" },
+          { title: "बायोगैस स्लरी", desc: "गैस निकलने के बाद बची स्लरी को खेत में जैविक खाद के रूप में डालें।" },
+          { title: "केंचुआ खाद", desc: "कृषि अपशिष्ट से केंचुआ खाद बनाकर मिट्टी की उर्वरता बढ़ाएं।" }
+        ]
+      },
+      mr: {
+        name: "एकात्मिक शेती पद्धती",
+        season: "कचरामुक्त चक्रीय मॉडेल",
+        description: "कचरामुक्त शेती: पिके, शेळीपालन, मत्स्यव्यवसाय आणि बायोगॅसचे एकत्रित मॉडेल.",
+        steps: [
+          { title: "पीक-पशु जोड", desc: "पिकांचे अवशेष जनावरांना चारा व शेणापासून बायोगॅस निर्मिती करा." },
+          { title: "कुक्कुट-मत्स्य जोड", desc: "तळ्यावर कोंबड्यांचा गोठा उभारून माशांसाठी नैसर्गिक खाद्य तयार करा." },
+          { title: "बायोगॅस स्लरी", desc: "बायोगॅस स्लरीचा शेतात उत्कृष्ट सेंद्रिय खत म्हणून वापर करा." },
+          { title: "गांडूळ खत", desc: "उरलेल्या काडीकचऱ्यापासून गांडूळ खत तयार करून जमिनीचा पोत सुधारा." }
         ]
       }
     }
@@ -256,116 +1230,112 @@ const CROP_GUIDES_DATA: CropGuide[] = [
 
 interface CropAcademyProps {
   preferredLanguage?: string;
+  userId?: string;
 }
 
-export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyProps) {
-  const [filterType, setFilterType] = useState<"all" | "seasonal" | "off-season">("all");
+export default function CropAcademy({ preferredLanguage = "en", userId = "guest-1" }: CropAcademyProps) {
+  const [filterType, setFilterType] = useState<"all" | "seasonal" | "off-season" | "livestock">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeVideoGuide, setActiveVideoGuide] = useState<CropGuide | null>(null);
-  const [playingState, setPlayingState] = useState(false);
-  const [playbackTime, setPlaybackTime] = useState(0);
+  
+  // Expanded lessons modal / accordion state
+  const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
 
-  // Localization Dictionary
+  // Active video player state
+  const [activeLesson, setActiveLesson] = useState<{
+    guideName: string;
+    categoryCode: string;
+    lesson: LessonItem;
+    categoryName: string;
+  } | null>(null);
+
+  // User progress map: lessonId -> boolean
+  const [completedLessons, setCompletedLessons] = useState<Record<string, boolean>>({});
+  const [loadingProgress, setLoadingProgress] = useState(false);
+
+  // UI Localization Dictionary
   const translations: Record<string, Record<string, string>> = {
     hi: {
-      "Crop Academy": "फसल अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "चरण-दर-चरण वीडियो पाठों के साथ मौसमी और गैर-मौसमी फसलें उगाएं।",
-      "Search crop guides...": "फसल गाइड खोजें...",
+      "Farming & Livestock Academy": "कृषि एवं पशुपालन अकादमी",
+      "Crop Academy": "फसल एवं पशुपालन अकादमी",
+      "Grow seasonal and off-season crops with step-by-step video lessons.": "चरण-दर-चरण वीडियो पाठों के साथ मौसमी, गैर-मौसमी फसलें और पशुपालन सीखें।",
+      "Search crop guides...": "फसल, पशुपालन या वीडियो खोजें...",
       "All Guides": "सभी गाइड",
       "Seasonal Crops": "मौसमी फसलें",
       "Off-Season Crops": "गैर-मौसमी (ऑफ़-सीज़न)",
-      "Soil:": "मिट्टी का प्रकार:",
-      "Watering:": "सिंचाई आवश्यकता:",
-      "View Sowing Steps": "बुवाई के चरण देखें",
+      "Livestock & Aquaculture": "पशुपालन एवं मत्स्य पालन",
+      "Soil:": "मिट्टी/आवास:",
+      "Watering:": "जल/सिंचाई आवश्यकता:",
       "Watch Lesson": "पाठ देखें",
-      "Sowing & Harvesting Steps": "बुवाई और कटाई के चरण",
+      "Open Lessons & Videos": "पाठ एवं वीडियो देखें",
+      "Hide Lessons": "पाठ छुपाएं",
+      "Sowing & Harvesting Steps": "महत्वपूर्ण चरण एवं तकनीक",
       "Video Tutorial Lesson": "वीडियो ट्यूटोरियल पाठ",
       "Step": "चरण",
       "Close": "बंद करें",
-      "Soil Context:": "मिट्टी संदर्भ:",
-      "Irrigation:": "सिंचाई:"
-    },
-    bho: {
-      "Crop Academy": "फसल अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "एगो-एगो कदम के वीडियो पाठ के साथ मौसमी अउर बिना-मौसम के फसल उगाईं।",
-      "Search crop guides...": "फसल गाइड खोजीं...",
-      "All Guides": "सब गाइड",
-      "Seasonal Crops": "मौसमी फसल",
-      "Off-Season Crops": "बिना-मौसम के फसल (ऑफ़-सीज़न)",
-      "Soil:": "मिट्टी के प्रकार:",
-      "Watering:": "सिंचाई के जरूरत:",
-      "View Sowing Steps": "बोआई के कदम देखीं",
-      "Watch Lesson": "वीडियो देखीं",
-      "Sowing & Harvesting Steps": "बोआई अउर कटाई के तरीका",
-      "Video Tutorial Lesson": "वीडियो ट्यूटोरियल पाठ",
-      "Step": "चरण",
-      "Close": "बंद करीं",
-      "Soil Context:": "मिट्टी संदर्भ:",
-      "Irrigation:": "सिंचाई:"
+      "Watch on YouTube": "YouTube पर देखें",
+      "Mark as Completed": "पूर्ण चिह्नित करें",
+      "Completed": "पूर्ण हुआ ✓",
+      "Learning Progress": "सीखने की प्रगति",
+      "Modules & Lessons": "मॉड्यूल एवं पाठ",
+      "Verified Educational Video": "सत्यापित शैक्षणिक वीडियो",
+      "No video restrictions": "पूर्ण स्क्रीन एवं उच्च गुणवत्ता",
+      "Language:": "भाषा:",
+      "Duration:": "अवधि:"
     },
     mr: {
-      "Crop Academy": "पीक अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "टप्प्याटप्प्याने मार्गदर्शक व्हिडिओद्वारे मौसमी आणि बिगर-हंगामी पिके उगवा.",
-      "Search crop guides...": "पीक मार्गदर्शक शोधा...",
+      "Farming & Livestock Academy": "कृषी व पशुसंवर्धन अकादमी",
+      "Crop Academy": "पीक व पशुसंवर्धन अकादमी",
+      "Grow seasonal and off-season crops with step-by-step video lessons.": "टप्प्याटप्प्याने मार्गदर्शक व्हिडिओद्वारे पिके व पशुसंवर्धन शिका.",
+      "Search crop guides...": "पीक, पशुपालन किंवा व्हिडिओ शोधा...",
       "All Guides": "सर्व मार्गदर्शक",
       "Seasonal Crops": "हंगामी पिके",
       "Off-Season Crops": "बिगर-हंगामी (ऑफ-सीझन) पिके",
-      "Soil:": "मातीचा प्रकार:",
-      "Watering:": "सिंचन गरज:",
-      "View Sowing Steps": "लागवडीच्या पायऱ्या",
-      "Watch Lesson": "मार्गदर्शक व्हिडिओ",
-      "Sowing & Harvesting Steps": "लागवड व काढणीच्या पायऱ्या",
+      "Livestock & Aquaculture": "पशुपालन व मत्स्यशेती",
+      "Soil:": "माती/गोठा प्रकार:",
+      "Watering:": "पाणी गरज:",
+      "Watch Lesson": "व्हिडिओ पहा",
+      "Open Lessons & Videos": "धडे व व्हिडिओ उघडा",
+      "Hide Lessons": "धडे बंद करा",
+      "Sowing & Harvesting Steps": "महत्त्वाचे टप्पे व कृती",
       "Video Tutorial Lesson": "व्हिडिओ ट्यूटोरियल",
       "Step": "टप्पा",
       "Close": "बंद करा",
-      "Soil Context:": "योग्य माती:",
-      "Irrigation:": "पाणी व्यवस्थापन:"
+      "Watch on YouTube": "YouTube वर उघडा",
+      "Mark as Completed": "पूर्ण झाले म्हणून नोंदवा",
+      "Completed": "पूर्ण झाले ✓",
+      "Learning Progress": "शिक्षणाची प्रगती",
+      "Modules & Lessons": "मॉड्यूल व धडे",
+      "Verified Educational Video": "सत्यापित शैक्षणिक व्हिडिओ"
     },
-    pa: {
-      "Crop Academy": "ਫਸਲ ਅਕੈਡਮੀ",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "ਵੀਡੀਓ ਸਬਕਾਂ ਦੇ ਨਾਲ ਮੌਸਮੀ ਅਤੇ ਬੇਮੌਸਮੀ ਫਸਲਾਂ ਉਗਾਉਣਾ ਸਿੱਖੋ।",
-      "Search crop guides...": "ਫਸਲ ਗਾਈਡ ਲੱਭੋ...",
-      "All Guides": "ਸਾਰੀਆਂ ਫਸਲਾਂ",
-      "Seasonal Crops": "ਮੌਸਮੀ ਫਸਲਾਂ",
-      "Off-Season Crops": "ਬੇਮੌਸਮੀ ਫਸਲਾਂ",
-      "Soil:": "ਮਿੱਟੀ:",
-      "Watering:": "ਸਿੰਚਾਈ:",
-      "View Sowing Steps": "ਬਿਜਾਈ ਦੇ ਪੜਾਅ",
-      "Watch Lesson": "ਵੀਡੀਓ ਦੇਖੋ",
-      "Sowing & Harvesting Steps": "ਬਿਜਾਈ ਅਤੇ ਕਟਾਈ ਦੇ ਪੜਾਅ",
-      "Video Tutorial Lesson": "ਟਿਊਟੋਰਿਅਲ ਵੀਡੀਓ",
-      "Step": "ਪੜਾਅ",
-      "Close": "ਬੰਦ ਕਰੋ"
+    mai: {
+      "Farming & Livestock Academy": "कृषि आ पशुपालन अकादमी",
+      "Crop Academy": "फसल आ पशुपालन अकादमी",
+      "Grow seasonal and off-season crops with step-by-step video lessons.": "वीडियो पाठ सँ उन्नत फसल आ पशुपालनक सीख प्राप्त करू।",
+      "Search crop guides...": "फसल वा पशुपालन खोजीं...",
+      "All Guides": "सभ गाइड",
+      "Seasonal Crops": "मौसमी फसल",
+      "Off-Season Crops": "बेमौसमी फसल",
+      "Livestock & Aquaculture": "पशुपालन आ मछली पालन",
+      "Watch Lesson": "पाठ देखीं",
+      "Open Lessons & Videos": "पाठ आ वीडियो देखीं",
+      "Close": "बंद करू",
+      "Watch on YouTube": "YouTube पर देखीं",
+      "Learning Progress": "सीखबाक प्रगति"
     },
-    ta: {
-      "Crop Academy": "பயிர் அகாடமி",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "படி படியாக வீடியோ பாடங்களுடன் பருவகால மற்றும் மாற்றுப் பயிர்களை வளர்க்கவும்.",
-      "Search crop guides...": "பயிர் வழிகாட்டியைத் தேடுக...",
-      "All Guides": "அனைத்து வழிகாட்டிகள்",
-      "Seasonal Crops": "பருவகால பயிர்கள்",
-      "Off-Season Crops": "மாற்றுப் பருவ பயிர்கள்",
-      "Soil:": "மண் வகை:",
-      "Watering:": "நீர் தேவை:",
-      "View Sowing Steps": "சாகுபடி முறைகள்",
-      "Watch Lesson": "வகுப்பைக் காண்க",
-      "Sowing & Harvesting Steps": "சாகுபடி மற்றும் அறுவடை படிகள்",
-      "Video Tutorial Lesson": "வீடியோ பாடம்",
-      "Step": "படி"
-    },
-    te: {
-      "Crop Academy": "పంటల అకాడమీ",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "వీడియో పాఠాల ద్వారా కాలక్రమంగా మరియు అకాల పంటలను పండించడం నేర్చుకోండి.",
-      "Search crop guides...": "పంట మార్గదర్శిని వెతకండి...",
-      "All Guides": "అన్ని గైడ్లు",
-      "Seasonal Crops": "కాలపరిమితి పంటలు",
-      "Off-Season Crops": "అకాల పంటలు",
-      "Soil:": "నేల రకం:",
-      "Watering:": "నీటి అవసరం:",
-      "View Sowing Steps": "సాగు పద్ధతులు",
-      "Watch Lesson": "వీడియో గైడ్",
-      "Sowing & Harvesting Steps": "సాగు మరియు కోత విధానాలు",
-      "Video Tutorial Lesson": "వీడియో శిక్షణ",
-      "Step": "దశ"
+    bho: {
+      "Farming & Livestock Academy": "खेती आ पशुपालन अकादमी",
+      "Crop Academy": "फसल आ पशुपालन अकादमी",
+      "Grow seasonal and off-season crops with step-by-step video lessons.": "एगो-एगो कदम के वीडियो पाठ से खेती आ पशुपालन सीखीं।",
+      "Search crop guides...": "फसल, पशुपालन चाहे वीडियो खोजीं...",
+      "All Guides": "सब गाइड",
+      "Seasonal Crops": "मौसमी फसल",
+      "Off-Season Crops": "बिना मौसम के फसल",
+      "Livestock & Aquaculture": "पशुपालन आ मछरी पालन",
+      "Watch Lesson": "वीडियो देखीं",
+      "Open Lessons & Videos": "पाठ आ वीडियो खोलीं",
+      "Close": "बंद करीं",
+      "Watch on YouTube": "YouTube पर देखीं",
+      "Learning Progress": "सीखे के प्रगति"
     }
   };
 
@@ -373,49 +1343,136 @@ export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyPro
     return translations[preferredLanguage]?.[key] || translations["en"]?.[key] || key;
   };
 
-  const getLocalizedCrop = (guide: CropGuide) => {
+  // Fetch user progress on mount
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        setLoadingProgress(true);
+        const res = await axios.get(`/api/academy/progress?userId=${userId}`);
+        if (res.data?.progress && Array.isArray(res.data.progress)) {
+          const map: Record<string, boolean> = {};
+          res.data.progress.forEach((p: any) => {
+            if (p.isCompleted || p.is_completed) {
+              map[p.lessonId || p.lesson_id] = true;
+            }
+          });
+          setCompletedLessons(map);
+        }
+      } catch (err) {
+        console.warn("Could not load backend progress, running in offline mode:", err);
+      } finally {
+        setLoadingProgress(false);
+      }
+    };
+
+    fetchProgress();
+  }, [userId]);
+
+  const handleToggleComplete = async (lessonId: string) => {
+    const nextState = !completedLessons[lessonId];
+    setCompletedLessons(prev => ({ ...prev, [lessonId]: nextState }));
+
+    try {
+      await axios.post("/api/academy/progress", {
+        userId,
+        lessonId,
+        isCompleted: nextState,
+        lastWatchedSeconds: 300
+      });
+    } catch (err) {
+      console.warn("Progress update saved locally:", err);
+    }
+  };
+
+  const getLocalizedGuide = (guide: AcademyCardData) => {
     const local = guide.translations[preferredLanguage];
     return {
       ...guide,
       name: local?.name || guide.name,
-      season: local?.season || guide.season,
+      season: local?.season || guide.season || (guide.type === "livestock" ? "All Year" : "Seasonal"),
       description: local?.description || guide.description,
       steps: local?.steps || guide.steps
     };
   };
 
-  const filteredGuides = CROP_GUIDES_DATA.filter((guide) => {
-    const loc = getLocalizedCrop(guide);
-    const matchesType = filterType === "all" || guide.type === filterType;
-    const matchesSearch = loc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          loc.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesType && matchesSearch;
+  // Filter and Search logic
+  const filteredGuides = MASTER_ACADEMY_DATA.filter((guide) => {
+    const loc = getLocalizedGuide(guide);
+    
+    // Type Filter
+    let matchesType = true;
+    if (filterType === "seasonal") matchesType = guide.type === "seasonal";
+    else if (filterType === "off-season") matchesType = guide.type === "off-season";
+    else if (filterType === "livestock") matchesType = guide.type === "livestock";
+
+    // Search Query Filter
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return matchesType;
+
+    const matchesName = loc.name.toLowerCase().includes(query);
+    const matchesDesc = loc.description.toLowerCase().includes(query);
+    const matchesCategory = guide.categoryCode.toLowerCase().includes(query);
+    const matchesLessons = guide.modules.some(m => 
+      m.title.toLowerCase().includes(query) || 
+      m.lessons.some(l => l.title.toLowerCase().includes(query) || l.titleEn.toLowerCase().includes(query))
+    );
+
+    return matchesType && (matchesName || matchesDesc || matchesCategory || matchesLessons);
   });
 
-  const handleOpenVideo = (guide: CropGuide) => {
-    setActiveVideoGuide(guide);
-    setPlayingState(true);
-    setPlaybackTime(10); // Start at 10 seconds simulation
+  const calculateCourseProgress = (guide: AcademyCardData) => {
+    const allLessons = guide.modules.flatMap(m => m.lessons);
+    if (allLessons.length === 0) return 0;
+    const completedCount = allLessons.filter(l => completedLessons[l.id]).length;
+    return Math.round((completedCount / allLessons.length) * 100);
+  };
+
+  const handleOpenLessonVideo = (guide: AcademyCardData, lesson: LessonItem) => {
+    const loc = getLocalizedGuide(guide);
+    setActiveLesson({
+      guideName: loc.name,
+      categoryCode: guide.categoryCode,
+      categoryName: loc.name,
+      lesson
+    });
   };
 
   const handleCloseVideo = () => {
-    setActiveVideoGuide(null);
-    setPlayingState(false);
+    setActiveLesson(null);
+  };
+
+  const getCategoryIcon = (code: string) => {
+    switch (code) {
+      case "dairy": return <Milk className="w-4 h-4 text-sky-400" />;
+      case "poultry": return <Feather className="w-4 h-4 text-amber-400" />;
+      case "fisheries": return <Fish className="w-4 h-4 text-cyan-400" />;
+      case "beekeeping": return <Sun className="w-4 h-4 text-yellow-400" />;
+      case "sheep": return <Layers className="w-4 h-4 text-emerald-400" />;
+      case "goat": return <Shield className="w-4 h-4 text-lime-400" />;
+      case "pig": return <Circle className="w-4 h-4 text-rose-400" />;
+      case "integrated": return <RefreshCw className="w-4 h-4 text-emerald-300" />;
+      default: return <Layers className="w-4 h-4 text-emerald-400" />;
+    }
   };
 
   return (
     <div className="space-y-6" id="crop-academy-module">
+      {/* Banner */}
       <div className="bg-gradient-to-br from-emerald-900 to-teal-950 text-white rounded-3xl p-6 shadow-md relative overflow-hidden">
-        {/* Decorative crop design */}
         <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none translate-x-12 translate-y-12">
           <Layers className="w-80 h-80 text-emerald-300" />
         </div>
         
-        <div className="relative z-10 max-w-lg">
-          <span className="bg-emerald-500/30 text-emerald-200 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest block w-max mb-2">
-            Seasonal smarts & training
-          </span>
-          <h2 className="text-2xl font-black tracking-tight">{localT("Crop Academy")}</h2>
+        <div className="relative z-10 max-w-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-emerald-500/30 text-emerald-200 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest block w-max">
+              🎥 Official Farming Video Lessons
+            </span>
+            <span className="bg-amber-500/20 text-amber-200 border border-amber-500/20 px-2.5 py-1 rounded-full text-[10px] font-bold">
+              ICAR & Agri-Extension Verified
+            </span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-black tracking-tight">{localT("Farming & Livestock Academy")}</h2>
           <p className="text-emerald-100 text-xs mt-1.5 leading-relaxed">
             {localT("Grow seasonal and off-season crops with step-by-step video lessons.")}
           </p>
@@ -423,11 +1480,11 @@ export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyPro
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white border rounded-2xl p-3.5 shadow-xs">
-        <div className="flex gap-1 bg-slate-50 p-1 rounded-xl w-full md:w-auto">
+      <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white border border-gray-100 rounded-2xl p-3.5 shadow-xs">
+        <div className="flex flex-wrap gap-1 bg-slate-50 p-1 rounded-xl w-full md:w-auto">
           <button
             onClick={() => setFilterType("all")}
-            className={`flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
               filterType === "all" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -435,42 +1492,57 @@ export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyPro
           </button>
           <button
             onClick={() => setFilterType("seasonal")}
-            className={`flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
               filterType === "seasonal" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            {localT("Seasonal Crops")}
+            🌾 {localT("Seasonal Crops")}
           </button>
           <button
             onClick={() => setFilterType("off-season")}
-            className={`flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
               filterType === "off-season" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            {localT("Off-Season Crops")}
+            🌱 {localT("Off-Season Crops")}
+          </button>
+          <button
+            onClick={() => setFilterType("livestock")}
+            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
+              filterType === "livestock" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            🐄 {localT("Livestock & Aquaculture")}
           </button>
         </div>
 
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={localT("Search crop guides...")}
-          className="w-full md:w-64 p-2 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-emerald-500 text-xs text-slate-700"
-        />
+        <div className="relative w-full md:w-72">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={localT("Search crop guides...")}
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 text-xs text-slate-700"
+          />
+        </div>
       </div>
 
-      {/* Crop Cards List */}
+      {/* Course & Guide Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredGuides.map((guide) => {
-          const loc = getLocalizedCrop(guide);
+          const loc = getLocalizedGuide(guide);
+          const progressPercent = calculateCourseProgress(guide);
+          const isExpanded = expandedCourseId === guide.id;
+          const firstLesson = guide.modules[0]?.lessons[0];
+
           return (
             <div 
               key={guide.id}
               className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-200 transition-all flex flex-col group"
               id={`crop-academy-card-${guide.id}`}
             >
-              {/* Crop Image & Play Trigger */}
+              {/* Card Image & Play Trigger */}
               <div className="aspect-video w-full relative overflow-hidden bg-slate-100">
                 <img 
                   src={guide.image} 
@@ -478,33 +1550,45 @@ export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyPro
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" 
                 />
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/25 transition-all flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/35 group-hover:bg-black/25 transition-all flex items-center justify-center">
                   <button
-                    onClick={() => handleOpenVideo(guide)}
+                    onClick={() => firstLesson && handleOpenLessonVideo(guide, firstLesson)}
                     className="p-4 bg-emerald-500/90 hover:bg-emerald-500 hover:scale-110 text-white rounded-full shadow-lg transition-all flex items-center justify-center border-4 border-white/30 backdrop-blur-xs cursor-pointer"
                     title="Watch tutorial video lesson"
                   >
                     <Play className="w-5 h-5 fill-white ml-0.5" />
                   </button>
                 </div>
-                {/* Labels */}
+                
+                {/* Labels & Tags */}
                 <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
                   <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full text-white uppercase tracking-wider ${
-                    guide.type === "seasonal" ? "bg-emerald-600" : "bg-teal-600"
+                    guide.type === "seasonal" ? "bg-emerald-600" : guide.type === "off-season" ? "bg-teal-600" : "bg-indigo-600"
                   }`}>
-                    {guide.type === "seasonal" ? "Seasonal" : "Off-Season Smarts"}
+                    {guide.type === "seasonal" ? "Seasonal Crop" : guide.type === "off-season" ? "Off-Season Smarts" : "Livestock Masterclass"}
                   </span>
-                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-black/50 text-white backdrop-blur-xs">
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white backdrop-blur-xs flex items-center gap-1">
                     ⏱ {guide.videoLength} Video Lesson
                   </span>
                 </div>
+
+                {/* Progress pill on top right */}
+                <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-full text-white text-[10px] font-bold flex items-center gap-1.5 border border-white/10">
+                  <Award className="w-3 h-3 text-amber-400" />
+                  <span>{localT("Learning Progress")}: {progressPercent}%</span>
+                </div>
               </div>
 
-              {/* Crop Content */}
+              {/* Card Body */}
               <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <div className="flex justify-between items-start">
-                    <h3 className="text-base font-extrabold text-slate-800">{loc.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-700">
+                        {getCategoryIcon(guide.categoryCode)}
+                      </div>
+                      <h3 className="text-base font-extrabold text-slate-800">{loc.name}</h3>
+                    </div>
                     <span className="text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md font-bold">
                       {loc.season}
                     </span>
@@ -512,27 +1596,45 @@ export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyPro
                   <p className="text-xs text-slate-500 leading-relaxed">{loc.description}</p>
                 </div>
 
-                {/* Specific metrics */}
-                <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl text-[10px]">
-                  <div>
-                    <span className="text-slate-400 block">{localT("Soil:")}</span>
-                    <span className="font-bold text-slate-700">{guide.soilType}</span>
+                {/* Progress Bar */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                    <span>{localT("Learning Progress")}</span>
+                    <span className="text-emerald-600">{progressPercent}%</span>
                   </div>
-                  <div>
-                    <span className="text-slate-400 block">{localT("Watering:")}</span>
-                    <span className="font-bold text-slate-700">{guide.waterLevel}</span>
+                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" 
+                      style={{ width: `${progressPercent}%` }}
+                    />
                   </div>
                 </div>
 
+                {/* Specific metrics if available */}
+                {(guide.soilType || guide.waterLevel) && (
+                  <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl text-[10px]">
+                    <div>
+                      <span className="text-slate-400 block">{localT("Soil:")}</span>
+                      <span className="font-bold text-slate-700 truncate block">{guide.soilType}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block">{localT("Watering:")}</span>
+                      <span className="font-bold text-slate-700 truncate block">{guide.waterLevel}</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Steps Accordion / Details */}
-                <div className="space-y-2.5 border-t pt-3.5">
-                  <h4 className="font-bold text-slate-800 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-                    {localT("Sowing & Harvesting Steps")}
-                  </h4>
+                <div className="space-y-2.5 border-t border-slate-100 pt-3.5">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-bold text-slate-800 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                      {localT("Sowing & Harvesting Steps")}
+                    </h4>
+                  </div>
                   
                   <div className="space-y-2">
-                    {loc.steps.map((step, idx) => (
+                    {loc.steps.slice(0, 3).map((step, idx) => (
                       <div key={idx} className="flex gap-2.5 text-xs">
                         <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 font-bold text-[9px] mt-0.5">
                           {idx + 1}
@@ -546,105 +1648,190 @@ export default function CropAcademy({ preferredLanguage = "en" }: CropAcademyPro
                   </div>
                 </div>
 
-                {/* Lesson Link */}
-                <button
-                  onClick={() => handleOpenVideo(guide)}
-                  className="w-full flex items-center justify-center gap-1 py-2 text-xs font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100/60 rounded-xl transition-all cursor-pointer"
-                >
-                  <Video className="w-3.5 h-3.5" />
-                  <span>{localT("Watch Lesson")} ({guide.videoLength})</span>
-                </button>
+                {/* Structured Lessons & Video Accordion */}
+                <div className="space-y-2 border-t border-slate-100 pt-3">
+                  <button
+                    onClick={() => setExpandedCourseId(isExpanded ? null : guide.id)}
+                    className="w-full flex items-center justify-between py-2 px-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-700 transition-all cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
+                      {isExpanded ? (translations[preferredLanguage]?.["Hide Lessons"] || "Hide Lessons") : localT("Open Lessons & Videos")} ({guide.modules.flatMap(m => m.lessons).length})
+                    </span>
+                    {isExpanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                  </button>
+
+                  {isExpanded && (
+                    <div className="space-y-3 pt-2 animate-in fade-in duration-200">
+                      {guide.modules.map((mod) => (
+                        <div key={mod.id} className="space-y-2 bg-slate-50/70 p-3 rounded-2xl border border-slate-100">
+                          <h5 className="font-extrabold text-[11px] text-slate-700 uppercase tracking-wide">
+                            📂 {mod.title}
+                          </h5>
+                          <div className="space-y-1.5">
+                            {mod.lessons.map((lesson, lIdx) => {
+                              const isDone = Boolean(completedLessons[lesson.id]);
+                              return (
+                                <div
+                                  key={lesson.id}
+                                  className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-100 hover:border-emerald-200 shadow-2xs transition-all gap-2"
+                                >
+                                  <div className="flex items-start gap-2.5 min-w-0">
+                                    <span className="font-mono font-bold text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded mt-0.5">
+                                      0{lIdx + 1}
+                                    </span>
+                                    <div className="min-w-0">
+                                      <p className="text-xs font-bold text-slate-800 truncate">{lesson.title}</p>
+                                      <span className="text-[10px] text-slate-400">⏱ {lesson.videoDuration}</span>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-1.5 shrink-0">
+                                    <button
+                                      onClick={() => handleToggleComplete(lesson.id)}
+                                      className={`p-1 rounded-lg text-[10px] font-bold transition-all ${
+                                        isDone ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400 hover:text-slate-600"
+                                      }`}
+                                      title={isDone ? "Completed" : "Mark as complete"}
+                                    >
+                                      <CheckCircle className={`w-3.5 h-3.5 ${isDone ? "fill-emerald-600 text-white" : ""}`} />
+                                    </button>
+                                    <button
+                                      onClick={() => handleOpenLessonVideo(guide, lesson)}
+                                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all cursor-pointer"
+                                    >
+                                      <Play className="w-3 h-3 fill-white" />
+                                      <span>{localT("Watch Lesson")}</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Primary Watch Lesson Trigger */}
+                {firstLesson && (
+                  <button
+                    onClick={() => handleOpenLessonVideo(guide, firstLesson)}
+                    className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-emerald-700 hover:text-white bg-emerald-50 hover:bg-emerald-600 rounded-xl transition-all cursor-pointer shadow-2xs group-hover:bg-emerald-600 group-hover:text-white"
+                  >
+                    <Video className="w-3.5 h-3.5" />
+                    <span>{localT("Watch Lesson")} ({guide.videoLength})</span>
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Video Player Overlay Modal */}
-      {activeVideoGuide && (
-        <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-900 text-white rounded-3xl overflow-hidden max-w-2xl w-full border border-slate-800 shadow-2xl relative">
+      {/* Professional YouTube Video Player Modal */}
+      {activeLesson && (
+        <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 text-white rounded-3xl overflow-hidden max-w-3xl w-full border border-slate-800 shadow-2xl relative flex flex-col max-h-[92vh]">
             
             {/* Modal Header */}
-            <div className="p-4 bg-slate-950/80 border-b border-slate-800/60 flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg">
-                  <Video className="w-4 h-4 animate-pulse" />
+            <div className="p-4 bg-slate-950/90 border-b border-slate-800/80 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
+                  <Video className="w-5 h-5 animate-pulse" />
                 </div>
-                <div>
-                  <h4 className="font-bold text-xs text-emerald-400 uppercase tracking-widest">{localT("Video Tutorial Lesson")}</h4>
-                  <p className="text-xs text-white font-extrabold">{getLocalizedCrop(activeVideoGuide).name} Lessons</p>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-emerald-500/20 text-emerald-300 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
+                      {activeLesson.categoryName}
+                    </span>
+                    <span className="text-slate-400 text-[10px]">⏱ {activeLesson.lesson.videoDuration}</span>
+                  </div>
+                  <h4 className="font-extrabold text-sm text-white truncate mt-0.5">{activeLesson.lesson.title}</h4>
                 </div>
               </div>
               <button
                 onClick={handleCloseVideo}
-                className="p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer"
+                className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer shrink-0 ml-2"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Custom Interactive Video Frame */}
-            <div className="aspect-video w-full bg-black relative group overflow-hidden">
-              <video 
-                src={activeVideoGuide.videoUrl} 
-                autoPlay 
-                loop 
-                muted 
-                controls={false}
-                className="w-full h-full object-cover"
-              />
-              
-              {/* Playback Simulation HUD */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 flex flex-col justify-between p-4 pointer-events-none">
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] bg-emerald-600 text-white px-2.5 py-1 rounded-full font-bold">
-                    🔴 LOCALIZED SUBTITLES AUTO-ON
-                  </span>
-                  <span className="text-[10px] bg-slate-800/80 text-slate-300 px-2 py-1 rounded font-bold">
-                    HD 1080p
-                  </span>
+            {/* Responsive 16:9 YouTube Player Frame */}
+            <div className="aspect-video w-full bg-black relative shrink-0">
+              {activeLesson.lesson.youtubeVideoId && activeLesson.lesson.youtubeVideoId !== "pending" ? (
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${activeLesson.lesson.youtubeVideoId}?autoplay=1&rel=0&modestbranding=1`}
+                  title={activeLesson.lesson.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="w-full h-full border-0"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-slate-950 text-slate-400">
+                  <Video className="w-12 h-12 text-amber-500 mb-2 animate-bounce" />
+                  <h5 className="text-white font-bold text-sm">Educational Video Pending Verification</h5>
+                  <p className="text-xs text-slate-400 mt-1 max-w-md">Our agricultural agronomy team is currently vetting and curating official high-definition instructional video for this lesson.</p>
                 </div>
-
-                {/* Subtitles Overlay */}
-                <div className="self-center bg-black/75 px-4 py-2 rounded-xl text-center text-xs text-emerald-300 font-medium max-w-md border border-emerald-500/10 leading-relaxed shadow-lg">
-                  🚜 "{getLocalizedCrop(activeVideoGuide).steps[0]?.title}: {getLocalizedCrop(activeVideoGuide).steps[0]?.desc}"
-                </div>
-
-                {/* Custom Video Controls bar */}
-                <div className="flex items-center gap-3 bg-black/60 backdrop-blur-xs p-2.5 rounded-xl border border-white/5">
-                  <button className="p-1 bg-emerald-500 text-white rounded-md">
-                    <Play className="w-3.5 h-3.5 fill-white" />
-                  </button>
-                  
-                  {/* Progress track */}
-                  <div className="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden">
-                    <div className="w-[35%] h-full bg-emerald-500 rounded-full" />
-                  </div>
-
-                  <span className="text-[10px] font-mono text-slate-300">01:15 / {activeVideoGuide.videoLength}</span>
-                  <Volume2 className="w-3.5 h-3.5 text-slate-400" />
-                  <Maximize2 className="w-3.5 h-3.5 text-slate-400" />
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* Steps sidebar within modal */}
-            <div className="p-5 space-y-3.5 bg-slate-950">
-              <h5 className="font-extrabold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                <Info className="w-4 h-4 text-emerald-400" />
-                Lesson Outline & steps:
-              </h5>
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                {getLocalizedCrop(activeVideoGuide).steps.map((step, idx) => (
-                  <div key={idx} className="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
-                    <span className="font-bold text-emerald-400 block text-[11px] mb-0.5">
-                      {localT("Step")} {idx + 1}: {step.title}
-                    </span>
-                    <p className="text-slate-400 text-[10px] leading-relaxed">{step.desc}</p>
-                  </div>
-                ))}
+            {/* Modal Footer / Details (Scrollable) */}
+            <div className="p-5 space-y-4 bg-slate-950 overflow-y-auto">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800/80 pb-3">
+                <div>
+                  <h5 className="font-extrabold text-sm text-white">{activeLesson.lesson.title}</h5>
+                  <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{activeLesson.lesson.content}</p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleToggleComplete(activeLesson.lesson.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      completedLessons[activeLesson.lesson.id]
+                        ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                        : "bg-slate-800 hover:bg-slate-700 text-slate-300"
+                    }`}
+                  >
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    <span>{completedLessons[activeLesson.lesson.id] ? localT("Completed") : localT("Mark as Completed")}</span>
+                  </button>
+
+                  {activeLesson.lesson.youtubeVideoId && activeLesson.lesson.youtubeVideoId !== "pending" && (
+                    <a
+                      href={`https://www.youtube.com/watch?v=${activeLesson.lesson.youtubeVideoId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                    >
+                      <span>{localT("Watch on YouTube")}</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </div>
               </div>
+
+              {/* Lesson Key Steps / Outline */}
+              {activeLesson.lesson.steps && activeLesson.lesson.steps.length > 0 && (
+                <div className="space-y-2">
+                  <h6 className="font-extrabold text-[11px] uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    Key Learning Steps:
+                  </h6>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    {activeLesson.lesson.steps.map((step, idx) => (
+                      <div key={idx} className="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                        <span className="font-bold text-emerald-400 block text-[11px] mb-0.5">
+                          {localT("Step")} {idx + 1}: {step.title}
+                        </span>
+                        <p className="text-slate-400 text-[10px] leading-relaxed">{step.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
