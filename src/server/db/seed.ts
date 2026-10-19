@@ -808,7 +808,7 @@ export async function runSeed(): Promise<boolean> {
              ON DUPLICATE KEY UPDATE youtube_video_id=VALUES(youtube_video_id), youtube_url=VALUES(youtube_url)`,
             [
               lv.id, lv.lesson_id, lv.youtube_video_id, lv.youtube_url, lv.title, lv.description,
-              lv.language, lv.duration_seconds, `https://img.youtube.com/vi/${lv.youtube_video_id}/hqdefault.jpg`, lv.is_primary, true
+              lv.language, lv.duration_seconds, `https://img.youtube.com/vi/${lv.youtube_video_id}/maxresdefault.jpg`, lv.is_primary, true
             ]
           );
         }

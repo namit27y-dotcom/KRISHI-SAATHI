@@ -20,7 +20,9 @@ import {
   Shield,
   Circle,
   RefreshCw,
-  Search
+  Search,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
 
 interface CropStep {
@@ -122,7 +124,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
             youtubeVideoId: "-eBrAm64fpg",
             youtubeUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
-            thumbnailUrl: "https://img.youtube.com/vi/-eBrAm64fpg/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/-eBrAm64fpg/maxresdefault.jpg",
             videoDuration: "3:52",
             content: "Raise healthy paddy seedlings in raised beds with carbendazim seed treatment to prevent blast.",
             steps: [
@@ -137,7 +139,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=id5LgdTMCtE",
             youtubeVideoId: "id5LgdTMCtE",
             youtubeUrl: "https://www.youtube.com/watch?v=id5LgdTMCtE",
-            thumbnailUrl: "https://img.youtube.com/vi/id5LgdTMCtE/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/id5LgdTMCtE/maxresdefault.jpg",
             videoDuration: "8:42",
             content: "Learn scientific puddle preparation and single-seedling SRI planting.",
             steps: [
@@ -158,7 +160,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=4-PW4NrLNRk",
             youtubeVideoId: "4-PW4NrLNRk",
             youtubeUrl: "https://www.youtube.com/watch?v=4-PW4NrLNRk",
-            thumbnailUrl: "https://img.youtube.com/vi/4-PW4NrLNRk/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/4-PW4NrLNRk/maxresdefault.jpg",
             videoDuration: "15:10",
             content: "Maintain continuous shallow flooding and apply balanced N-P-K at panicle initiation.",
             steps: [
@@ -173,7 +175,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
             youtubeVideoId: "-eBrAm64fpg",
             youtubeUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
-            thumbnailUrl: "https://img.youtube.com/vi/-eBrAm64fpg/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/-eBrAm64fpg/maxresdefault.jpg",
             videoDuration: "3:52",
             content: "Harvest at 18-20% grain moisture to prevent shattering losses.",
             steps: [
@@ -255,7 +257,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
             youtubeVideoId: "JN0ICendQns",
             youtubeUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
-            thumbnailUrl: "https://img.youtube.com/vi/JN0ICendQns/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/JN0ICendQns/maxresdefault.jpg",
             videoDuration: "6:37",
             content: "Fine seedbed preparation and 20-22 cm row spacing using seed drill.",
             steps: [
@@ -276,7 +278,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=G1nL_mFLn-A",
             youtubeVideoId: "G1nL_mFLn-A",
             youtubeUrl: "https://www.youtube.com/watch?v=G1nL_mFLn-A",
-            thumbnailUrl: "https://img.youtube.com/vi/G1nL_mFLn-A/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/G1nL_mFLn-A/maxresdefault.jpg",
             videoDuration: "7:16",
             content: "Critical first irrigation at 21 days after sowing with top dressing of urea.",
             steps: [
@@ -291,7 +293,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
             youtubeVideoId: "JN0ICendQns",
             youtubeUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
-            thumbnailUrl: "https://img.youtube.com/vi/JN0ICendQns/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/JN0ICendQns/maxresdefault.jpg",
             videoDuration: "6:37",
             content: "Harvest when grains are hard and dry with moisture below 14%.",
             steps: [
@@ -362,7 +364,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=wQ5Qr_PL8eU",
             youtubeVideoId: "wQ5Qr_PL8eU",
             youtubeUrl: "https://www.youtube.com/watch?v=wQ5Qr_PL8eU",
-            thumbnailUrl: "https://img.youtube.com/vi/wQ5Qr_PL8eU/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/wQ5Qr_PL8eU/maxresdefault.jpg",
             videoDuration: "2:43",
             content: "Vertical nylon wire support and lateral pruning up to 5th node.",
             steps: [
@@ -377,7 +379,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=etI-95vwdgo",
             youtubeVideoId: "etI-95vwdgo",
             youtubeUrl: "https://www.youtube.com/watch?v=etI-95vwdgo",
-            thumbnailUrl: "https://img.youtube.com/vi/etI-95vwdgo/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/etI-95vwdgo/maxresdefault.jpg",
             videoDuration: "6:02",
             content: "Soluble NPK fertigation schedule and temperature humidity maintenance.",
             steps: [
@@ -448,7 +450,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=wxMIq2E6X_Q",
             youtubeVideoId: "wxMIq2E6X_Q",
             youtubeUrl: "https://www.youtube.com/watch?v=wxMIq2E6X_Q",
-            thumbnailUrl: "https://img.youtube.com/vi/wxMIq2E6X_Q/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/wxMIq2E6X_Q/maxresdefault.jpg",
             videoDuration: "5:54",
             content: "Perlite root support and closed-loop recirculated nutrient solution.",
             steps: [
@@ -463,7 +465,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=j4EFjxCUmN8",
             youtubeVideoId: "j4EFjxCUmN8",
             youtubeUrl: "https://www.youtube.com/watch?v=j4EFjxCUmN8",
-            thumbnailUrl: "https://img.youtube.com/vi/j4EFjxCUmN8/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/j4EFjxCUmN8/maxresdefault.jpg",
             videoDuration: "17:50",
             content: "Manual cluster agitation for pollination and bi-weekly harvest.",
             steps: [
@@ -534,7 +536,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
             youtubeVideoId: "vA0A1WzinbI",
             youtubeUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
-            thumbnailUrl: "https://img.youtube.com/vi/vA0A1WzinbI/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/vA0A1WzinbI/maxresdefault.jpg",
             videoDuration: "2:54",
             content: "Loose housing system with good cross ventilation and comfortable sand bedding.",
             steps: [
@@ -549,7 +551,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=wDT0JmOGRw4",
             youtubeVideoId: "wDT0JmOGRw4",
             youtubeUrl: "https://www.youtube.com/watch?v=wDT0JmOGRw4",
-            thumbnailUrl: "https://img.youtube.com/vi/wDT0JmOGRw4/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/wDT0JmOGRw4/maxresdefault.jpg",
             videoDuration: "1:57",
             content: "Green fodder preservation in anaerobic silage pits with molasses and mineral mixtures.",
             steps: [
@@ -564,7 +566,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
             youtubeVideoId: "vA0A1WzinbI",
             youtubeUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
-            thumbnailUrl: "https://img.youtube.com/vi/vA0A1WzinbI/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/vA0A1WzinbI/maxresdefault.jpg",
             videoDuration: "2:54",
             content: "Colostrum feeding within 2 hours of birth and post-milking iodine teat dip.",
             steps: [
@@ -636,7 +638,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=DMQDRAffiUw",
             youtubeVideoId: "DMQDRAffiUw",
             youtubeUrl: "https://www.youtube.com/watch?v=DMQDRAffiUw",
-            thumbnailUrl: "https://img.youtube.com/vi/DMQDRAffiUw/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/DMQDRAffiUw/maxresdefault.jpg",
             videoDuration: "3:54",
             content: "Elevated shed construction and rotational grazing for parasite prevention.",
             steps: [
@@ -651,7 +653,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=4VDlIFV3qIM",
             youtubeVideoId: "4VDlIFV3qIM",
             youtubeUrl: "https://www.youtube.com/watch?v=4VDlIFV3qIM",
-            thumbnailUrl: "https://img.youtube.com/vi/4VDlIFV3qIM/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/4VDlIFV3qIM/maxresdefault.jpg",
             videoDuration: "4:59",
             content: "Deworming calendar, PPR vaccination, and clean shearing protocols.",
             steps: [
@@ -725,7 +727,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
             youtubeVideoId: "DdEjvOBEnwI",
             youtubeUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
-            thumbnailUrl: "https://img.youtube.com/vi/DdEjvOBEnwI/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/DdEjvOBEnwI/maxresdefault.jpg",
             videoDuration: "3:40",
             content: "Selecting high-yield Sirohi, Jamnapari, and Barbari breeds for stall feeding.",
             steps: [
@@ -740,7 +742,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=3SxADJwDW9Y",
             youtubeVideoId: "3SxADJwDW9Y",
             youtubeUrl: "https://www.youtube.com/watch?v=3SxADJwDW9Y",
-            thumbnailUrl: "https://img.youtube.com/vi/3SxADJwDW9Y/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/3SxADJwDW9Y/maxresdefault.jpg",
             videoDuration: "3:37",
             content: "Elevated wooden slotted flooring design and dry/green fodder formulation.",
             steps: [
@@ -755,7 +757,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
             youtubeVideoId: "DdEjvOBEnwI",
             youtubeUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
-            thumbnailUrl: "https://img.youtube.com/vi/DdEjvOBEnwI/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/DdEjvOBEnwI/maxresdefault.jpg",
             videoDuration: "3:40",
             content: "Enterotoxemia and PPR vaccination schedules with creep feeding for kids.",
             steps: [
@@ -829,7 +831,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
             youtubeVideoId: "CHJMfkOvOGk",
             youtubeUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
-            thumbnailUrl: "https://img.youtube.com/vi/CHJMfkOvOGk/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/CHJMfkOvOGk/maxresdefault.jpg",
             videoDuration: "9:20",
             content: "Day-old chick temperature management (95°F) and rice husk litter preparation.",
             steps: [
@@ -844,7 +846,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=_z8mg6NIJM4",
             youtubeVideoId: "_z8mg6NIJM4",
             youtubeUrl: "https://www.youtube.com/watch?v=_z8mg6NIJM4",
-            thumbnailUrl: "https://img.youtube.com/vi/_z8mg6NIJM4/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/_z8mg6NIJM4/maxresdefault.jpg",
             videoDuration: "3:31",
             content: "Feed conversion ratio optimization and strict farm sanitation.",
             steps: [
@@ -859,7 +861,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
             youtubeVideoId: "CHJMfkOvOGk",
             youtubeUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
-            thumbnailUrl: "https://img.youtube.com/vi/CHJMfkOvOGk/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/CHJMfkOvOGk/maxresdefault.jpg",
             videoDuration: "9:20",
             content: "Egg production enhancement and disease control.",
             steps: [
@@ -932,7 +934,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=67x4_mLm0mo",
             youtubeVideoId: "67x4_mLm0mo",
             youtubeUrl: "https://www.youtube.com/watch?v=67x4_mLm0mo",
-            thumbnailUrl: "https://img.youtube.com/vi/67x4_mLm0mo/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/67x4_mLm0mo/maxresdefault.jpg",
             videoDuration: "3:07",
             content: "Piggery housing, dry rations, and disease prevention.",
             steps: [
@@ -1003,7 +1005,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=dzf2a0mcCvE",
             youtubeVideoId: "dzf2a0mcCvE",
             youtubeUrl: "https://www.youtube.com/watch?v=dzf2a0mcCvE",
-            thumbnailUrl: "https://img.youtube.com/vi/dzf2a0mcCvE/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/dzf2a0mcCvE/maxresdefault.jpg",
             videoDuration: "3:46",
             content: "Langstroth hive box frames, queen excluders, and worker bee colony balancing.",
             steps: [
@@ -1018,7 +1020,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=tZ3DZ1Z3i0c",
             youtubeVideoId: "tZ3DZ1Z3i0c",
             youtubeUrl: "https://www.youtube.com/watch?v=tZ3DZ1Z3i0c",
-            thumbnailUrl: "https://img.youtube.com/vi/tZ3DZ1Z3i0c/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/tZ3DZ1Z3i0c/maxresdefault.jpg",
             videoDuration: "3:12",
             content: "Centrifugal extractor operations and pure honey processing.",
             steps: [
@@ -1089,7 +1091,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=RNQxV7zdoyc",
             youtubeVideoId: "RNQxV7zdoyc",
             youtubeUrl: "https://www.youtube.com/watch?v=RNQxV7zdoyc",
-            thumbnailUrl: "https://img.youtube.com/vi/RNQxV7zdoyc/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/RNQxV7zdoyc/maxresdefault.jpg",
             videoDuration: "3:14",
             content: "Pond drying, agricultural lime application (250 kg/ha), and fingerling acclimatization.",
             steps: [
@@ -1104,7 +1106,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=xOLdDsCekQY",
             youtubeVideoId: "xOLdDsCekQY",
             youtubeUrl: "https://www.youtube.com/watch?v=xOLdDsCekQY",
-            thumbnailUrl: "https://img.youtube.com/vi/xOLdDsCekQY/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/xOLdDsCekQY/maxresdefault.jpg",
             videoDuration: "6:13",
             content: "Rohu, Catla, and Mrigal feeding and aerator systems.",
             steps: [
@@ -1175,7 +1177,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=FCTNm27o5Ug",
             youtubeVideoId: "FCTNm27o5Ug",
             youtubeUrl: "https://www.youtube.com/watch?v=FCTNm27o5Ug",
-            thumbnailUrl: "https://img.youtube.com/vi/FCTNm27o5Ug/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/FCTNm27o5Ug/maxresdefault.jpg",
             videoDuration: "3:22",
             content: "Directing poultry droppings as pond manure and utilizing pond silt as rich crop compost.",
             steps: [
@@ -1190,7 +1192,7 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
             videoUrl: "https://www.youtube.com/watch?v=58Xj4PYSCSo",
             youtubeVideoId: "58Xj4PYSCSo",
             youtubeUrl: "https://www.youtube.com/watch?v=58Xj4PYSCSo",
-            thumbnailUrl: "https://img.youtube.com/vi/58Xj4PYSCSo/hqdefault.jpg",
+            thumbnailUrl: "https://img.youtube.com/vi/58Xj4PYSCSo/maxresdefault.jpg",
             videoDuration: "3:31",
             content: "Converting cattle dung into cooking methane gas and liquid bio-fertilizer.",
             steps: [
@@ -1248,6 +1250,9 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
     categoryName: string;
   } | null>(null);
 
+  // Theater / expanded HD view state
+  const [isTheaterMode, setIsTheaterMode] = useState(false);
+
   // User progress map: lessonId -> boolean
   const [completedLessons, setCompletedLessons] = useState<Record<string, boolean>>({});
   const [loadingProgress, setLoadingProgress] = useState(false);
@@ -1280,7 +1285,11 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
       "Verified Educational Video": "सत्यापित शैक्षणिक वीडियो",
       "No video restrictions": "पूर्ण स्क्रीन एवं उच्च गुणवत्ता",
       "Language:": "भाषा:",
-      "Duration:": "अवधि:"
+      "Duration:": "अवधि:",
+      "Theater Mode": "थिएटर मोड",
+      "Default": "सामान्य दृश्य",
+      "Standard View": "सामान्य दृश्य",
+      "Tip: Click the YouTube gear icon ⚙️ inside the player to lock quality to 1080p/720p HD.": "सुझाव: उच्चतम 1080p/720p HD गुणवत्ता के लिए प्लेयर में गियर आइकन ⚙️ पर क्लिक करें।"
     },
     mr: {
       "Farming & Livestock Academy": "कृषी व पशुसंवर्धन अकादमी",
@@ -1305,7 +1314,11 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
       "Completed": "पूर्ण झाले ✓",
       "Learning Progress": "शिक्षणाची प्रगती",
       "Modules & Lessons": "मॉड्यूल व धडे",
-      "Verified Educational Video": "सत्यापित शैक्षणिक व्हिडिओ"
+      "Verified Educational Video": "सत्यापित शैक्षणिक व्हिडिओ",
+      "Theater Mode": "थिएटर मोड",
+      "Default": "मूळ दृश्य",
+      "Standard View": "मूळ दृश्य",
+      "Tip: Click the YouTube gear icon ⚙️ inside the player to lock quality to 1080p/720p HD.": "टीप: उच्च 1080p/720p HD गुणवत्तेसाठी प्लेयरमधील गिअर आयकॉन ⚙️ वर क्लिक करा."
     },
     mai: {
       "Farming & Livestock Academy": "कृषि आ पशुपालन अकादमी",
@@ -1320,7 +1333,11 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
       "Open Lessons & Videos": "पाठ आ वीडियो देखीं",
       "Close": "बंद करू",
       "Watch on YouTube": "YouTube पर देखीं",
-      "Learning Progress": "सीखबाक प्रगति"
+      "Learning Progress": "सीखबाक प्रगति",
+      "Theater Mode": "थिएटर मोड",
+      "Default": "सामान्य दृश्य",
+      "Standard View": "सामान्य दृश्य",
+      "Tip: Click the YouTube gear icon ⚙️ inside the player to lock quality to 1080p/720p HD.": "सुझाव: उच्चतम 1080p/720p HD गुणवत्ता लेल प्लेयरक गियर आइकन ⚙️ पर क्लिक करू।"
     },
     bho: {
       "Farming & Livestock Academy": "खेती आ पशुपालन अकादमी",
@@ -1335,7 +1352,11 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
       "Open Lessons & Videos": "पाठ आ वीडियो खोलीं",
       "Close": "बंद करीं",
       "Watch on YouTube": "YouTube पर देखीं",
-      "Learning Progress": "सीखे के प्रगति"
+      "Learning Progress": "सीखे के प्रगति",
+      "Theater Mode": "थिएटर मोड",
+      "Default": "साधारण दृश्य",
+      "Standard View": "साधारण दृश्य",
+      "Tip: Click the YouTube gear icon ⚙️ inside the player to lock quality to 1080p/720p HD.": "सुझाव: 1080p/720p HD क्वालिटी खातिर प्लेयर में गियर आइकन ⚙️ पर क्लिक करीं।"
     }
   };
 
@@ -1439,6 +1460,7 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
 
   const handleCloseVideo = () => {
     setActiveLesson(null);
+    setIsTheaterMode(false);
   };
 
   const getCategoryIcon = (code: string) => {
@@ -1732,42 +1754,81 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
 
       {/* Professional YouTube Video Player Modal */}
       {activeLesson && (
-        <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-900 text-white rounded-3xl overflow-hidden max-w-3xl w-full border border-slate-800 shadow-2xl relative flex flex-col max-h-[92vh]">
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200 backdrop-blur-sm">
+          <div 
+            className={`bg-slate-900 text-white rounded-2xl sm:rounded-3xl overflow-hidden ${
+              isTheaterMode ? "max-w-6xl" : "max-w-4xl xl:max-w-5xl"
+            } w-full border border-slate-800 shadow-2xl relative flex flex-col max-h-[94vh] transition-all duration-300`}
+            style={{
+              transform: "translateZ(0)",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden"
+            }}
+          >
             
             {/* Modal Header */}
-            <div className="p-4 bg-slate-950/90 border-b border-slate-800/80 flex justify-between items-center shrink-0">
+            <div className="p-3.5 sm:p-4 bg-slate-950/95 border-b border-slate-800/80 flex justify-between items-center shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
                   <Video className="w-5 h-5 animate-pulse" />
                 </div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="bg-emerald-500/20 text-emerald-300 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
                       {activeLesson.categoryName}
                     </span>
                     <span className="text-slate-400 text-[10px]">⏱ {activeLesson.lesson.videoDuration}</span>
+                    <span className="bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded flex items-center gap-1">
+                      <Sparkles className="w-2.5 h-2.5 text-sky-400" />
+                      HD / 1080p
+                    </span>
                   </div>
                   <h4 className="font-extrabold text-sm text-white truncate mt-0.5">{activeLesson.lesson.title}</h4>
                 </div>
               </div>
-              <button
-                onClick={handleCloseVideo}
-                className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer shrink-0 ml-2"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                <button
+                  onClick={() => setIsTheaterMode(prev => !prev)}
+                  title={isTheaterMode ? localT("Standard View") : localT("Theater Mode")}
+                  className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 hover:text-white transition-all cursor-pointer hidden sm:flex items-center gap-1.5 text-xs font-semibold"
+                >
+                  {isTheaterMode ? <Minimize2 className="w-4 h-4 text-emerald-400" /> : <Maximize2 className="w-4 h-4 text-sky-400" />}
+                  <span className="text-[11px] hidden md:inline">{isTheaterMode ? localT("Default") : localT("Theater Mode")}</span>
+                </button>
+                <button
+                  onClick={handleCloseVideo}
+                  className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* Responsive 16:9 YouTube Player Frame */}
-            <div className="aspect-video w-full bg-black relative shrink-0">
+            <div 
+              className="aspect-video w-full bg-black relative shrink-0 overflow-hidden"
+              style={{
+                transform: "translateZ(0)",
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden"
+              }}
+            >
               {activeLesson.lesson.youtubeVideoId && activeLesson.lesson.youtubeVideoId !== "pending" ? (
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${activeLesson.lesson.youtubeVideoId}?autoplay=1&rel=0&modestbranding=1`}
+                  key={activeLesson.lesson.youtubeVideoId}
+                  src={`https://www.youtube.com/embed/${activeLesson.lesson.youtubeVideoId}?autoplay=1&rel=0&enablejsapi=1&playsinline=1${typeof window !== "undefined" && window.location.origin ? `&origin=${encodeURIComponent(window.location.origin)}` : ""}`}
                   title={activeLesson.lesson.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                   allowFullScreen
-                  className="w-full h-full border-0"
+                  loading="eager"
+                  className="w-full h-full border-0 block"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    aspectRatio: "16/9",
+                    border: "none",
+                    display: "block"
+                  }}
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-slate-950 text-slate-400">
@@ -1779,11 +1840,14 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
             </div>
 
             {/* Modal Footer / Details (Scrollable) */}
-            <div className="p-5 space-y-4 bg-slate-950 overflow-y-auto">
+            <div className="p-4 sm:p-5 space-y-4 bg-slate-950 overflow-y-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800/80 pb-3">
-                <div>
+                <div className="min-w-0">
                   <h5 className="font-extrabold text-sm text-white">{activeLesson.lesson.title}</h5>
                   <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{activeLesson.lesson.content}</p>
+                  <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+                    <span>💡 {localT("Tip: Click the YouTube gear icon ⚙️ inside the player to lock quality to 1080p/720p HD.")}</span>
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">

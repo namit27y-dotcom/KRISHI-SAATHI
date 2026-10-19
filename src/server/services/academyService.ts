@@ -175,7 +175,7 @@ export class AcademyService {
         description: v.description,
         language: v.language,
         durationSeconds: v.duration_seconds,
-        thumbnailUrl: v.thumbnail_url || (v.youtube_video_id ? `https://img.youtube.com/vi/${v.youtube_video_id}/hqdefault.jpg` : ""),
+        thumbnailUrl: v.thumbnail_url || (v.youtube_video_id ? `https://img.youtube.com/vi/${v.youtube_video_id}/maxresdefault.jpg` : ""),
         isPrimary: Boolean(v.is_primary)
       }));
     }
@@ -190,7 +190,7 @@ export class AcademyService {
       description: v.description,
       language: v.language || "en",
       durationSeconds: v.duration_seconds || v.durationSeconds || 0,
-      thumbnailUrl: v.thumbnail_url || v.thumbnailUrl || (v.youtube_video_id || v.youtubeVideoId ? `https://img.youtube.com/vi/${v.youtube_video_id || v.youtubeVideoId}/hqdefault.jpg` : ""),
+      thumbnailUrl: v.thumbnail_url || v.thumbnailUrl || (v.youtube_video_id || v.youtubeVideoId ? `https://img.youtube.com/vi/${v.youtube_video_id || v.youtubeVideoId}/maxresdefault.jpg` : ""),
       isPrimary: Boolean(v.is_primary ?? v.isPrimary ?? true)
     }));
   }
