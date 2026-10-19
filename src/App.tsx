@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "motion/react";
-import { 
-  Sprout, 
-  Camera, 
-  ShieldAlert, 
-  Leaf, 
-  Droplets, 
-  FileText, 
-  MessageSquare, 
-  BarChart3, 
-  Bell, 
-  LogOut, 
-  User, 
-  FileDown, 
-  Heart, 
-  PlusCircle, 
+import {
+  Sprout,
+  Camera,
+  ShieldAlert,
+  Leaf,
+  Droplets,
+  FileText,
+  MessageSquare,
+  BarChart3,
+  Bell,
+  LogOut,
+  User,
+  FileDown,
+  Heart,
+  PlusCircle,
   AlertTriangle,
   Loader2,
   CheckCircle,
@@ -38,6 +38,7 @@ import AnalyticsDashboard from "./components/AnalyticsDashboard.tsx";
 import NotificationPanel from "./components/NotificationPanel.tsx";
 import FloatingHelper from "./components/FloatingHelper.tsx";
 import CropAcademy from "./components/CropAcademy.tsx";
+import AnimalFarming from "./components/AnimalFarming.tsx";
 
 // Marketplace, Role-Based and Direct Chat Dashboards
 import MarketplaceBuy from "./components/MarketplaceBuy.tsx";
@@ -119,6 +120,11 @@ export default function App() {
         "Fertilizer & Water": "उर्वरक और सिंचाई",
         "Govt Schemes": "सरकारी योजनाएं",
         "Crop Academy 🎥": "फसल अकादमी 🎥",
+        "Crop Academy 🌾": "फसल अकादमी 🌾",
+        "Animal Farming 🐄": "पशुपालन 🐄",
+        "Crop Academy": "फसल अकादमी",
+        "Animal Farming": "पशुपालन",
+        "View Animal Farming": "पशुपालन देखें",
         "Featured Sowing Lessons": "विशेष बुवाई पाठ",
         "View All Academy": "सभी अकादमी देखें",
         "Winter Rabi": "सर्दियों की रबी",
@@ -153,6 +159,11 @@ export default function App() {
         "Fertilizer & Water": "खाद अउर सिंचाई",
         "Govt Schemes": "सरकारी योजना",
         "Crop Academy 🎥": "फसल अकादमी 🎥",
+        "Crop Academy 🌾": "फसल अकादमी 🌾",
+        "Animal Farming 🐄": "पशुपालन 🐄",
+        "Crop Academy": "फसल अकादमी",
+        "Animal Farming": "पशुपालन",
+        "View Animal Farming": "पशुपालन देखीं",
         "Featured Sowing Lessons": "विशेष बोआई पाठ",
         "View All Academy": "सब अकादमी देखीं",
         "Winter Rabi": "जाड़ा के रबी",
@@ -187,6 +198,11 @@ export default function App() {
         "Fertilizer & Water": "खत आणि पाणी",
         "Govt Schemes": "शासकीय योजना",
         "Crop Academy 🎥": "पीक अकादमी 🎥",
+        "Crop Academy 🌾": "पीक अकादमी 🌾",
+        "Animal Farming 🐄": "पशुसंवर्धन 🐄",
+        "Crop Academy": "पीक अकादमी",
+        "Animal Farming": "पशुसंवर्धन",
+        "View Animal Farming": "पशुसंवर्धन पहा",
         "Featured Sowing Lessons": "निवडक लागवड धडे",
         "View All Academy": "सर्व अकादमी पहा",
         "Winter Rabi": "हिवाळी रब्बी पीक",
@@ -365,7 +381,7 @@ export default function App() {
   // Section 9.4: Save Identified Plant to Farm Records (Auto Populator)
   const saveIdentifiedCrop = () => {
     if (!plantIdResult) return;
-    
+
     // Auto-fill crop name and switch tab directly to Planners to preview suggested schedules!
     alert(`Successfully synced "${plantIdResult.identity.commonName}" into your active farming record! Swapping to Planners.`);
     setActiveTab("planners");
@@ -382,7 +398,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans relative overflow-x-hidden" id="applet-main-body">
       {/* Subtle Farm Background Layer */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none opacity-[0.09] bg-cover bg-center bg-no-repeat bg-fixed -z-10"
         style={{ backgroundImage: `url(${farmBgImg})` }}
       />
@@ -394,11 +410,11 @@ export default function App() {
       <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 md:px-8 py-3.5 flex justify-between items-center shadow-xs">
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500 shadow-sm shrink-0">
-            <img 
-              src={logoImg} 
-              alt="Krishi Saathi Logo" 
+            <img
+              src={logoImg}
+              alt="Krishi Saathi Logo"
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover" 
+              className="w-full h-full object-cover"
             />
           </div>
           <div>
@@ -459,9 +475,9 @@ export default function App() {
               </button>
 
               {showNotifPanel && (
-                <NotificationPanel 
-                  userId={user.id} 
-                  onClose={() => setShowNotifPanel(false)} 
+                <NotificationPanel
+                  userId={user.id}
+                  onClose={() => setShowNotifPanel(false)}
                 />
               )}
             </div>
@@ -481,7 +497,7 @@ export default function App() {
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6 pb-20 lg:pb-6">
-        
+
         {/* Left Sidebar Menu / Guest Notice */}
         <div className="col-span-1 space-y-4">
           {/* Guest Notice Badge if using guest */}
@@ -663,8 +679,9 @@ export default function App() {
                 { id: "farmer-sell", label: "Sell Crops 🌾", icon: Sprout, highlight: true },
                 { id: "order-history", label: "Order History 🧾", icon: FileText },
                 { id: "chats", label: "Direct Trade Chats 💬", icon: MessageSquare },
+                { id: "crop-academy", label: "Crop Academy 🌾", icon: Sprout },
+                { id: "animal-farming", label: "Animal Farming 🐄", icon: Video },
                 { id: "snap", label: "Snap & Know ID", icon: Camera },
-                { id: "academy", label: "Crop Academy 🎥", icon: Video },
                 { id: "disease", label: "Disease Diagnose", icon: ShieldAlert },
                 { id: "planners", label: "Fertilizer & Water", icon: Leaf },
                 { id: "schemes", label: "Govt Schemes", icon: FileText },
@@ -736,11 +753,11 @@ export default function App() {
               {activeTab === "dashboard" && (
                 <div className="space-y-6" id="dashboard-hub">
                   {/* Weather widget quick preview */}
-                  <WeatherAdvisor 
-                    userId={user.id} 
-                    defaultState={user.state} 
-                    defaultDistrict={user.district} 
-                    defaultSoilType={user.soilType} 
+                  <WeatherAdvisor
+                    userId={user.id}
+                    defaultState={user.state}
+                    defaultDistrict={user.district}
+                    defaultSoilType={user.soilType}
                   />
 
                   {/* Real-time Weather Alert Control Station */}
@@ -834,31 +851,43 @@ export default function App() {
                     </button>
                   </div>
 
-                  {/* Featured Crop Lessons Front & Center */}
+                  {/* Featured Crop & Livestock Lessons Front & Center */}
                   <div className="space-y-3.5 pt-2">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center flex-wrap gap-2">
                       <h4 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
                         <Video className="w-4 h-4 text-emerald-600 animate-pulse" /> {t("Featured Sowing Lessons")}
                       </h4>
-                      <button
-                        onClick={() => setActiveTab("academy")}
-                        className="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        {t("View All Academy")} <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setActiveTab("crop-academy")}
+                          className="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-xl flex items-center gap-1 cursor-pointer transition-all"
+                        >
+                          🌾 {t("Crop Academy 🌾")}
+                        </button>
+                        <button
+                          onClick={() => setActiveTab("animal-farming")}
+                          className="text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-xl flex items-center gap-1 cursor-pointer transition-all"
+                        >
+                          🐄 {t("Animal Farming 🐄")}
+                        </button>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div 
-                        onClick={() => setActiveTab("academy")}
+                      <div
+                        onClick={() => setActiveTab("crop-academy")}
                         className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer flex gap-3.5 p-3.5"
                       >
-                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 relative">
-                          <img 
-                            src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=200" 
-                            alt="Wheat Cultivation" 
+                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-900 shrink-0 relative">
+                          <img
+                            src="/images/academy/wheat.jpg"
+                            alt="Wheat Cultivation Field"
                             className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
                             referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              // Graceful fallback to colored block
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
                           />
                           <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                             <Play className="w-4 h-4 text-white fill-white" />
@@ -870,20 +899,23 @@ export default function App() {
                             <h5 className="font-extrabold text-slate-800 text-xs mt-1.5 truncate">{t("High-Yield Wheat Guide")}</h5>
                             <p className="text-[10px] text-slate-400 mt-0.5 truncate">{t("Learn spacing & CRI watering stages")}</p>
                           </div>
-                          <span className="text-[9px] font-bold text-slate-400">⏱ 5:10 {t("mins lesson")}</span>
+                          <span className="text-[9px] font-bold text-slate-400">⏱ 6:37 {t("mins lesson")}</span>
                         </div>
                       </div>
 
-                      <div 
-                        onClick={() => setActiveTab("academy")}
+                      <div
+                        onClick={() => setActiveTab("crop-academy")}
                         className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer flex gap-3.5 p-3.5"
                       >
-                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 relative">
-                          <img 
-                            src="https://images.unsplash.com/photo-1449339044510-aab182404a0a?auto=format&fit=crop&q=80&w=200" 
-                            alt="Cucumber Greenhouse" 
+                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-900 shrink-0 relative">
+                          <img
+                            src="/images/academy/cucumber.jpg"
+                            alt="Cucumber Greenhouse"
                             className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
                             referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
                           />
                           <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                             <Play className="w-4 h-4 text-white fill-white" />
@@ -895,7 +927,7 @@ export default function App() {
                             <h5 className="font-extrabold text-slate-800 text-xs mt-1.5 truncate">{t("Cucumber Polyhouse")}</h5>
                             <p className="text-[10px] text-slate-400 mt-0.5 truncate">{t("Maximize yield during heavy monsoon")}</p>
                           </div>
-                          <span className="text-[9px] font-bold text-slate-400">⏱ 3:45 {t("mins lesson")}</span>
+                          <span className="text-[9px] font-bold text-slate-400">⏱ 2:43 {t("mins lesson")}</span>
                         </div>
                       </div>
                     </div>
@@ -909,7 +941,7 @@ export default function App() {
                         <Droplets className="w-4 h-4 text-blue-500 animate-pulse" /> Active Water & Fertilizer Plans
                       </h4>
                       <p className="text-xs text-slate-400">Automatically syncs with recommendations from your "Snap & Know" save logs.</p>
-                      
+
                       <div className="space-y-2 text-xs">
                         <div className="p-3 bg-slate-50 rounded-xl flex justify-between items-center">
                           <div>
@@ -994,7 +1026,7 @@ export default function App() {
                             <div className="bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-200">
                               <h5 className="font-bold text-slate-800 text-xs mb-1">Step 2: Add Soil Photo Context (Optional but Recommended)</h5>
                               <p className="text-[11px] text-slate-400 mb-3">Snap your field's soil context for N-P-K & texture compatibility checks.</p>
-                              
+
                               {!isCapturingSoil ? (
                                 <button
                                   type="button"
@@ -1029,7 +1061,7 @@ export default function App() {
                             >
                               Reset
                             </button>
-                            
+
                             <button
                               onClick={runPlantIdAnalysis}
                               className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5"
@@ -1060,10 +1092,10 @@ export default function App() {
 
                   {plantIdResult && !plantIdLoading && (
                     <div className="space-y-6">
-                      <FieldGuideCard 
-                        data={plantIdResult} 
-                        photoUrl={plantPhoto || ""} 
-                        soilPhotoUrl={soilPhoto || undefined} 
+                      <FieldGuideCard
+                        data={plantIdResult}
+                        photoUrl={plantPhoto || ""}
+                        soilPhotoUrl={soilPhoto || undefined}
                         language={user?.preferredLanguage}
                       />
 
@@ -1094,9 +1126,14 @@ export default function App() {
                 </div>
               )}
 
-              {/* Tab: Crop Academy & Seasonal Video Lessons */}
-              {activeTab === "academy" && (
-                <CropAcademy preferredLanguage={user.preferredLanguage} userId={user.id} />
+              {/* Tab: Crop Academy (Crops only) */}
+              {(activeTab === "crop-academy" || activeTab === "academy") && (
+                <CropAcademy mode="crops" preferredLanguage={user.preferredLanguage} userId={user.id} />
+              )}
+
+              {/* Tab: Animal Farming (Livestock, Poultry, Aquaculture) */}
+              {activeTab === "animal-farming" && (
+                <AnimalFarming preferredLanguage={user.preferredLanguage} userId={user.id} />
               )}
 
               {/* Tab: Crop Disease Diagnose */}
@@ -1111,11 +1148,11 @@ export default function App() {
 
               {/* Tab: Government Scheme Assistant */}
               {activeTab === "schemes" && (
-                <GovSchemes 
-                  userId={user.id} 
-                  userState={user.state} 
-                  userCrop={user.crop || "Tomato"} 
-                  userLandArea={user.landArea} 
+                <GovSchemes
+                  userId={user.id}
+                  userState={user.state}
+                  userCrop={user.crop || "Tomato"}
+                  userLandArea={user.landArea}
                 />
               )}
 
@@ -1161,8 +1198,8 @@ export default function App() {
 
               {/* Tab: Unified Messenger Direct Chats */}
               {activeTab === "chats" && (
-                <MarketplaceChats 
-                  user={user} 
+                <MarketplaceChats
+                  user={user}
                   preSelectedPartnerId={chatPartnerId}
                   preSelectedPartnerName={chatPartnerName}
                   onBack={() => {
@@ -1174,11 +1211,11 @@ export default function App() {
 
               {/* Tab: Weather Reference (Dealer/Buyer/Farmer alternative tab) */}
               {activeTab === "weather" && (
-                <WeatherAdvisor 
-                  userId={user.id} 
-                  defaultState={user.state} 
-                  defaultDistrict={user.district} 
-                  defaultSoilType={user.soilType || "Loamy"} 
+                <WeatherAdvisor
+                  userId={user.id}
+                  defaultState={user.state}
+                  defaultDistrict={user.district}
+                  defaultSoilType={user.soilType || "Loamy"}
                 />
               )}
             </>
@@ -1247,7 +1284,7 @@ export default function App() {
               >
                 Dismiss
               </button>
-              
+
               {!activeWeatherAlert.saved ? (
                 <button
                   onClick={saveWeatherAlertToDb}

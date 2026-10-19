@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { 
-  Play, 
-  Video, 
-  Layers, 
-  X, 
+import {
+  Play,
+  Video,
+  Layers,
+  X,
   CheckCircle,
   ExternalLink,
   BookOpen,
@@ -72,6 +72,7 @@ interface AcademyCardData {
   type: "seasonal" | "off-season" | "livestock";
   season?: string;
   image: string;
+  imageAlt?: string;
   youtubeVideoId: string;
   youtubeUrl: string;
   videoLength: string;
@@ -99,7 +100,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Rice (Paddy)",
     type: "seasonal",
     season: "Monsoon (Kharif)",
-    image: "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/rice.jpg",
+    imageAlt: "Flooded terraced paddy fields for rice cultivation",
     youtubeVideoId: "-eBrAm64fpg",
     youtubeUrl: "https://www.youtube.com/watch?v=-eBrAm64fpg",
     videoLength: "3:52",
@@ -232,7 +234,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Wheat",
     type: "seasonal",
     season: "Winter (Rabi)",
-    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/wheat.jpg",
+    imageAlt: "Golden ripe wheat crops in sunny farm field",
     youtubeVideoId: "JN0ICendQns",
     youtubeUrl: "https://www.youtube.com/watch?v=JN0ICendQns",
     videoLength: "6:37",
@@ -339,7 +342,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Off-Season Cucumber",
     type: "off-season",
     season: "Monsoon Polyhouse (Off-Season)",
-    image: "https://images.unsplash.com/photo-1590378222684-d0517793b51a?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/cucumber.jpg",
+    imageAlt: "Off-season hybrid cucumbers growing on vertical trellis in polyhouse",
     youtubeVideoId: "wQ5Qr_PL8eU",
     youtubeUrl: "https://www.youtube.com/watch?v=wQ5Qr_PL8eU",
     videoLength: "2:43",
@@ -425,7 +429,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Hydroponic Cherry Tomato",
     type: "off-season",
     season: "Summer Controlled Sowing (Off-Season)",
-    image: "https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/tomato.jpg",
+    imageAlt: "Hydroponic cherry tomatoes clustering on greenhouse vine",
     youtubeVideoId: "wxMIq2E6X_Q",
     youtubeUrl: "https://www.youtube.com/watch?v=wxMIq2E6X_Q",
     videoLength: "5:54",
@@ -511,7 +516,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Dairy Farming",
     type: "livestock",
     season: "Year-Round Livestock",
-    image: "https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/dairy.jpg",
+    imageAlt: "Holstein dairy cows grazing in green pasture",
     youtubeVideoId: "vA0A1WzinbI",
     youtubeUrl: "https://www.youtube.com/watch?v=vA0A1WzinbI",
     videoLength: "2:54",
@@ -612,7 +618,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Sheep Farming",
     type: "livestock",
     season: "Dry & Semiarid Pastures",
-    image: "https://images.unsplash.com/photo-1484557052118-f32bd25b45b5?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/sheep.jpg",
+    imageAlt: "Flock of woolly sheep grazing in a green pasture",
     youtubeVideoId: "DMQDRAffiUw",
     youtubeUrl: "https://www.youtube.com/watch?v=DMQDRAffiUw",
     videoLength: "3:54",
@@ -701,7 +708,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Goat Farming",
     type: "livestock",
     season: "Stall-Fed & Semi-Intensive",
-    image: "https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/goat.jpg",
+    imageAlt: "Healthy goats feeding in stall-fed farm paddock",
     youtubeVideoId: "DdEjvOBEnwI",
     youtubeUrl: "https://www.youtube.com/watch?v=DdEjvOBEnwI",
     videoLength: "3:40",
@@ -805,7 +813,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Poultry Farming",
     type: "livestock",
     season: "Broiler & Layer Farm",
-    image: "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/poultry.jpg",
+    imageAlt: "Free-range poultry chickens in farm shed",
     youtubeVideoId: "CHJMfkOvOGk",
     youtubeUrl: "https://www.youtube.com/watch?v=CHJMfkOvOGk",
     videoLength: "9:20",
@@ -909,7 +918,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Pig Farming",
     type: "livestock",
     season: "Commercial Housing",
-    image: "https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/pig.jpg",
+    imageAlt: "Clean commercial piggery pen",
     youtubeVideoId: "67x4_mLm0mo",
     youtubeUrl: "https://www.youtube.com/watch?v=67x4_mLm0mo",
     videoLength: "3:07",
@@ -980,7 +990,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Beekeeping & Honey",
     type: "livestock",
     season: "Floral Blooms & Migration",
-    image: "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/beekeeping.jpg",
+    imageAlt: "Beekeeper inspecting wooden Langstroth hive frames",
     youtubeVideoId: "dzf2a0mcCvE",
     youtubeUrl: "https://www.youtube.com/watch?v=dzf2a0mcCvE",
     videoLength: "3:46",
@@ -1066,7 +1077,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Fisheries & Aquaculture",
     type: "livestock",
     season: "Pond Polyculture & Biofloc",
-    image: "https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/fisheries.jpg",
+    imageAlt: "Aquaculture fish pond with paddle-wheel aerator",
     youtubeVideoId: "RNQxV7zdoyc",
     youtubeUrl: "https://www.youtube.com/watch?v=RNQxV7zdoyc",
     videoLength: "3:14",
@@ -1152,7 +1164,8 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
     name: "Integrated Livestock Farming",
     type: "livestock",
     season: "Zero-Waste Circular System",
-    image: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600",
+    image: "/images/academy/integrated.jpg",
+    imageAlt: "Integrated circular farm with duck-rice and fish pond",
     youtubeVideoId: "FCTNm27o5Ug",
     youtubeUrl: "https://www.youtube.com/watch?v=FCTNm27o5Ug",
     videoLength: "3:22",
@@ -1231,14 +1244,20 @@ const MASTER_ACADEMY_DATA: AcademyCardData[] = [
 ];
 
 interface CropAcademyProps {
+  mode?: "crops" | "animals" | "all";
   preferredLanguage?: string;
   userId?: string;
 }
 
-export default function CropAcademy({ preferredLanguage = "en", userId = "guest-1" }: CropAcademyProps) {
-  const [filterType, setFilterType] = useState<"all" | "seasonal" | "off-season" | "livestock">("all");
+export default function CropAcademy({
+  mode = "crops",
+  preferredLanguage = "en",
+  userId = "guest-1"
+}: CropAcademyProps) {
+  const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
   // Expanded lessons modal / accordion state
   const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
 
@@ -1261,13 +1280,23 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
   const translations: Record<string, Record<string, string>> = {
     hi: {
       "Farming & Livestock Academy": "कृषि एवं पशुपालन अकादमी",
-      "Crop Academy": "फसल एवं पशुपालन अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "चरण-दर-चरण वीडियो पाठों के साथ मौसमी, गैर-मौसमी फसलें और पशुपालन सीखें।",
-      "Search crop guides...": "फसल, पशुपालन या वीडियो खोजें...",
+      "Crop Academy": "फसल अकादमी (Crop Academy)",
+      "Animal Farming & Husbandry": "पशुपालन एवं मत्स्य पालन अकादमी (Animal Farming)",
+      "Grow seasonal and off-season crops with step-by-step video lessons.": "चरण-दर-चरण वीडियो पाठों के साथ मौसमी और गैर-मौसमी उच्च उपज वाली फसलें उगाएं।",
+      "Practical video guides for livestock rearing, dairy, poultry, beekeeping, and sustainable aquaculture.": "पशुपालन, डेयरी, मुर्गी पालन, मधुमक्खी पालन और जलीय कृषि के व्यावहारिक वीडियो गाइड।",
+      "Search crop guides...": "फसल, बुवाई चरण या वीडियो खोजें...",
+      "Search crop guides, sowing steps, varieties...": "फसल, बुवाई चरण या किस्में खोजें...",
+      "Search livestock guides, breeds, housing, vaccination...": "पशुपालन, नस्ल, आवास, टीकाकरण खोजें...",
       "All Guides": "सभी गाइड",
+      "All Crops": "सभी फसलें",
+      "All Animal Farming": "सभी पशुपालन एवं जलकृषि",
       "Seasonal Crops": "मौसमी फसलें",
       "Off-Season Crops": "गैर-मौसमी (ऑफ़-सीज़न)",
+      "Off-Season & Hydroponics": "गैर-मौसमी एवं हाइड्रोपोनिक्स",
       "Livestock & Aquaculture": "पशुपालन एवं मत्स्य पालन",
+      "Dairy & Ruminants": "डेयरी एवं मवेशी",
+      "Poultry & Piggery": "मुर्गी व सूअर पालन",
+      "Aquaculture & Eco": "मत्स्य व समेकित कृषि",
       "Soil:": "मिट्टी/आवास:",
       "Watering:": "जल/सिंचाई आवश्यकता:",
       "Watch Lesson": "पाठ देखें",
@@ -1293,13 +1322,23 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
     },
     mr: {
       "Farming & Livestock Academy": "कृषी व पशुसंवर्धन अकादमी",
-      "Crop Academy": "पीक व पशुसंवर्धन अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "टप्प्याटप्प्याने मार्गदर्शक व्हिडिओद्वारे पिके व पशुसंवर्धन शिका.",
-      "Search crop guides...": "पीक, पशुपालन किंवा व्हिडिओ शोधा...",
+      "Crop Academy": "पीक अकादमी (Crop Academy)",
+      "Animal Farming & Husbandry": "पशुसंवर्धन व मत्स्यशेती (Animal Farming)",
+      "Grow seasonal and off-season crops with step-by-step video lessons.": "मार्गदर्शक व्हिडिओंच्या साहाय्याने भरघोस उत्पादन देणारी हंगामी व बिगर-हंगामी पिके घ्या.",
+      "Practical video guides for livestock rearing, dairy, poultry, beekeeping, and sustainable aquaculture.": "दुग्ध व्यवसाय, शेळी-मेंढी, कुक्कुटपालन, मधमाश्या व मत्स्यपालनाचे प्रात्यक्षिक व्हिडिओ मार्गदर्शक.",
+      "Search crop guides...": "पीक, पेरणी किंवा व्हिडिओ शोधा...",
+      "Search crop guides, sowing steps, varieties...": "पीक माहिती, पेरणी टप्पे, वाण शोधा...",
+      "Search livestock guides, breeds, housing, vaccination...": "पशुपालन, जाती, गोठा रचना, लसीकरण शोधा...",
       "All Guides": "सर्व मार्गदर्शक",
+      "All Crops": "सर्व पिके",
+      "All Animal Farming": "सर्व पशुसंवर्धन",
       "Seasonal Crops": "हंगामी पिके",
       "Off-Season Crops": "बिगर-हंगामी (ऑफ-सीझन) पिके",
+      "Off-Season & Hydroponics": "बिगर-हंगामी व हायड्रोपोनिक्स",
       "Livestock & Aquaculture": "पशुपालन व मत्स्यशेती",
+      "Dairy & Ruminants": "दुग्ध व रवंथ करणारे प्राणी",
+      "Poultry & Piggery": "कुक्कुट व वराह पालन",
+      "Aquaculture & Eco": "मत्स्य व एकात्मिक शेती",
       "Soil:": "माती/गोठा प्रकार:",
       "Watering:": "पाणी गरज:",
       "Watch Lesson": "व्हिडिओ पहा",
@@ -1322,13 +1361,23 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
     },
     mai: {
       "Farming & Livestock Academy": "कृषि आ पशुपालन अकादमी",
-      "Crop Academy": "फसल आ पशुपालन अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "वीडियो पाठ सँ उन्नत फसल आ पशुपालनक सीख प्राप्त करू।",
-      "Search crop guides...": "फसल वा पशुपालन खोजीं...",
+      "Crop Academy": "फसल अकादमी (Crop Academy)",
+      "Animal Farming & Husbandry": "पशुपालन आ जलकृषि (Animal Farming)",
+      "Grow seasonal and off-season crops with step-by-step video lessons.": "वीडियो पाठ सँ उन्नत फसलक सीख प्राप्त करू।",
+      "Practical video guides for livestock rearing, dairy, poultry, beekeeping, and sustainable aquaculture.": "पशुपालन, डेयरी, मुर्गी, मधुमक्खी आ मत्स्य पालनक वीडियो गाइड।",
+      "Search crop guides...": "फसल वा बुवाई खोजीं...",
+      "Search crop guides, sowing steps, varieties...": "फसल गाइड, रोपनी चरण आ प्रभेद खोजीं...",
+      "Search livestock guides, breeds, housing, vaccination...": "पशुपालन, नस्ल, गोहाल आ टीकाकरण खोजीं...",
       "All Guides": "सभ गाइड",
+      "All Crops": "सभ फसल",
+      "All Animal Farming": "सभ पशुपालन",
       "Seasonal Crops": "मौसमी फसल",
       "Off-Season Crops": "बेमौसमी फसल",
+      "Off-Season & Hydroponics": "बेमौसमी आ हाइड्रोपोनिक्स",
       "Livestock & Aquaculture": "पशुपालन आ मछली पालन",
+      "Dairy & Ruminants": "डेयरी आ मवेशी",
+      "Poultry & Piggery": "मुर्गी आ सूअर पालन",
+      "Aquaculture & Eco": "मछली आ एकीकृत खेती",
       "Watch Lesson": "पाठ देखीं",
       "Open Lessons & Videos": "पाठ आ वीडियो देखीं",
       "Close": "बंद करू",
@@ -1341,13 +1390,23 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
     },
     bho: {
       "Farming & Livestock Academy": "खेती आ पशुपालन अकादमी",
-      "Crop Academy": "फसल आ पशुपालन अकादमी",
-      "Grow seasonal and off-season crops with step-by-step video lessons.": "एगो-एगो कदम के वीडियो पाठ से खेती आ पशुपालन सीखीं।",
-      "Search crop guides...": "फसल, पशुपालन चाहे वीडियो खोजीं...",
+      "Crop Academy": "फसल अकादमी (Crop Academy)",
+      "Animal Farming & Husbandry": "पशुपालन आ मछरी पालन (Animal Farming)",
+      "Grow seasonal and off-season crops with step-by-step video lessons.": "एगो-एगो कदम के वीडियो पाठ से फसल उगाईं।",
+      "Practical video guides for livestock rearing, dairy, poultry, beekeeping, and sustainable aquaculture.": "डेयरी, बकरी, मुर्गी, मधुमक्खी आ मछरी पालन के वीडियो गाइड।",
+      "Search crop guides...": "फसल, बोआई चाहे वीडियो खोजीं...",
+      "Search crop guides, sowing steps, varieties...": "फसल के गाइड, बोआई आ किस्म खोजीं...",
+      "Search livestock guides, breeds, housing, vaccination...": "पशुपालन, नस्ल, बाड़ा आ सुई-दवा खोजीं...",
       "All Guides": "सब गाइड",
+      "All Crops": "सब फसल",
+      "All Animal Farming": "सब पशुपालन",
       "Seasonal Crops": "मौसमी फसल",
       "Off-Season Crops": "बिना मौसम के फसल",
+      "Off-Season & Hydroponics": "बिना मौसम के आ हाइड्रोपोनिक्स",
       "Livestock & Aquaculture": "पशुपालन आ मछरी पालन",
+      "Dairy & Ruminants": "डेयरी आ मवेशी",
+      "Poultry & Piggery": "मुर्गी आ सूअर पालन",
+      "Aquaculture & Eco": "मछरी आ एकीकृत खेती",
       "Watch Lesson": "वीडियो देखीं",
       "Open Lessons & Videos": "पाठ आ वीडियो खोलीं",
       "Close": "बंद करीं",
@@ -1418,23 +1477,41 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
 
   // Filter and Search logic
   const filteredGuides = MASTER_ACADEMY_DATA.filter((guide) => {
-    const loc = getLocalizedGuide(guide);
-    
-    // Type Filter
-    let matchesType = true;
-    if (filterType === "seasonal") matchesType = guide.type === "seasonal";
-    else if (filterType === "off-season") matchesType = guide.type === "off-season";
-    else if (filterType === "livestock") matchesType = guide.type === "livestock";
+    // 1. Base Section Partitioning
+    if (mode === "crops" && guide.categoryCode !== "crops") return false;
+    if (mode === "animals" && guide.type !== "livestock") return false;
 
-    // Search Query Filter
+    const loc = getLocalizedGuide(guide);
+
+    // 2. Type & Category Sub-Filter
+    let matchesType = true;
+    if (mode === "crops") {
+      if (filterType === "seasonal") matchesType = guide.type === "seasonal";
+      else if (filterType === "off-season") matchesType = guide.type === "off-season";
+    } else if (mode === "animals") {
+      if (filterType === "ruminants") {
+        matchesType = ["dairy", "sheep", "goat"].includes(guide.categoryCode);
+      } else if (filterType === "poultry-pig") {
+        matchesType = ["poultry", "pig"].includes(guide.categoryCode);
+      } else if (filterType === "aqua-eco") {
+        matchesType = ["fisheries", "beekeeping", "integrated"].includes(guide.categoryCode);
+      }
+    } else {
+      // mode === "all"
+      if (filterType === "seasonal") matchesType = guide.type === "seasonal";
+      else if (filterType === "off-season") matchesType = guide.type === "off-season";
+      else if (filterType === "livestock") matchesType = guide.type === "livestock";
+    }
+
+    // 3. Search Query Filter
     const query = searchQuery.toLowerCase().trim();
     if (!query) return matchesType;
 
     const matchesName = loc.name.toLowerCase().includes(query);
     const matchesDesc = loc.description.toLowerCase().includes(query);
     const matchesCategory = guide.categoryCode.toLowerCase().includes(query);
-    const matchesLessons = guide.modules.some(m => 
-      m.title.toLowerCase().includes(query) || 
+    const matchesLessons = guide.modules.some(m =>
+      m.title.toLowerCase().includes(query) ||
       m.lessons.some(l => l.title.toLowerCase().includes(query) || l.titleEn.toLowerCase().includes(query))
     );
 
@@ -1478,25 +1555,40 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
   };
 
   return (
-    <div className="space-y-6" id="crop-academy-module">
+    <div
+      className="space-y-6"
+      id={mode === "crops" ? "crop-academy-section" : mode === "animals" ? "animal-farming-section" : "farming-academy-section"}
+    >
       {/* Banner */}
-      <div className="bg-gradient-to-br from-emerald-900 to-teal-950 text-white rounded-3xl p-6 shadow-md relative overflow-hidden">
+      <div className={`text-white rounded-3xl p-6 shadow-md relative overflow-hidden ${
+        mode === "animals"
+          ? "bg-gradient-to-br from-amber-950 via-slate-900 to-emerald-950 border border-amber-900/30"
+          : "bg-gradient-to-br from-emerald-900 to-teal-950"
+      }`}>
         <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none translate-x-12 translate-y-12">
-          <Layers className="w-80 h-80 text-emerald-300" />
+          {mode === "animals" ? (
+            <Milk className="w-80 h-80 text-amber-300" />
+          ) : (
+            <Layers className="w-80 h-80 text-emerald-300" />
+          )}
         </div>
-        
+
         <div className="relative z-10 max-w-xl">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className="bg-emerald-500/30 text-emerald-200 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest block w-max">
-              🎥 Official Farming Video Lessons
+              {mode === "animals" ? "🐄 Livestock & Husbandry Academy" : "🌾 Crop Agronomy Academy"}
             </span>
             <span className="bg-amber-500/20 text-amber-200 border border-amber-500/20 px-2.5 py-1 rounded-full text-[10px] font-bold">
-              ICAR & Agri-Extension Verified
+              {mode === "animals" ? "Veterinary & ICAR Verified" : "ICAR & Agri-Extension Verified"}
             </span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-black tracking-tight">{localT("Farming & Livestock Academy")}</h2>
+          <h2 className="text-2xl md:text-3xl font-black tracking-tight">
+            {mode === "animals" ? localT("Animal Farming & Husbandry") : mode === "crops" ? localT("Crop Academy") : localT("Farming & Livestock Academy")}
+          </h2>
           <p className="text-emerald-100 text-xs mt-1.5 leading-relaxed">
-            {localT("Grow seasonal and off-season crops with step-by-step video lessons.")}
+            {mode === "animals"
+              ? localT("Practical video guides for livestock rearing, dairy, poultry, beekeeping, and sustainable aquaculture.")
+              : localT("Grow seasonal and off-season crops with step-by-step video lessons.")}
           </p>
         </div>
       </div>
@@ -1504,38 +1596,104 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
       {/* Filter and Search Bar */}
       <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white border border-gray-100 rounded-2xl p-3.5 shadow-xs">
         <div className="flex flex-wrap gap-1 bg-slate-50 p-1 rounded-xl w-full md:w-auto">
-          <button
-            onClick={() => setFilterType("all")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-              filterType === "all" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            {localT("All Guides")}
-          </button>
-          <button
-            onClick={() => setFilterType("seasonal")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-              filterType === "seasonal" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            🌾 {localT("Seasonal Crops")}
-          </button>
-          <button
-            onClick={() => setFilterType("off-season")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-              filterType === "off-season" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            🌱 {localT("Off-Season Crops")}
-          </button>
-          <button
-            onClick={() => setFilterType("livestock")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-              filterType === "livestock" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            🐄 {localT("Livestock & Aquaculture")}
-          </button>
+          {mode === "crops" ? (
+            <>
+              <button
+                onClick={() => setFilterType("all")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "all" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                {localT("All Crops")}
+              </button>
+              <button
+                onClick={() => setFilterType("seasonal")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "seasonal" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🌾 {localT("Seasonal Crops")}
+              </button>
+              <button
+                onClick={() => setFilterType("off-season")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "off-season" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🌱 {localT("Off-Season & Hydroponics")}
+              </button>
+            </>
+          ) : mode === "animals" ? (
+            <>
+              <button
+                onClick={() => setFilterType("all")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "all" ? "bg-white text-amber-800 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                {localT("All Animal Farming")}
+              </button>
+              <button
+                onClick={() => setFilterType("ruminants")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "ruminants" ? "bg-white text-amber-800 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🥛 {localT("Dairy & Ruminants")}
+              </button>
+              <button
+                onClick={() => setFilterType("poultry-pig")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "poultry-pig" ? "bg-white text-amber-800 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🐔 {localT("Poultry & Piggery")}
+              </button>
+              <button
+                onClick={() => setFilterType("aqua-eco")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "aqua-eco" ? "bg-white text-amber-800 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🐟 {localT("Aquaculture & Eco")}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => setFilterType("all")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "all" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                {localT("All Guides")}
+              </button>
+              <button
+                onClick={() => setFilterType("seasonal")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "seasonal" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🌾 {localT("Seasonal Crops")}
+              </button>
+              <button
+                onClick={() => setFilterType("off-season")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "off-season" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🌱 {localT("Off-Season Crops")}
+              </button>
+              <button
+                onClick={() => setFilterType("livestock")}
+                className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  filterType === "livestock" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🐄 {localT("Livestock & Aquaculture")}
+              </button>
+            </>
+          )}
         </div>
 
         <div className="relative w-full md:w-72">
@@ -1544,7 +1702,7 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={localT("Search crop guides...")}
+            placeholder={mode === "animals" ? localT("Search livestock guides, breeds, housing, vaccination...") : localT("Search crop guides, sowing steps, varieties...")}
             className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 text-xs text-slate-700"
           />
         </div>
@@ -1559,19 +1717,31 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
           const firstLesson = guide.modules[0]?.lessons[0];
 
           return (
-            <div 
+            <div
               key={guide.id}
               className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-200 transition-all flex flex-col group"
-              id={`crop-academy-card-${guide.id}`}
+              id={`academy-card-${guide.id}`}
             >
-              {/* Card Image & Play Trigger */}
-              <div className="aspect-video w-full relative overflow-hidden bg-slate-100">
-                <img 
-                  src={guide.image} 
-                  alt={loc.name} 
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" 
-                />
+              {/* Card Image & Play Trigger with Graceful Fallback */}
+              <div className="aspect-video w-full relative overflow-hidden bg-slate-900">
+                {!imageErrors[guide.id] ? (
+                  <img
+                    src={guide.image}
+                    alt={guide.imageAlt || loc.name}
+                    referrerPolicy="no-referrer"
+                    onError={() => setImageErrors(prev => ({ ...prev, [guide.id]: true }))}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-white p-4">
+                    <div className="p-3 bg-white/10 rounded-2xl mb-2 backdrop-blur-xs">
+                      {getCategoryIcon(guide.categoryCode)}
+                    </div>
+                    <span className="font-extrabold text-sm text-center">{loc.name}</span>
+                    <span className="text-[10px] text-emerald-300 font-bold mt-0.5">{loc.season}</span>
+                  </div>
+                )}
+
                 <div className="absolute inset-0 bg-black/35 group-hover:bg-black/25 transition-all flex items-center justify-center">
                   <button
                     onClick={() => firstLesson && handleOpenLessonVideo(guide, firstLesson)}
@@ -1581,7 +1751,7 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
                     <Play className="w-5 h-5 fill-white ml-0.5" />
                   </button>
                 </div>
-                
+
                 {/* Labels & Tags */}
                 <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
                   <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full text-white uppercase tracking-wider ${
@@ -1625,8 +1795,8 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
                     <span className="text-emerald-600">{progressPercent}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" 
+                    <div
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
                       style={{ width: `${progressPercent}%` }}
                     />
                   </div>
@@ -1654,7 +1824,7 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
                       {localT("Sowing & Harvesting Steps")}
                     </h4>
                   </div>
-                  
+
                   <div className="space-y-2">
                     {loc.steps.slice(0, 3).map((step, idx) => (
                       <div key={idx} className="flex gap-2.5 text-xs">
@@ -1755,7 +1925,7 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
       {/* Professional YouTube Video Player Modal */}
       {activeLesson && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200 backdrop-blur-sm">
-          <div 
+          <div
             className={`bg-slate-900 text-white rounded-2xl sm:rounded-3xl overflow-hidden ${
               isTheaterMode ? "max-w-6xl" : "max-w-4xl xl:max-w-5xl"
             } w-full border border-slate-800 shadow-2xl relative flex flex-col max-h-[94vh] transition-all duration-300`}
@@ -1765,7 +1935,7 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
               WebkitBackfaceVisibility: "hidden"
             }}
           >
-            
+
             {/* Modal Header */}
             <div className="p-3.5 sm:p-4 bg-slate-950/95 border-b border-slate-800/80 flex justify-between items-center shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -1805,7 +1975,7 @@ export default function CropAcademy({ preferredLanguage = "en", userId = "guest-
             </div>
 
             {/* Responsive 16:9 YouTube Player Frame */}
-            <div 
+            <div
               className="aspect-video w-full bg-black relative shrink-0 overflow-hidden"
               style={{
                 transform: "translateZ(0)",
