@@ -15,13 +15,18 @@ import {
   Plus,
   Trash2,
   X,
-  MessageSquare
+  MessageSquare,
+  RotateCcw,
+  AlertCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface Message {
   role: "user" | "model";
   text: string;
+  isError?: boolean;
+  canRetry?: boolean;
+  failedQuery?: string;
 }
 
 interface ChatSession {
@@ -261,34 +266,72 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
     }
   };
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
+  const sendMessage = async (textToSend: string) => {
+    const trimmed = textToSend.trim();
+    if (!trimmed || loading) return;
 
-    const userMessage = input.trim();
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", text: userMessage }]);
+    setMessages((prev) => [...prev, { role: "user", text: trimmed }]);
     setLoading(true);
 
     try {
-      // Reconstruct history
-      const history = messages.slice(1).map((msg) => ({
-        role: msg.role === "user" ? "user" : "model",
-        text: msg.text
-      }));
+      // Reconstruct history excluding errors
+      const history = messages
+        .filter((msg) => !msg.isError)
+        .slice(1)
+        .map((msg) => ({
+          role: msg.role === "user" ? ("user" as const) : ("model" as const),
+          text: msg.text
+        }));
 
       const res = await axios.post("/api/chat", {
-        message: userMessage,
+        message: trimmed,
         history,
-        userId
+        userId,
+        preferredLanguage
       });
 
-      setMessages((prev) => [...prev, { role: "model", text: res.data.response }]);
+      const responseText = res.data?.response || "I am here to assist your farming operations.";
+      setMessages((prev) => [...prev, { role: "model", text: responseText }]);
     } catch (err: any) {
-      setMessages((prev) => [...prev, { role: "model", text: "I apologize, I experienced a network disruption. Please try asking again." }]);
+      console.error("[AI Companion Error]", err);
+      let errorMsg = preferredLanguage === "hi"
+        ? "माफ़ कीजिये, AI सर्वर से संपर्क नहीं हो पाया।"
+        : preferredLanguage === "mr"
+        ? "क्षमस्व, AI सर्व्हरशी संपर्क होऊ शकला नाही."
+        : "I apologize, I was unable to connect to the AI assistant.";
+
+      if (err.response?.data?.error) {
+        errorMsg = err.response.data.error;
+      } else if (err.code === "ECONNABORTED" || err.message?.includes("timeout")) {
+        errorMsg = preferredLanguage === "hi"
+          ? "अनुरोध समय समाप्त हो गया। कृपया पुनः प्रयास करें।"
+          : "Request timed out while waiting for AI response. Please try again.";
+      } else if (!err.response) {
+        errorMsg = preferredLanguage === "hi"
+          ? "नेटवर्क व्यवधान: सर्वर तक पहुँच नहीं है। कृपया अपना इंटरनेट जांचें।"
+          : "Network disruption: Unable to reach the backend server. Please verify your connection.";
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "model",
+          text: errorMsg,
+          isError: true,
+          canRetry: true,
+          failedQuery: trimmed
+        }
+      ]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || loading) return;
+    sendMessage(input);
   };
 
   const readAloud = (text: string) => {
@@ -483,22 +526,42 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
             return (
               <div key={i} className={`flex items-start gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
                 {!isUser && (
-                  <div className="p-1.5 bg-emerald-100 text-emerald-800 rounded-lg shrink-0 mt-1">
-                    <Sprout className="w-4 h-4" />
+                  <div className={`p-1.5 rounded-lg shrink-0 mt-1 ${
+                    msg.isError ? "bg-rose-100 text-rose-700" : "bg-emerald-100 text-emerald-800"
+                  }`}>
+                    {msg.isError ? <AlertCircle className="w-4 h-4" /> : <Sprout className="w-4 h-4" />}
                   </div>
                 )}
 
                 <div className={`max-w-[85%] text-xs leading-relaxed p-3.5 rounded-2xl shadow-sm ${
                   isUser 
                     ? "bg-emerald-600 text-white rounded-tr-none" 
+                    : msg.isError
+                    ? "bg-rose-50 text-rose-800 rounded-tl-none border border-rose-200"
                     : "bg-white text-slate-700 rounded-tl-none border border-slate-100"
                 }`}>
                   <p className="whitespace-pre-wrap">{msg.text}</p>
+
+                  {/* Retry action if error */}
+                  {msg.isError && msg.canRetry && msg.failedQuery && (
+                    <div className="mt-2.5 pt-2 border-t border-rose-100 flex justify-end">
+                      <button
+                        type="button"
+                        disabled={loading}
+                        onClick={() => sendMessage(msg.failedQuery!)}
+                        className="inline-flex items-center gap-1.5 text-[11px] font-bold text-rose-700 hover:text-rose-800 bg-rose-100/80 hover:bg-rose-200/80 px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        Retry
+                      </button>
+                    </div>
+                  )}
                   
                   {/* Audio controls for AI message */}
-                  {!isUser && (
+                  {!isUser && !msg.isError && (
                     <div className="mt-2.5 pt-2 border-t border-slate-50 flex justify-end">
                       <button
+                        type="button"
                         onClick={() => readAloud(msg.text)}
                         className={`p-1.5 rounded-lg border transition-all flex items-center gap-1 text-[10px] font-semibold ${
                           speakingText === msg.text
@@ -544,10 +607,11 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
         <button
           type="button"
           onClick={toggleListening}
+          disabled={loading}
           className={`p-3 rounded-xl border transition-all shrink-0 ${
             isListening
               ? "bg-rose-500 text-white border-rose-400 animate-pulse"
-              : "bg-slate-50 hover:bg-slate-100 text-slate-500 border-slate-100"
+              : "bg-slate-50 hover:bg-slate-100 text-slate-500 border-slate-100 disabled:opacity-50"
           }`}
           title={isListening ? "Listening..." : "Speak Question"}
           id="btn-voice-input"
@@ -560,14 +624,14 @@ export default function AICompanion({ userId, preferredLanguage = "en" }: AIComp
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={isListening ? "Listening to your voice..." : "Type custom farming question here..."}
-          disabled={isListening}
-          className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none focus:border-emerald-500 bg-white"
+          disabled={isListening || loading}
+          className="flex-1 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none focus:border-emerald-500 bg-white disabled:bg-slate-100"
         />
 
         <button
           type="submit"
           disabled={!input.trim() || loading}
-          className="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-all shadow-sm disabled:opacity-40"
+          className="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-all shadow-sm disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
           id="btn-submit-chat"
         >
           <Send className="w-4 h-4" />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -23,7 +23,8 @@ import {
   ArrowRight,
   Video,
   Play,
-  ShoppingBag
+  ShoppingBag,
+  CloudSun
 } from "lucide-react";
 
 import AuthScreen from "./components/AuthScreen.tsx";
@@ -241,6 +242,36 @@ export default function App() {
 
   // Notifications Floating State
   const [showNotifPanel, setShowNotifPanel] = useState(false);
+  const notifContainerRef = useRef<HTMLDivElement>(null);
+  const notifButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Close notification panel on outside click or Escape key
+  useEffect(() => {
+    if (!showNotifPanel) return;
+
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (notifContainerRef.current && !notifContainerRef.current.contains(event.target as Node)) {
+        setShowNotifPanel(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowNotifPanel(false);
+        notifButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showNotifPanel]);
 
   // Chat Navigation States for Role-based Direct Messenger Integration
   const [chatPartnerId, setChatPartnerId] = useState<string | null>(null);
@@ -256,24 +287,91 @@ export default function App() {
     saved?: boolean;
   } | null>(null);
   const [showWeatherToast, setShowWeatherToast] = useState(false);
+  const [checkingWeatherAlert, setCheckingWeatherAlert] = useState(false);
+  const [weatherCheckStatus, setWeatherCheckStatus] = useState<{
+    type: "success" | "alert" | "error";
+    message: string;
+  } | null>(null);
 
-  const checkRealtimeWeatherAlert = async (districtName: string, stateName: string) => {
+  const checkRealtimeWeatherAlert = async (
+    districtName: string,
+    stateName: string,
+    forceRefresh: boolean = false,
+    isManual: boolean = false
+  ) => {
+    if (!districtName || !stateName) {
+      if (isManual) {
+        setWeatherCheckStatus({
+          type: "error",
+          message: "Please enter a valid district and state to check weather alerts."
+        });
+      }
+      return;
+    }
+
+    if (isManual) {
+      setCheckingWeatherAlert(true);
+      setWeatherCheckStatus(null);
+    }
+
     try {
-      const res = await axios.get(`/api/weather/current?district=${districtName}&state=${stateName}`);
+      let geoQuery = "";
+      // If manual check and browser has geolocation, attempt high-accuracy coordinate lookup
+      if (isManual && navigator.geolocation) {
+        try {
+          const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 });
+          });
+          if (pos?.coords) {
+            geoQuery = `&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`;
+          }
+        } catch (_) {
+          // Fall back gracefully to district/state geocoding
+        }
+      }
+
+      const res = await axios.get(
+        `/api/weather/current?district=${encodeURIComponent(districtName)}&state=${encodeURIComponent(stateName)}${geoQuery}${forceRefresh ? "&forceRefresh=true" : ""}`
+      );
       const weatherData = res.data;
-      if (weatherData && weatherData.alert && !weatherData.alert.toLowerCase().includes("no immediate climate alerts")) {
+
+      if (weatherData?.hasAlert && weatherData.alert) {
         setActiveWeatherAlert({
-          title: weatherData.rainfallPrediction || "Severe Weather Forecasted",
-          message: weatherData.alert,
-          district: districtName,
-          state: stateName,
-          severity: "warning",
+          title: weatherData.alert.title,
+          message: weatherData.alert.message,
+          district: weatherData.district || districtName,
+          state: weatherData.state || stateName,
+          severity: weatherData.alert.severity || "warning",
           saved: false
         });
         setShowWeatherToast(true);
+        if (isManual) {
+          setWeatherCheckStatus({
+            type: "alert",
+            message: `⚠️ Active Alert: ${weatherData.alert.title} in ${districtName}.`
+          });
+        }
+      } else {
+        if (isManual) {
+          setActiveWeatherAlert(null);
+          setWeatherCheckStatus({
+            type: "success",
+            message: `✓ No active weather alerts for ${weatherData.location || districtName}. Currently ${weatherData.temp}°C, Humidity ${weatherData.humidity}%, ${weatherData.condition || "normal conditions"}.`
+          });
+        }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error running weather alert check:", err);
+      if (isManual) {
+        setWeatherCheckStatus({
+          type: "error",
+          message: err.response?.data?.error || "Unable to check real-time weather alerts. Please check network connection."
+        });
+      }
+    } finally {
+      if (isManual) {
+        setCheckingWeatherAlert(false);
+      }
     }
   };
 
@@ -463,12 +561,16 @@ export default function App() {
             </div>
 
             {/* Notifications Button */}
-            <div className="relative">
+            <div className="relative" ref={notifContainerRef}>
               <button
+                ref={notifButtonRef}
                 onClick={() => setShowNotifPanel(!showNotifPanel)}
-                className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-100 text-slate-600 transition-all relative"
+                className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-100 text-slate-600 transition-all relative focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
                 title="Schedules & Alerts"
                 id="btn-trigger-notif"
+                aria-expanded={showNotifPanel}
+                aria-haspopup="dialog"
+                aria-label="Notifications & Alerts"
               >
                 <Bell className="w-4 h-4" />
                 <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5 animate-ping" />
@@ -477,7 +579,10 @@ export default function App() {
               {showNotifPanel && (
                 <NotificationPanel
                   userId={user.id}
-                  onClose={() => setShowNotifPanel(false)}
+                  onClose={() => {
+                    setShowNotifPanel(false);
+                    notifButtonRef.current?.focus();
+                  }}
                 />
               )}
             </div>
@@ -778,54 +883,86 @@ export default function App() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-2 shrink-0">
-                      <button
-                        onClick={async () => {
-                          await checkRealtimeWeatherAlert(user.district, user.state);
-                        }}
-                        className="bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-all border border-slate-200 flex items-center gap-1.5"
-                        id="btn-trigger-realtime-check"
-                      >
-                        Check Now
-                      </button>
-                      <button
-                        onClick={() => {
-                          const alerts = [
-                            {
-                              title: "Severe Hailstorm Warning ⛈️",
-                              message: `Large hail and violent winds forecasted for ${user.district} district. Cover delicate cash crops immediately and move cattle to sturdy shelters.`,
-                              severity: "danger" as const
-                            },
-                            {
-                              title: "Flash Flood Warning 🌊",
-                              message: `Torrential rainfall exceeding 120mm forecasted in ${user.district} area. Clear all channel blockages, elevate stored grains, and stay away from low-lying streams.`,
-                              severity: "danger" as const
-                            },
-                            {
-                              title: "Excessive Heatwave Alert 🥵",
-                              message: `Temperatures predicted to breach 44°C. Apply dense organic mulch to prevent root scorch and deploy micro-sprinklers in early mornings.`,
-                              severity: "warning" as const
-                            },
-                            {
-                              title: "Cyclone Advisory 🌀",
-                              message: `Strong cyclonic wind bands expected. Prune unstable overhanging branches, secure polyhouse tarpaulins, and avoid heavy field operations.`,
-                              severity: "danger" as const
-                            }
-                          ];
-                          const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
-                          setActiveWeatherAlert({
-                            ...randomAlert,
-                            district: user.district,
-                            state: user.state,
-                            saved: false
-                          });
-                          setShowWeatherToast(true);
-                        }}
-                        className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-all border border-rose-100 flex items-center gap-1.5 shadow-xs cursor-pointer"
-                        id="btn-simulate-severe-forecast"
-                      >
-                        ⚡ Simulate Severe Forecast
-                      </button>
+                    <div className="flex flex-col gap-2 shrink-0">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          disabled={checkingWeatherAlert}
+                          onClick={async () => {
+                            await checkRealtimeWeatherAlert(user.district, user.state, true, true);
+                          }}
+                          className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+                          id="btn-trigger-realtime-check"
+                          aria-label="Check live weather alerts"
+                        >
+                          {checkingWeatherAlert ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <CloudSun className="w-3.5 h-3.5" />
+                          )}
+                          <span>{checkingWeatherAlert ? "Scanning Atmosphere..." : "Check Now"}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const alerts = [
+                              {
+                                title: "Severe Hailstorm Warning ⛈️",
+                                message: `Large hail and violent winds forecasted for ${user.district} district. Cover delicate cash crops immediately and move cattle to sturdy shelters.`,
+                                severity: "danger" as const
+                              },
+                              {
+                                title: "Flash Flood Warning 🌊",
+                                message: `Torrential rainfall exceeding 120mm forecasted in ${user.district} area. Clear all channel blockages, elevate stored grains, and stay away from low-lying streams.`,
+                                severity: "danger" as const
+                              },
+                              {
+                                title: "Excessive Heatwave Alert 🥵",
+                                message: `Temperatures predicted to breach 44°C. Apply dense organic mulch to prevent root scorch and deploy micro-sprinklers in early mornings.`,
+                                severity: "warning" as const
+                              },
+                              {
+                                title: "Cyclone Advisory 🌀",
+                                message: `Strong cyclonic wind bands expected. Prune unstable overhanging branches, secure polyhouse tarpaulins, and avoid heavy field operations.`,
+                                severity: "danger" as const
+                              }
+                            ];
+                            const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
+                            setActiveWeatherAlert({
+                              ...randomAlert,
+                              district: user.district,
+                              state: user.state,
+                              saved: false
+                            });
+                            setShowWeatherToast(true);
+                            setWeatherCheckStatus({
+                              type: "alert",
+                              message: `⚡ Simulated Alert: ${randomAlert.title}`
+                            });
+                          }}
+                          className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-all border border-rose-100 flex items-center gap-1.5 shadow-xs cursor-pointer"
+                          id="btn-simulate-severe-forecast"
+                        >
+                          ⚡ Simulate Severe Forecast
+                        </button>
+                      </div>
+
+                      {weatherCheckStatus && (
+                        <div className={`p-2.5 rounded-xl text-[11px] font-medium leading-relaxed border flex items-center gap-1.5 ${
+                          weatherCheckStatus.type === "success"
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                            : weatherCheckStatus.type === "alert"
+                            ? "bg-amber-50 text-amber-800 border-amber-200"
+                            : "bg-rose-50 text-rose-800 border-rose-200"
+                        }`}>
+                          {weatherCheckStatus.type === "success" ? (
+                            <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                          )}
+                          <span>{weatherCheckStatus.message}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 

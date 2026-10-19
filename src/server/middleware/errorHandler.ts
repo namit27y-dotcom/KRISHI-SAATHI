@@ -29,6 +29,6 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
   res.status(statusCode).json({
     success: false,
     error: message,
-    ...(isProd ? {} : { stack: err.stack })
+    ...(err.code ? { code: err.code } : {})
   });
 }

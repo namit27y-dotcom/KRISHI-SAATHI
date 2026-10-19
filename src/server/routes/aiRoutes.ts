@@ -53,12 +53,13 @@ router.post("/weather/recommend", aiLimiter, async (req, res, next) => {
 // Live Weather Endpoint
 router.get("/weather/current", async (req, res, next) => {
   try {
-    const { district, state, lat, lon } = req.query;
+    const { district, state, lat, lon, forceRefresh } = req.query;
     const data = await WeatherService.getCurrentWeather(
       state as string,
       district as string,
       lat ? parseFloat(lat as string) : undefined,
-      lon ? parseFloat(lon as string) : undefined
+      lon ? parseFloat(lon as string) : undefined,
+      forceRefresh === "true" || forceRefresh === "1"
     );
     res.json(data);
   } catch (err) {

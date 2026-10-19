@@ -9,15 +9,18 @@ import {
   Volume2, 
   VolumeX, 
   Loader2, 
-  Sparkles,
-  HelpCircle,
-  TrendingUp,
-  CloudSun
+  Sparkles, 
+  HelpCircle, 
+  RotateCcw,
+  AlertCircle
 } from "lucide-react";
 
 interface Message {
   role: "user" | "model";
   text: string;
+  isError?: boolean;
+  canRetry?: boolean;
+  failedQuery?: string;
 }
 
 interface FloatingHelperProps {
@@ -37,7 +40,8 @@ const translations = {
       "Tell me about Government Schemes"
     ],
     listening: "Listening...",
-    close: "Close"
+    close: "Close",
+    retry: "Retry"
   },
   hi: {
     title: "कृषि साथी हेल्प बॉट",
@@ -50,7 +54,8 @@ const translations = {
       "सरकारी योजनाओं के बारे में बताएं"
     ],
     listening: "सुन रहा हूँ...",
-    close: "बंद करें"
+    close: "बंद करें",
+    retry: "पुनः प्रयास करें"
   },
   mr: {
     title: "कृषि साथी हेल्प बॉट",
@@ -63,7 +68,8 @@ const translations = {
       "शासकीय योजनांबद्दल सांगा"
     ],
     listening: "ऐकत आहे...",
-    close: "बंद करा"
+    close: "बंद करा",
+    retry: "पुन्हा प्रयत्न करा"
   }
 };
 
@@ -109,7 +115,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
       rec.onstart = () => setIsListening(true);
       rec.onend = () => setIsListening(false);
       rec.onresult = (e: any) => {
-        const transcript = e.results[0][0].transcript;
+        const transcript = e.results?.[0]?.[0]?.transcript;
         if (transcript) {
           setInput(transcript);
         }
@@ -124,7 +130,9 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
 
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.abort();
+        try {
+          recognitionRef.current.abort();
+        } catch (_) {}
       }
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
@@ -145,31 +153,68 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
         window.speechSynthesis.cancel();
         setSpeakingText(null);
       }
-      recognitionRef.current.start();
+      try {
+        recognitionRef.current.start();
+      } catch (err) {
+        console.error("Failed to start speech recognition:", err);
+      }
     }
   };
 
   const handleSend = async (textToSend: string) => {
-    if (!textToSend.trim() || loading) return;
+    const trimmed = textToSend.trim();
+    if (!trimmed || loading) return;
 
-    setMessages((prev) => [...prev, { role: "user", text: textToSend }]);
+    setMessages((prev) => [...prev, { role: "user", text: trimmed }]);
     setLoading(true);
 
     try {
-      const history = messages.map((msg) => ({
-        role: msg.role === "user" ? ("user" as const) : ("model" as const),
-        text: msg.text
-      }));
+      const history = messages
+        .filter((msg) => !msg.isError)
+        .map((msg) => ({
+          role: msg.role === "user" ? ("user" as const) : ("model" as const),
+          text: msg.text
+        }));
 
       const res = await axios.post("/api/chat", {
-        message: textToSend,
+        message: trimmed,
         history,
-        userId
+        userId,
+        preferredLanguage
       });
 
-      setMessages((prev) => [...prev, { role: "model", text: res.data.response }]);
+      const responseText = res.data?.response || "I am here to assist your farming operations.";
+      setMessages((prev) => [...prev, { role: "model", text: responseText }]);
     } catch (err: any) {
-      setMessages((prev) => [...prev, { role: "model", text: preferredLanguage === "hi" ? "माफ़ कीजिये, नेटवर्क में कुछ व्यवधान आया है।" : "I apologize, I experienced a network disruption." }]);
+      console.error("[Help AI Chatbot Error]", err);
+      let errorMsg = preferredLanguage === "hi"
+        ? "माफ़ कीजिये, AI सर्वर से संपर्क नहीं हो पाया।"
+        : preferredLanguage === "mr"
+        ? "क्षमस्व, AI सर्व्हरशी संपर्क होऊ शकला नाही."
+        : "I apologize, I was unable to connect to the AI assistant.";
+
+      if (err.response?.data?.error) {
+        errorMsg = err.response.data.error;
+      } else if (err.code === "ECONNABORTED" || err.message?.includes("timeout")) {
+        errorMsg = preferredLanguage === "hi"
+          ? "अनुरोध समय समाप्त हो गया। कृपया पुनः प्रयास करें।"
+          : "Request timed out while generating response. Please try again.";
+      } else if (!err.response) {
+        errorMsg = preferredLanguage === "hi"
+          ? "नेटवर्क व्यवधान: सर्वर तक पहुँच नहीं है। कृपया अपना इंटरनेट जांचें।"
+          : "Network disruption: Unable to reach the backend server. Please verify your connection.";
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "model",
+          text: errorMsg,
+          isError: true,
+          canRetry: true,
+          failedQuery: trimmed
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -177,7 +222,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
     const currentInput = input;
     setInput("");
     handleSend(currentInput);
@@ -217,7 +262,11 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end" id="floating-ai-assistant">
       {/* Expanded chat panel */}
       {isOpen && (
-        <div className="w-[360px] h-[500px] bg-white border border-slate-100 rounded-3xl shadow-2xl flex flex-col mb-4 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div 
+          className="w-[calc(100vw-2rem)] sm:w-[380px] max-w-[380px] h-[520px] max-h-[85vh] bg-white border border-slate-100 rounded-3xl shadow-2xl flex flex-col mb-4 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200"
+          role="region"
+          aria-label="Krishi Saathi AI Help Assistant"
+        >
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex justify-between items-center shrink-0">
             <div className="flex items-center gap-2">
@@ -228,17 +277,19 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
                 <h3 className="font-bold text-xs uppercase tracking-wider">{t.title}</h3>
                 <span className="text-[9px] text-emerald-100/95 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
-                  Online Help Bot
+                  Live Agronomy AI
                 </span>
               </div>
             </div>
             <button 
+              type="button"
               onClick={() => {
                 setIsOpen(false);
                 if ("speechSynthesis" in window) window.speechSynthesis.cancel();
               }}
               className="p-1.5 hover:bg-white/15 rounded-lg transition-all"
               title={t.close}
+              aria-label={t.close}
             >
               <X className="w-4 h-4" />
             </button>
@@ -252,22 +303,40 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
                 className={`flex gap-2.5 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}
               >
                 {msg.role !== "user" && (
-                  <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100 shrink-0">
-                    <Sparkles className="w-3.5 h-3.5" />
+                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center border shrink-0 ${
+                    msg.isError ? "bg-rose-50 text-rose-600 border-rose-200" : "bg-emerald-50 text-emerald-700 border-emerald-100"
+                  }`}>
+                    {msg.isError ? <AlertCircle className="w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5" />}
                   </div>
                 )}
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <div 
-                    className={`p-3 rounded-2xl text-xs leading-relaxed shadow-xs ${
+                    className={`p-3 rounded-2xl text-xs leading-relaxed shadow-xs whitespace-pre-wrap break-words ${
                       msg.role === "user" 
                         ? "bg-emerald-600 text-white rounded-tr-none" 
+                        : msg.isError
+                        ? "bg-rose-50/90 text-rose-800 border border-rose-200 rounded-tl-none font-medium"
                         : "bg-white text-slate-700 border border-slate-100 rounded-tl-none"
                     }`}
                   >
                     {msg.text}
                   </div>
-                  {msg.role === "model" && (
+                  
+                  {msg.isError && msg.canRetry && msg.failedQuery && (
                     <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => handleSend(msg.failedQuery!)}
+                      className="inline-flex items-center gap-1.5 text-[11px] font-bold text-rose-700 hover:text-rose-800 bg-rose-100/70 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition-all"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      {t.retry}
+                    </button>
+                  )}
+
+                  {msg.role === "model" && !msg.isError && (
+                    <button
+                      type="button"
                       onClick={() => readAloud(msg.text)}
                       className={`p-1.5 rounded-lg transition-all text-[10px] flex items-center gap-1 ${
                         speakingText === msg.text
@@ -291,7 +360,7 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 </div>
                 <div className="p-3 bg-white border border-slate-100 rounded-2xl rounded-tl-none text-slate-400 text-xs italic">
-                  Typing...
+                  Agronomist AI is thinking...
                 </div>
               </div>
             )}
@@ -303,9 +372,10 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
             {t.quickTips.map((tip, i) => (
               <button
                 key={i}
+                type="button"
                 disabled={loading}
                 onClick={() => handleSend(tip)}
-                className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-100 rounded-full text-[10px] font-medium whitespace-nowrap transition-all shadow-xs shrink-0"
+                className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-100 rounded-full text-[10px] font-medium whitespace-nowrap transition-all shadow-xs shrink-0 disabled:opacity-50"
               >
                 {tip}
               </button>
@@ -317,12 +387,14 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
             <button
               type="button"
               onClick={toggleListening}
+              disabled={loading}
               className={`p-2 rounded-xl border transition-all ${
                 isListening 
                   ? "bg-rose-50 border-rose-200 text-rose-600 animate-pulse" 
-                  : "bg-slate-50 border-slate-100 text-slate-500 hover:text-slate-700"
+                  : "bg-slate-50 border-slate-100 text-slate-500 hover:text-slate-700 disabled:opacity-50"
               }`}
               title="Voice Input"
+              aria-label="Voice input"
             >
               {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </button>
@@ -333,13 +405,14 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
               onChange={(e) => setInput(e.target.value)}
               placeholder={isListening ? t.listening : t.placeholder}
               disabled={loading}
-              className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 transition-all text-slate-700"
+              className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 transition-all text-slate-700 disabled:bg-slate-100"
             />
 
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="p-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-100 text-white disabled:text-slate-400 rounded-xl transition-all shadow-md flex items-center justify-center"
+              className="p-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 text-white disabled:text-slate-400 rounded-xl transition-all shadow-md flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
+              aria-label="Send message"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -353,6 +426,8 @@ export default function FloatingHelper({ userId, preferredLanguage = "en" }: Flo
         className="w-14 h-14 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all relative border border-emerald-500/20"
         title="Krishi Saathi AI Help Assistant"
         id="floating-helper-trigger"
+        aria-label="Toggle Krishi Saathi AI Help Assistant"
+        aria-expanded={isOpen}
       >
         {isOpen ? (
           <X className="w-6 h-6 animate-in spin-in-90 duration-200" />

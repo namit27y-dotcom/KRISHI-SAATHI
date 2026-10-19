@@ -2,16 +2,10 @@ import express from "express";
 import http from "http";
 import fs from "fs";
 import path from "path";
-import helmet from "helmet";
-import cors from "cors";
 import { createServer as createViteServer } from "vite";
 import { ENV } from "./src/server/config/env.js";
 import { dbConnection } from "./src/server/db/connection.js";
-import { runMigrations } from "./src/server/db/migrations.js";
-import { runSeed } from "./src/server/db/seed.js";
-import apiRouter from "./src/server/routes/index.js";
-import { errorHandler } from "./src/server/middleware/errorHandler.js";
-import { apiLimiter } from "./src/server/middleware/rateLimiter.js";
+import { app, initializeDatabase } from "./src/server/app.js";
 
 // Ensure process working directory matches realpath for Vite dev server & bundling consistency
 try {
@@ -20,55 +14,11 @@ try {
 
 async function startServer() {
   console.log("[Server] Starting Krishi Saathi...");
-  const app = express();
   const PORT = ENV.PORT;
   const httpServer = http.createServer(app);
 
-  // Security Headers
-  app.use(
-    helmet({
-      contentSecurityPolicy: false, // Allows Vite inline scripts and dynamic images
-      crossOriginEmbedderPolicy: false,
-    })
-  );
-
-  // CORS Setup
-  app.use(
-    cors({
-      origin: ENV.CORS_ORIGIN === "*" ? true : ENV.CORS_ORIGIN.split(",").map(s => s.trim()),
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"]
-    })
-  );
-
-  // Body Parsing with appropriate limits for image payloads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
-
   // Initialize Database Connection & Migrations
-  try {
-    const isConnected = await dbConnection.connect();
-    if (isConnected) {
-      await runMigrations();
-      await runSeed();
-    } else {
-      // Offline fallback initialization
-      await runMigrations();
-      await runSeed();
-    }
-  } catch (err: any) {
-    console.error("[Server] Database initialization warning:", err.message || err);
-  }
-
-  // Rate Limiter for general API endpoints
-  app.use("/api", apiLimiter);
-
-  // Mount Master API Router
-  app.use("/api", apiRouter);
-
-  // Centralized Error Handler for API routes
-  app.use(errorHandler);
+  await initializeDatabase();
 
   // Vite Development and Production Static Asset Serving
   if (ENV.NODE_ENV !== "production") {

@@ -14,7 +14,7 @@ const ai = new GoogleGenAI({
   },
 });
 
-const MODEL_NAME = "gemini-3.5-flash";
+const MODEL_NAME = "gemini-2.5-flash";
 
 // Helper to convert base64 image object for Gemini SDK
 function getGeminiImagePart(base64Data: string) {

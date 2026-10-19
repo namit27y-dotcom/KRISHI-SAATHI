@@ -14,13 +14,43 @@ import {
   Sprout 
 } from "lucide-react";
 
+interface DailyForecast {
+  date: string;
+  day: string;
+  maxTemp: number;
+  minTemp: number;
+  precipitationProbability: number;
+  condition: string;
+  icon: string;
+}
+
 interface WeatherData {
   location: string;
+  state?: string;
+  district?: string;
+  latitude?: number;
+  longitude?: number;
   temp: number;
+  feelsLike?: number;
   humidity: number;
   wind: number;
+  windDirection?: string;
+  precipitation?: number;
+  condition?: string;
+  icon?: string;
   rainfallPrediction: string;
-  alert: string;
+  hasAlert?: boolean;
+  alert?: {
+    title: string;
+    message: string;
+    severity: "warning" | "danger" | "info";
+    type?: string;
+  } | null;
+  alertMessage?: string;
+  forecast?: DailyForecast[];
+  source?: string;
+  isLive?: boolean;
+  isStale?: boolean;
   updatedAt: string;
 }
 
@@ -55,6 +85,7 @@ export default function WeatherAdvisor({
 }: WeatherAdvisorProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
 
   // Recommendation form states
   const [stateName, setStateName] = useState(defaultState);
@@ -66,16 +97,20 @@ export default function WeatherAdvisor({
   const [recommendError, setRecommendError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCurrentWeather();
+    fetchCurrentWeather(false);
   }, [districtName, stateName]);
 
-  const fetchCurrentWeather = async () => {
+  const fetchCurrentWeather = async (forceRefresh: boolean = false) => {
     setWeatherLoading(true);
+    setWeatherError(null);
     try {
-      const res = await axios.get(`/api/weather/current?district=${districtName}&state=${stateName}`);
+      const res = await axios.get(
+        `/api/weather/current?district=${encodeURIComponent(districtName)}&state=${encodeURIComponent(stateName)}${forceRefresh ? "&forceRefresh=true" : ""}`
+      );
       setWeather(res.data);
-    } catch (err) {
-      console.error("Error fetching mock weather:", err);
+    } catch (err: any) {
+      console.error("[WeatherAdvisor Error]", err);
+      setWeatherError(err.response?.data?.error || "Failed to fetch live meteorological data.");
     } finally {
       setWeatherLoading(false);
     }
@@ -108,73 +143,164 @@ export default function WeatherAdvisor({
       {/* Current block weather card */}
       <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-3xl p-6 text-white shadow-md relative overflow-hidden">
         {/* Ambient graphics */}
-        <div className="absolute right-0 top-0 transform translate-x-12 -translate-y-6 opacity-15">
-          <CloudSun className="w-48 h-48" />
+        <div className="absolute right-0 top-0 transform translate-x-12 -translate-y-6 opacity-15 pointer-events-none">
+          <CloudSun className="w-56 h-56" />
         </div>
 
         <div className="relative z-10 space-y-4">
-          <div className="flex justify-between items-start">
+          <div className="flex flex-wrap justify-between items-start gap-2">
             <div>
               <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-100 flex items-center gap-1">
-                <MapPin className="w-3 h-3" /> Live Block Weather
+                <MapPin className="w-3 h-3" /> Live Meteorological Satellite
               </span>
-              <h3 className="text-xl font-bold mt-0.5">
+              <h3 className="text-xl font-bold mt-0.5 flex items-center gap-2">
                 {weather?.location || `${districtName}, ${stateName}`}
+                {weather?.condition && (
+                  <span className="text-xs font-normal text-emerald-100 bg-emerald-800/40 px-2.5 py-0.5 rounded-full border border-emerald-400/20">
+                    {weather.condition}
+                  </span>
+                )}
               </h3>
             </div>
-            <span className="text-[10px] text-emerald-100/80 bg-white/10 px-2.5 py-1 rounded-full backdrop-blur-sm">
-              Updated: {weather?.updatedAt || "Just now"}
-            </span>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-emerald-100/90 bg-white/10 px-2.5 py-1 rounded-full backdrop-blur-sm">
+                Updated: {weather?.updatedAt || "Just now"}
+              </span>
+              <button
+                type="button"
+                onClick={() => fetchCurrentWeather(true)}
+                disabled={weatherLoading}
+                className="p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all text-xs flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                title="Fetch fresh satellite weather"
+                aria-label="Refresh weather data"
+              >
+                <Loader2 className={`w-3.5 h-3.5 ${weatherLoading ? "animate-spin" : ""}`} />
+                <span className="text-[10px] font-semibold hidden sm:inline">Refresh</span>
+              </button>
+            </div>
           </div>
 
-          {weatherLoading ? (
-            <div className="flex items-center justify-center py-6">
-              <Loader2 className="w-6 h-6 animate-spin text-white" />
+          {weatherError ? (
+            <div className="p-4 bg-rose-900/40 border border-rose-300/30 rounded-2xl text-xs text-rose-100">
+              <p className="font-semibold">{weatherError}</p>
+              <button
+                type="button"
+                onClick={() => fetchCurrentWeather(true)}
+                className="mt-2 text-[11px] underline font-bold text-rose-200 hover:text-white"
+              >
+                Try Reconnecting
+              </button>
+            </div>
+          ) : weatherLoading && !weather ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-8 h-8 animate-spin text-white" />
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/15 rounded-xl backdrop-blur-sm">
-                  <Thermometer className="w-5 h-5 text-amber-200" />
+            <>
+              {/* Primary Weather Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+                <div className="p-3 bg-white/15 rounded-2xl backdrop-blur-sm flex items-center gap-3">
+                  <div className="p-2 bg-amber-400/20 rounded-xl text-amber-200">
+                    <Thermometer className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] block text-emerald-100/90">Temperature</span>
+                    <span className="text-lg font-extrabold">{weather?.temp ?? "--"}°C</span>
+                    {weather?.feelsLike !== undefined && (
+                      <span className="text-[9px] block text-emerald-100/80">Feels {weather.feelsLike}°C</span>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <span className="text-[10px] block text-emerald-100/90">Temperature</span>
-                  <span className="text-lg font-extrabold">{weather?.temp}°C</span>
+
+                <div className="p-3 bg-white/15 rounded-2xl backdrop-blur-sm flex items-center gap-3">
+                  <div className="p-2 bg-blue-400/20 rounded-xl text-blue-200">
+                    <Droplets className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] block text-emerald-100/90">Relative Humidity</span>
+                    <span className="text-lg font-extrabold">{weather?.humidity ?? "--"}%</span>
+                    <span className="text-[9px] block text-emerald-100/80">Moisture status</span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-white/15 rounded-2xl backdrop-blur-sm flex items-center gap-3">
+                  <div className="p-2 bg-emerald-400/20 rounded-xl text-emerald-100">
+                    <Wind className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] block text-emerald-100/90">Wind Velocity</span>
+                    <span className="text-lg font-extrabold">{weather?.wind ?? "--"} km/h</span>
+                    {weather?.windDirection && (
+                      <span className="text-[9px] block text-emerald-100/80">Direction: {weather.windDirection}</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3 bg-white/15 rounded-2xl backdrop-blur-sm flex items-center gap-3">
+                  <div className="p-2 bg-cyan-400/20 rounded-xl text-cyan-200">
+                    <CloudSun className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] block text-emerald-100/90">Precipitation</span>
+                    <span className="text-sm font-extrabold leading-tight block mt-0.5">
+                      {weather?.precipitation !== undefined ? `${weather.precipitation} mm` : "None"}
+                    </span>
+                    <span className="text-[9px] block text-emerald-100/80 line-clamp-1">
+                      {weather?.rainfallPrediction || "Normal"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/15 rounded-xl backdrop-blur-sm">
-                  <Droplets className="w-5 h-5 text-blue-200" />
+              {/* 7-Day Weather Forecast Strip */}
+              {weather?.forecast && weather.forecast.length > 0 && (
+                <div className="pt-2">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-100 block mb-2">
+                    7-Day Agronomic Outlook
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+                    {weather.forecast.map((day, idx) => (
+                      <div 
+                        key={idx}
+                        className="bg-white/10 hover:bg-white/15 p-2 rounded-xl text-center backdrop-blur-xs border border-white/5 transition-all"
+                      >
+                        <span className="text-[10px] font-bold block text-emerald-100">{day.day}</span>
+                        <span className="text-xs font-black block mt-1">{day.maxTemp}° <span className="text-[10px] font-normal opacity-75">{day.minTemp}°</span></span>
+                        <span className="text-[9px] block text-emerald-100/85 mt-0.5 truncate" title={day.condition}>
+                          {day.condition}
+                        </span>
+                        {day.precipitationProbability > 0 && (
+                          <span className="text-[9px] font-bold text-cyan-200 block mt-0.5">
+                            💧 {day.precipitationProbability}%
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <span className="text-[10px] block text-emerald-100/90">Air Humidity</span>
-                  <span className="text-lg font-extrabold">{weather?.humidity}%</span>
-                </div>
-              </div>
+              )}
 
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/15 rounded-xl backdrop-blur-sm">
-                  <Wind className="w-5 h-5 text-emerald-100" />
+              {/* Climate Alert Notice */}
+              {weather?.hasAlert && weather.alert ? (
+                <div className={`mt-3 p-3.5 rounded-2xl border text-xs flex items-start gap-2.5 backdrop-blur-sm ${
+                  weather.alert.severity === "danger" 
+                    ? "bg-rose-950/60 border-rose-300/40 text-rose-100" 
+                    : "bg-amber-950/50 border-amber-300/40 text-amber-100"
+                }`}>
+                  <AlertTriangle className="w-5 h-5 shrink-0 text-amber-300 mt-0.5" />
+                  <div>
+                    <h5 className="font-bold text-xs">{weather.alert.title}</h5>
+                    <p className="leading-relaxed mt-0.5 opacity-95">{weather.alert.message}</p>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-[10px] block text-emerald-100/90">Wind Velocity</span>
-                  <span className="text-lg font-extrabold">{weather?.wind} km/h</span>
+              ) : (
+                <div className="mt-2 text-[11px] text-emerald-100/85 flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-200" />
+                  <span>{weather?.alertMessage || "No active climate alerts in your block. Conditions are favorable for field operations."}</span>
                 </div>
-              </div>
-
-              <div className="col-span-2 md:col-span-1 flex flex-col justify-center">
-                <span className="text-[9px] text-emerald-100 uppercase tracking-widest font-bold">Rainfall expectation</span>
-                <p className="text-xs font-semibold mt-0.5">{weather?.rainfallPrediction}</p>
-              </div>
-            </div>
-          )}
-
-          {weather?.alert && (
-            <div className="mt-4 p-3 bg-white/10 rounded-2xl border border-white/10 text-xs flex items-start gap-2 backdrop-blur-sm">
-              <AlertTriangle className="w-4 h-4 text-amber-200 shrink-0 mt-0.5" />
-              <p className="text-emerald-50 leading-relaxed font-medium">{weather.alert}</p>
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>

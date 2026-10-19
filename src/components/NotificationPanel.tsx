@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Bell, AlertTriangle, Info, CheckCircle, Clock } from "lucide-react";
+import { Bell, AlertTriangle, Info, CheckCircle, Clock, X } from "lucide-react";
 import { Notification } from "../types.ts";
 
 interface NotificationPanelProps {
@@ -20,7 +20,7 @@ export default function NotificationPanel({ userId, onClose }: NotificationPanel
     setLoading(true);
     try {
       const res = await axios.get(`/api/notifications?userId=${userId}`);
-      setNotifications(res.data.notifications);
+      setNotifications(res.data.notifications || []);
     } catch (err) {
       console.error("Error fetching notifications:", err);
     } finally {
@@ -55,10 +55,17 @@ export default function NotificationPanel({ userId, onClose }: NotificationPanel
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 overflow-hidden text-xs max-h-[380px] flex flex-col" id="notification-panel-layout">
+    <div 
+      className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 overflow-hidden text-xs max-h-[420px] flex flex-col"
+      id="notification-panel-layout"
+      role="dialog"
+      aria-modal="false"
+      aria-label="Notification alerts"
+      onClick={(e) => e.stopPropagation()}
+    >
       {/* Header */}
       <div className="px-4 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center shrink-0">
-        <span className="font-bold text-slate-800 flex items-center gap-1">
+        <span className="font-bold text-slate-800 flex items-center gap-1.5">
           <Bell className="w-4 h-4 text-emerald-600" /> Notifications 
           {unreadCount > 0 && (
             <span className="bg-rose-500 text-white font-mono text-[9px] px-1.5 py-0.5 rounded-full font-bold ml-1">
@@ -66,16 +73,31 @@ export default function NotificationPanel({ userId, onClose }: NotificationPanel
             </span>
           )}
         </span>
-        <button 
-          onClick={fetchNotifications}
-          className="text-[10px] text-emerald-600 hover:underline font-bold"
-        >
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            type="button"
+            onClick={fetchNotifications}
+            className="text-[10px] text-emerald-600 hover:text-emerald-700 hover:underline font-bold transition-all"
+            aria-label="Refresh notifications"
+          >
+            Refresh
+          </button>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-lg transition-all"
+              aria-label="Close notification panel"
+              title="Close"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Notifications List */}
-      <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
+      <div className="flex-1 overflow-y-auto divide-y divide-gray-50 overscroll-contain">
         {loading ? (
           <div className="p-8 text-center text-slate-400">Loading alerts...</div>
         ) : notifications.length === 0 ? (
@@ -86,9 +108,19 @@ export default function NotificationPanel({ userId, onClose }: NotificationPanel
           notifications.map((notif) => (
             <div
               key={notif.id}
-              onClick={() => !notif.isRead && markAsRead(notif.id)}
-              className={`p-3.5 flex items-start gap-3 transition-all cursor-pointer ${
-                notif.isRead ? "bg-white hover:bg-slate-50/50" : "bg-emerald-50/20 hover:bg-emerald-50/40 font-semibold text-slate-900"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  if (!notif.isRead) markAsRead(notif.id);
+                }
+              }}
+              onClick={() => {
+                if (!notif.isRead) markAsRead(notif.id);
+              }}
+              className={`p-3.5 flex items-start gap-3 transition-all cursor-pointer select-none ${
+                notif.isRead ? "bg-white hover:bg-slate-50/70" : "bg-emerald-50/30 hover:bg-emerald-50/60 font-semibold text-slate-900"
               }`}
               id={`notif-row-${notif.id}`}
             >
@@ -107,3 +139,4 @@ export default function NotificationPanel({ userId, onClose }: NotificationPanel
     </div>
   );
 }
+

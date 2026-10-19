@@ -27,8 +27,9 @@ export const ENV = {
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
   CORS_ORIGIN: process.env.CORS_ORIGIN || "*",
   
-  // Google Maps
+  // Google Maps & Weather
   VITE_GOOGLE_MAPS_API_KEY: process.env.VITE_GOOGLE_MAPS_API_KEY || "",
+  WEATHER_API_KEY: process.env.WEATHER_API_KEY || process.env.OPENWEATHER_API_KEY || "",
 };
 
 export const isProd = ENV.NODE_ENV === "production";

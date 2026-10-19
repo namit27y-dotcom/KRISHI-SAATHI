@@ -432,12 +432,61 @@ export class AIService {
   }
 
   // 8. AI Chat Assistant (Supports Crops + Animal & Fish Farming)
-  public static async chatAssistant(message: string, history: any[] = [], farmingCategory: string = "crops", preferredLanguage: string = "en", userId?: string) {
-    const contents = history.map(h => ({
-      role: h.role === "user" ? "user" : "model",
-      parts: [{ text: h.text }]
-    }));
-    contents.push({ role: "user", parts: [{ text: message }] });
+  public static async chatAssistant(
+    message: string,
+    history: any[] = [],
+    farmingCategory: string = "crops",
+    preferredLanguage: string = "en",
+    userId?: string
+  ) {
+    if (!message || typeof message !== "string" || !message.trim()) {
+      const err: any = new Error("Message cannot be empty.");
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const apiKey = (ENV.GEMINI_API_KEY || "").trim();
+    if (!apiKey || apiKey === "MOCK_KEY" || apiKey.startsWith("your_")) {
+      const err: any = new Error(
+        "Google Gemini API key is not configured on the server. Please configure GEMINI_API_KEY."
+      );
+      err.statusCode = 503;
+      err.code = "GEMINI_NOT_CONFIGURED";
+      throw err;
+    }
+
+    const client = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          "User-Agent": "krishi-saathi-production-backend",
+        },
+      },
+    });
+
+    // Prepare clean history alternating turns and starting with 'user'
+    const cleanContents: any[] = [];
+    if (Array.isArray(history)) {
+      for (const h of history) {
+        if (!h || !h.text || typeof h.text !== "string" || !h.text.trim()) continue;
+        const role = h.role === "user" ? "user" : "model";
+        // Drop leading model greeting so contents starts with a user turn
+        if (cleanContents.length === 0 && role === "model") continue;
+        // Merge adjacent turns of same role if any
+        if (cleanContents.length > 0 && cleanContents[cleanContents.length - 1].role === role) {
+          cleanContents[cleanContents.length - 1].parts[0].text += "\n" + h.text.trim();
+        } else {
+          cleanContents.push({ role, parts: [{ text: h.text.trim() }] });
+        }
+      }
+    }
+
+    // Add current user message
+    if (cleanContents.length > 0 && cleanContents[cleanContents.length - 1].role === "user") {
+      cleanContents[cleanContents.length - 1].parts[0].text += "\n" + message.trim();
+    } else {
+      cleanContents.push({ role: "user", parts: [{ text: message.trim() }] });
+    }
 
     const systemPrompt = `
       You are Krishi Saathi's expert AI Farming & Animal Husbandry Assistant.
@@ -452,34 +501,78 @@ export class AIService {
       Guidelines:
       - Always promote sustainable, soil-safe, organic-first practices.
       - If animal/fish sickness is asked, provide supportive care but state clearly to consult a veterinarian.
-      - Selected language: ${preferredLanguage}. Provide bilingual clarity (English + ${preferredLanguage}).
+      - Selected language: ${preferredLanguage}. Respond primarily in ${
+        preferredLanguage === "hi" ? "Hindi" : preferredLanguage === "mr" ? "Marathi" : "English"
+      }, with essential agricultural terminology in English where helpful for clarity.
       - Keep language humble, practical, and easy to understand for farmers.
+      - Use clean markdown formatting (bullet points, clear paragraphs). Avoid unescaped raw HTML.
     `;
 
-    const apiCall = ai.models.generateContent({
-      model: MODEL_NAME,
-      contents: contents,
-      config: { systemInstruction: systemPrompt }
-    }).then(res => res.text || "I am here to assist your farming operations. Please let me know how I can help.");
+    try {
+      let timeoutId: any;
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          const timeoutErr: any = new Error("AI request timed out while generating a response. Please try again.");
+          timeoutErr.statusCode = 504;
+          timeoutErr.code = "GEMINI_TIMEOUT";
+          reject(timeoutErr);
+        }, 25000);
+      });
 
-    const answer = await withTimeoutAndFallback(
-      apiCall,
-      () => preferredLanguage === "hi"
-        ? `कृषि साथी में आपका स्वागत है। आप अपनी फसल, जैविक खाद, सिंचाई या पशुपालन संबंधी कोई भी प्रश्न पूछ सकते हैं।`
-        : preferredLanguage === "mr"
-        ? `कृषि साथी मध्ये आपले स्वागत आहे. आपण पिके, खत व्यवस्थापन किंवा शेतीपूरक व्यवसायाबाबत प्रश्न विचारू शकता.`
-        : `Welcome to Krishi Saathi! You can ask any question regarding crops, organic soil management, livestock, or aquaculture.`,
-      5000
-    );
+      const generatePromise = client.models.generateContent({
+        model: MODEL_NAME,
+        contents: cleanContents,
+        config: { systemInstruction: systemPrompt }
+      });
 
-    if (userId) {
-      await dbConnection.execute(
-        `INSERT INTO chat_history (id, user_id, message, response) VALUES (?, ?, ?, ?)`,
-        ["msg-" + Math.random().toString(36).substring(2, 11), userId, message, answer]
-      );
+      const res = await Promise.race([generatePromise, timeoutPromise]);
+      clearTimeout(timeoutId);
+
+      const answer = res.text?.trim() || "I am here to assist your farming operations. Please let me know how I can help.";
+
+      if (userId) {
+        try {
+          await dbConnection.execute(
+            `INSERT INTO chat_history (id, user_id, message, response) VALUES (?, ?, ?, ?)`,
+            ["msg-" + Math.random().toString(36).substring(2, 11), userId, message.trim(), answer]
+          );
+        } catch (dbErr: any) {
+          console.warn("[Chat History] Could not save message to database:", dbErr.message);
+        }
+      }
+
+      return answer;
+    } catch (error: any) {
+      if (error.statusCode) {
+        throw error;
+      }
+
+      console.error("[Gemini AI Error]", {
+        status: error.status,
+        code: error.code,
+        message: error.message || String(error),
+      });
+
+      const msg = String(error.message || "");
+      if (error.status === 429 || msg.includes("429") || msg.includes("Quota") || msg.includes("RESOURCE_EXHAUSTED")) {
+        const rateLimitErr: any = new Error("AI service quota or rate limit exceeded. Please wait a minute and retry.");
+        rateLimitErr.statusCode = 429;
+        rateLimitErr.code = "GEMINI_QUOTA_EXCEEDED";
+        throw rateLimitErr;
+      }
+
+      if (error.status === 401 || error.status === 403 || msg.includes("API key not valid") || msg.includes("PERMISSION_DENIED")) {
+        const authErr: any = new Error("Invalid or unauthorized Gemini API key. Please check server environment configuration.");
+        authErr.statusCode = 503;
+        authErr.code = "GEMINI_AUTH_FAILED";
+        throw authErr;
+      }
+
+      const safeErr: any = new Error("AI assistant encountered an issue generating a response. Please try again.");
+      safeErr.statusCode = 502;
+      safeErr.code = "GEMINI_PROVIDER_ERROR";
+      throw safeErr;
     }
-
-    return answer;
   }
 
   // Fallbacks
